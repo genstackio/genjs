@@ -1,4 +1,4 @@
-import {AbstractPackage} from '@ohoareau/microgen';
+import {AbstractPackage} from '@genjs/genjs';
 import {
     GitIgnoreTemplate,
     LicenseTemplate,
@@ -8,7 +8,7 @@ import {
     ContributingTemplate,
     NvmRcTemplate,
     TerraformToVarsTemplate
-} from "@ohoareau/microgen-templates";
+} from "@genjs/genjs-templates";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -145,9 +145,9 @@ export default class Package extends AbstractPackage {
                 .addMetaTarget('deploy', ['deploy-storybooks', 'invalidate-cache'])
             ;
         }
-        if (m.microgen) {
+        if (m.genjs) {
             t
-                .addPredefinedTarget('generate', 'yarn-microgen')
+                .addPredefinedTarget('generate', 'yarn-genjs')
             ;
         }
         if ('github' === scm) {

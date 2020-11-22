@@ -1,11 +1,11 @@
-import {AbstractPackage} from '@ohoareau/microgen';
+import {AbstractPackage} from '@genjs/genjs';
 import {
     GitIgnoreTemplate,
     LicenseTemplate,
     MakefileTemplate,
     ReadmeTemplate,
     TerraformToVarsTemplate
-} from "@ohoareau/microgen-templates";
+} from "@genjs/genjs-templates";
 import RootReadmeTemplate from "./RootReadmeTemplate";
 import {buildProjectsVars} from "./utils";
 
@@ -122,7 +122,7 @@ export default class Package extends AbstractPackage {
         const t = new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'develop')
-            .addPredefinedTarget('generate', 'yarn-microgen')
+            .addPredefinedTarget('generate', 'yarn-genjs')
             .addPredefinedTarget('install-root', 'yarn-install')
             .addPredefinedTarget('install-terraform', 'tfenv-install')
             .addMetaTarget('pre-install-root', ['install-root'])
@@ -189,7 +189,7 @@ export default class Package extends AbstractPackage {
     }
     protected getTechnologies(): any {
         return [
-            'microgen',
+            'genjs',
             'make',
             'aws_cli',
             'aws_profiles',

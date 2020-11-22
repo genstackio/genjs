@@ -1,1 +1,1 @@
-# microgen-plugin-js-react-app
+# genjs-plugin-js-react-app

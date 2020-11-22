@@ -1,4 +1,4 @@
-import {AbstractFileTemplate} from '@ohoareau/microgen';
+import {AbstractFileTemplate} from '@genjs/genjs';
 
 export type PackageExcludesTemplateConfig = {
     package_excludes?: string[],

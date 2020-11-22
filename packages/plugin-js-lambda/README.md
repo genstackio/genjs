@@ -1,1 +1,1 @@
-# microgen-plugin-js-lambda
+# genjs-plugin-js-lambda-basic

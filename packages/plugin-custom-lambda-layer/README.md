@@ -1,1 +1,1 @@
-# microgen-plugin-custom-lambda-layer
+# genjs-plugin-custom-lambda-layer

@@ -21,7 +21,7 @@ module.exports = {
         vars: {
             author: {
                 name: 'Olivier Hoareau',
-                email: 'oha+oss@greenberets.io',
+                email: 'oss@genjs.dev',
             },
             project_envs: {
                 dev: {},

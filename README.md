@@ -1,3 +1,3 @@
-# MicroGen
+# GenJS
 
-Documentation [available here](https://github.com/ohoareau/microgen/wiki/Home)
+Documentation [available here](https://genjs.dev)

@@ -1,4 +1,4 @@
-import {AbstractFileTemplate} from '@ohoareau/microgen';
+import {AbstractFileTemplate} from '@genjs/genjs';
 import * as predefinedTargets from './targets';
 
 export interface TargetConfigBase {

@@ -1,1 +1,1 @@
-# microgen-plugin-js-docusaurus
+# genjs-plugin-js-docusaurus

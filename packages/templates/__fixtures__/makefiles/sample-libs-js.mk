@@ -30,7 +30,7 @@ deploy-storybooks:
 	@yarn --silent deploy-storybooks
 
 generate:
-	@yarn --silent microgen
+	@yarn --silent genjs
 
 install: install-root install-packages build
 install-packages:

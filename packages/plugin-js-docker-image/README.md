@@ -1,1 +1,1 @@
-# microgen-plugin-js-docker-image
+# genjs-plugin-js-docker-image

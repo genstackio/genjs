@@ -1,4 +1,4 @@
-import {ReadmeTemplate, ReadmeTemplateConfig} from "@ohoareau/microgen-templates";
+import {ReadmeTemplate, ReadmeTemplateConfig} from "@genjs/genjs-templates";
 import {
     buildInstallProceduresVars,
     buildPreRequisitesVars,

@@ -1,10 +1,10 @@
-import {AbstractPackage} from '@ohoareau/microgen';
+import {AbstractPackage} from '@genjs/genjs';
 import {
     GitIgnoreTemplate,
     LicenseTemplate,
     MakefileTemplate,
     TerraformToVarsTemplate
-} from "@ohoareau/microgen-templates";
+} from "@genjs/genjs-templates";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {

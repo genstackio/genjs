@@ -29,7 +29,7 @@ export * from './YarnLernaBootstrapTarget';
 export * from './YarnLernaRunBuildTarget';
 export * from './YarnLernaChangedTarget';
 export * from './YarnLernaPublishTarget';
-export * from './YarnMicrogenTarget';
+export * from './YarnGenjsTarget';
 export * from './YarnDeployTarget';
 export * from './YarnDevTarget';
 export * from './YarnDeployStorybooksTarget';

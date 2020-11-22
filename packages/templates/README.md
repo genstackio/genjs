@@ -1,1 +1,1 @@
-# microgen-templates
+# genjs-templates

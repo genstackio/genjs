@@ -22,7 +22,7 @@ test-local:
 	@yarn --silent test --coverage
 
 package-install:
-	@yarn --silent lerna bootstrap --scope @ohoareau/$(p)
+	@yarn --silent lerna bootstrap --scope @genjs/$(p)
 
 package-build:
 	@cd packages/$(p) && yarn --silent build

@@ -1,1 +1,1 @@
-# microgen-plugin-ts-sls
+# genjs-plugin-ts-sls

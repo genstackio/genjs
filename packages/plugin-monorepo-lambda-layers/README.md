@@ -1,1 +1,1 @@
-# microgen-plugin-monorepo-lambda-layers
+# genjs-plugin-monorepo-lambda-layers

@@ -1,4 +1,4 @@
-import {IPackage, AbstractBehaviour} from "@ohoareau/microgen";
+import {IPackage, AbstractBehaviour} from "@genjs/genjs";
 
 export class TestableBehaviour extends AbstractBehaviour {
     public build(p: IPackage) {

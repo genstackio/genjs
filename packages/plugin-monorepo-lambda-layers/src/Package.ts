@@ -1,5 +1,5 @@
-import {AbstractPackage} from '@ohoareau/microgen';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@ohoareau/microgen-templates";
+import {AbstractPackage} from '@genjs/genjs';
+import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@genjs/genjs-templates";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -64,7 +64,7 @@ export default class Package extends AbstractPackage {
             .addTarget('clean', ['$(foreach l,$(layers),make -C layers/$(l) clean;)'])
             .addTarget('prepare-build', ['$(foreach l,$(layers),make -C layers/$(l) prepare-build;)'])
             .addTarget('layer-publish', ['make -C layers/$(l) publish'])
-            .addPredefinedTarget('generate', 'yarn-microgen')
+            .addPredefinedTarget('generate', 'yarn-genjs')
             .addPredefinedTarget('install-root', 'yarn-install')
             .addTarget('list-layers', ['echo $(layers)'])
             .addTarget('new', ['/bin/echo -n "Layer name: " && read layer_name && cp -R templates layers/$$layer_name'])
@@ -75,7 +75,7 @@ export default class Package extends AbstractPackage {
     }
     protected getTechnologies(): any {
         return [
-            'microgen',
+            'genjs',
             'make',
             'node',
             'es6',

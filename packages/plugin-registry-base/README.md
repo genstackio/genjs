@@ -1,1 +1,1 @@
-# microgen-plugin-registry-base
+# genjs-plugin-registry-base

@@ -21,7 +21,7 @@ deploy-front: generate-env-local-front
 	@set -a && . front/.env.local && set +a && make -C front/ deploy env=$(env)
 
 generate:
-	@yarn --silent microgen
+	@yarn --silent genjs
 generate-env-local: generate-env-local-front generate-env-local-app generate-env-local-api
 generate-env-local-api:
 	@make -C api/ generate-env-local env=$(env)

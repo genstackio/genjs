@@ -1,8 +1,8 @@
 {
-  "name": "@ohoareau/microgen-repo",
+  "name": "@genjs/genjs-repo",
   "version": "0.0.0",
-  "description": "MicroGen stuff by Olivier Hoareau",
-  "author": "Olivier Hoareau <oha+oss@greenberets.io>",
+  "description": "GenJS stuff by GenJS team",
+  "author": "GenJS Dev Team <oss@genjs.dev>",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -12,12 +12,12 @@
     "packages/*"
   ],
   "devDependencies": {
-    "lerna": "^3.20.2",
-    "jest": "^25.4.0",
-    "typescript": "^3.8.3",
-    "@types/node": "^13.13.2",
-    "aws-sdk": "^2.663.0",
-    "@types/jest": "^25.2.1",
-    "ts-jest": "^25.4.0"
+    "lerna": "^3.22.1",
+    "jest": "^26.6.3",
+    "typescript": "^4.1.2",
+    "@types/node": "^14.14.9",
+    "aws-sdk": "^2.797.0",
+    "@types/jest": "^26.0.15",
+    "ts-jest": "^26.4.4"
   }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "@ohoareau/microgen-plugin-monorepo-js-scripts",
-  "version": "0.6.25",
+  "name": "@genjs/genjs-plugin-monorepo-js-scripts",
+  "version": "0.0.0",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -18,16 +18,16 @@
   "scripts": {
     "build": "tsc",
     "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
-    "gen": "../../packages/microgen/bin/microgen",
-    "dump": "../../packages/microgen/bin/microgen dump"
+    "gen": "../genjs/bin/genjs",
+    "dump": "../genjs/bin/genjs dump"
   },
   "peerDependencies": {
-    "@ohoareau/microgen": "^0"
+    "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@ohoareau/microgen-templates": "^0.3.25"
+    "@genjs/genjs-templates": "^0"
   },
   "devDependencies": {
-    "@ohoareau/microgen": "^0.22.11"
+    "@genjs/genjs": "^0"
   }
 }

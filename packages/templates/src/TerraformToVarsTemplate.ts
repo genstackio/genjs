@@ -1,4 +1,4 @@
-import {AbstractFileTemplate} from '@ohoareau/microgen';
+import {AbstractFileTemplate} from '@genjs/genjs';
 
 export type TerraformToVarsTemplateConfig = {
     envs_from_terraform?: {[key: string]: string},
