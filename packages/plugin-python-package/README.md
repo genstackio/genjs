@@ -1,1 +1,1 @@
-# microgen-plugin-python-package
+# genjs-plugin-python-package

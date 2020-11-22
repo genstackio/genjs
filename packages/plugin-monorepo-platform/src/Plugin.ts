@@ -1,5 +1,5 @@
 import Package from './Package';
-import {IGenerator, IPlugin, IPackage} from '@ohoareau/microgen';
+import {IGenerator, IPlugin, IPackage} from '@genjs/genjs';
 import {buildProjectsVars} from "./utils";
 
 export default class Plugin implements IPlugin {

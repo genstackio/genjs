@@ -1,1 +1,1 @@
-# microgen-plugin-terraform-infra
+# genjs-plugin-terraform-infra

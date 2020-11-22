@@ -1,1 +1,1 @@
-# microgen-plugin-python-lambda-layer
+# genjs-plugin-python-lambda-layer

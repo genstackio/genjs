@@ -1,1 +1,1 @@
-# microgen-plugin-php-lambda
+# genjs-plugin-php-lambda

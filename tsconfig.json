@@ -17,11 +17,15 @@
     "noUnusedLocals": true,
     "strict": true,
     "lib": [
+      "dom",
       "es2018"
-    ]
+    ],
+    "jsx": "react"
   },
   "exclude": [
     "node_modules",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.stories.tsx"
   ]
 }

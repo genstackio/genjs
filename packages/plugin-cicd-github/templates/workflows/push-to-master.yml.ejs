@@ -1,0 +1,40 @@
+name: Push to master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: <%- typeof node_version_constraint === 'undefined' ? '14.x' : node_version_constraint %>
+
+      - name: Set NPM Registry identity
+        uses: ohoareau/actions/npmrc-scope-authtoken-add@master
+        with:
+          scope: <%- npm_scope %>
+          token: ${{secrets.<%- package_registry_secret_var -%>}}
+          registry: <%- package_registry %>
+
+      - name: Set Env from current Branch
+        uses: ohoareau/actions/branch-to-env@master
+        with:
+          secrets: ${{toJson(secrets)}}
+          branch: ${{github.base_ref}}
+
+      - name: Install
+        run: make install
+
+      - name: Test
+        run: make test
+        env:
+          CI: true

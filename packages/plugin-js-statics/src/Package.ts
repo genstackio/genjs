@@ -1,12 +1,16 @@
-import {AbstractPackage} from '@ohoareau/microgen';
 import {
+    AbstractPackage,
     GitIgnoreTemplate,
     LicenseTemplate,
     MakefileTemplate,
     ReadmeTemplate,
-    TerraformToVarsTemplate
-} from "@ohoareau/microgen-templates";
-import {BuildableBehaviour, DeployableBehaviour, InstallableBehaviour, StartableBehaviour, TestableBehaviour, GenerateEnvLocalableBehaviour} from "@ohoareau/microgen-behaviours";
+    TerraformToVarsTemplate,
+    BuildableBehaviour,
+    DeployableBehaviour,
+    InstallableBehaviour,
+    StartableBehaviour, TestableBehaviour,
+    GenerateEnvLocalableBehaviour,
+} from '@genjs/genjs';
 
 export default class Package extends AbstractPackage {
     protected getBehaviours() {

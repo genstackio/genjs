@@ -1,11 +1,11 @@
-import {AbstractPackage} from '@ohoareau/microgen';
 import {
+    AbstractPackage,
     GitIgnoreTemplate,
     LicenseTemplate,
     MakefileTemplate,
     ReadmeTemplate,
-    TerraformToVarsTemplate
-} from "@ohoareau/microgen-templates";
+    TerraformToVarsTemplate,
+} from '@genjs/genjs';
 
 export type environment = {
     name: string,

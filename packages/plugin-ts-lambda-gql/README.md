@@ -1,1 +1,1 @@
-# microgen-plugin-ts-lambda-gql
+# genjs-plugin-ts-lambda-gql

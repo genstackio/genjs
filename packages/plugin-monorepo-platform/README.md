@@ -1,1 +1,1 @@
-# microgen-plugin-monorepo-platform
+# genjs-plugin-monorepo-platform

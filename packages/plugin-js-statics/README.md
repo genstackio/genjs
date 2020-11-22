@@ -1,1 +1,1 @@
-# microgen-plugin-js-statics
+# genjs-plugin-js-statics

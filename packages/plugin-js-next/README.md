@@ -1,1 +1,1 @@
-# microgen-plugin-js-next
+# genjs-plugin-js-next

@@ -1,1 +1,1 @@
-# microgen-plugin-js-gatsby
+# genjs-plugin-js-gatsby
