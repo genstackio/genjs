@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-lambda",
-  "version": "0.0/0",
+  "version": "0.0.0",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -23,10 +23,6 @@
   },
   "peerDependencies": {
     "@genjs/genjs": "^0"
-  },
-  "dependencies": {
-    "@genjs/genjs-behaviours": "^0",
-    "@genjs/genjs-templates": "^0"
   },
   "devDependencies": {
     "@genjs/genjs": "^0",

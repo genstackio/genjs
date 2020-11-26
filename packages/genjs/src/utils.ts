@@ -1,6 +1,7 @@
 import ejs from 'ejs';
 const fs = require('fs');
 import stringifyObject from 'stringify-object';
+import YAML from 'yaml';
 const fse = require('fs-extra');
 const path = require('path');
 
@@ -49,3 +50,4 @@ export const populateData = (o, d) => {
 export const mergeData = (a, b) => {
     return populateData({...a}, b);
 }
+export const parseYaml = x => YAML.parse(x);

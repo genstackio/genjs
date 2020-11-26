@@ -1,0 +1,37 @@
+name: Pull-Request on Feature Branch
+
+on:
+  pull_request:
+    branches-ignore:
+      - prod
+      - master
+      - release
+      - develop
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Set NPM Registry identity
+        uses: ohoareau/actions/npmrc-scope-authtoken-add@master
+        with:
+          scope: <%- npm_scope %>
+          token: ${{secrets.<%- package_registry_secret_var -%>}}
+          registry: <%- package_registry %>
+
+      - name: Install
+        run: make install
+
+      - name: Test
+        run: make test
+        env:
+          CI: true

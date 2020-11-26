@@ -1,4 +1,4 @@
-import YAML from "yaml";
+import {parseYaml} from '@genjs/genjs';
 
 export class ConfigEnhancer {
     private readonly assetFetcher: Function;
@@ -168,7 +168,7 @@ export class ConfigEnhancer {
                 if (undefined === v) {
                     acc['default'] = k;
                 } else {
-                    acc[k] = YAML.parse(v || '');
+                    acc[k] = parseYaml(v || '');
                 }
                 return acc;
             }, {}) : {};

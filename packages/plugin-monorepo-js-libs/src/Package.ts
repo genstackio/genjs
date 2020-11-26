@@ -1,5 +1,5 @@
-import {AbstractPackage} from '@genjs/genjs';
 import {
+    AbstractPackage,
     GitIgnoreTemplate,
     LicenseTemplate,
     MakefileTemplate,
@@ -7,8 +7,8 @@ import {
     CodeOfConductTemplate,
     ContributingTemplate,
     NvmRcTemplate,
-    TerraformToVarsTemplate
-} from "@genjs/genjs-templates";
+    TerraformToVarsTemplate,
+} from '@genjs/genjs';
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -49,10 +49,6 @@ export default class Package extends AbstractPackage {
             ['packages/generator-package/tsconfig.json']: true,
             ['.storybook/main.js']: true,
         });
-        if (vars.scm && vars.scm === 'github') {
-            files['.github/workflows/deploy-to-env.yml'] = true;
-            files['.github/workflows/push-to-feature-branch.yml'] = true;
-        }
         return files;
     }
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
@@ -145,7 +141,7 @@ export default class Package extends AbstractPackage {
                 .addMetaTarget('deploy', ['deploy-storybooks', 'invalidate-cache'])
             ;
         }
-        if (m.genjs) {
+        if (m.generate_target) {
             t
                 .addPredefinedTarget('generate', 'yarn-genjs')
             ;

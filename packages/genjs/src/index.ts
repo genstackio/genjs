@@ -11,4 +11,8 @@ export * from './AbstractFileTemplate';
 export * from './AbstractBehaviour';
 export * from './Genjs';
 export * from './Cli';
+export * from './behaviours';
+export * from './templates';
+export * from './targets';
+export {parseYaml} from './utils';
 export {default as default} from './Genjs';

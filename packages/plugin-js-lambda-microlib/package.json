@@ -25,11 +25,6 @@
   "peerDependencies": {
     "@genjs/genjs": "^0"
   },
-  "dependencies": {
-    "@genjs/genjs-behaviours": "^0",
-    "@genjs/genjs-templates": "^0",
-    "yaml": "^1.10.0"
-  },
   "devDependencies": {
     "@genjs/genjs": "^0",
     "aws-sdk": "^2.797.0"

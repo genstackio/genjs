@@ -69,10 +69,10 @@ export class Genjs implements IGenerator {
             acc[k] = new PackageGroup(this, {name: k, packages: extra[key] || {}, dir});
             return acc;
         }, {});
-        const localPlugin = `${rootDir}/.genjs`;
+        const localPlugin = `${rootDir}/.genjs/.local`;
         try {
             const localPluginPath = fs.realpathSync(localPlugin);
-            if (localPluginPath) plugins.push('./.genjs');
+            if (localPluginPath) plugins.push('./.genjs/.local');
         } catch (e) {
             // nothing to do, local plugin does not exist.
         }

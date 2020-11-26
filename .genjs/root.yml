@@ -1,0 +1,7 @@
+type: monorepo-js-libs
+
+vars:
+  makefile:
+    generate_target: true,
+  readme:
+    name: genjs

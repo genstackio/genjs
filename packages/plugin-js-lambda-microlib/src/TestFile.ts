@@ -10,7 +10,7 @@ export default class TestFile {
     public readonly groups: TestGroup[];
     constructor({mocks = [], groups = {}}: TestFileConfig) {
         this.mocks = mocks;
-        this.groups = Object.entries(groups).reduce((acc, [k, v]) => {
+        this.groups = Object.entries(groups).reduce((acc, [k, {name: _, ...v}]) => {
             acc.push(new TestGroup({name: k, ...v}));
             return acc;
         }, <TestGroup[]>[]);

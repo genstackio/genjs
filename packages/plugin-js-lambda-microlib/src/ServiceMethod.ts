@@ -30,7 +30,7 @@ export default class ServiceMethod {
         let loop = 0;
         do {
             previousCode = code;
-            code = code ? ejs.render(code, {...vars, service, ...helpers({rootDir, service, serviceMethod: this})}, {}) : code
+            code = code ? ejs.render(code, {...vars, ...helpers({rootDir, service, serviceMethod: this})}, {}) : code
             loop++;
         } while (code !== previousCode && loop < 5)
         this.code = code;

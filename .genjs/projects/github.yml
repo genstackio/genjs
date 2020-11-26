@@ -1,0 +1,9 @@
+type: cicd-github
+
+name: .github
+
+vars:
+  github:
+    workflows:
+      push-to-master: true
+      push-to-feature-branch: true

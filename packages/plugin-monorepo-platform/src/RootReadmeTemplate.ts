@@ -1,4 +1,7 @@
-import {ReadmeTemplate, ReadmeTemplateConfig} from "@genjs/genjs-templates";
+import {
+    ReadmeTemplate,
+    ReadmeTemplateConfig,
+} from "@genjs/genjs";
 import {
     buildInstallProceduresVars,
     buildPreRequisitesVars,

@@ -1,10 +1,10 @@
-import {AbstractPackage} from '@genjs/genjs';
 import {
+    AbstractPackage,
     GitIgnoreTemplate,
     LicenseTemplate,
     ReadmeTemplate,
-    TerraformToVarsTemplate
-} from "@genjs/genjs-templates";
+    TerraformToVarsTemplate,
+} from '@genjs/genjs';
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {

@@ -1,16 +1,22 @@
 import Handler, {HandlerConfig} from './Handler';
 import Starter, {StarterConfig} from './Starter';
 import Microservice, {MicroserviceConfig} from './Microservice';
-import {AbstractPackage, BasePackageConfig} from '@genjs/genjs';
 import {
+    AbstractPackage,
+    BasePackageConfig,
     GitIgnoreTemplate,
     LicenseTemplate,
     MakefileTemplate,
     ReadmeTemplate,
     PackageExcludesTemplate,
-    TerraformToVarsTemplate
-} from "@genjs/genjs-templates";
-import {StartableBehaviour, BuildableBehaviour, CleanableBehaviour, InstallableBehaviour, GenerateEnvLocalableBehaviour, TestableBehaviour} from '@genjs/genjs-behaviours';
+    TerraformToVarsTemplate,
+    StartableBehaviour,
+    BuildableBehaviour,
+    CleanableBehaviour,
+    InstallableBehaviour,
+    GenerateEnvLocalableBehaviour,
+    TestableBehaviour,
+} from '@genjs/genjs';
 import ConfigEnhancer from "./ConfigEnhancer";
 
 export type PackageConfig = BasePackageConfig & {

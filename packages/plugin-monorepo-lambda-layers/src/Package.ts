@@ -1,5 +1,10 @@
-import {AbstractPackage} from '@genjs/genjs';
-import {GitIgnoreTemplate, LicenseTemplate, MakefileTemplate, ReadmeTemplate} from "@genjs/genjs-templates";
+import {
+    AbstractPackage,
+    GitIgnoreTemplate,
+    LicenseTemplate,
+    MakefileTemplate,
+    ReadmeTemplate,
+} from '@genjs/genjs';
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {

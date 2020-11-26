@@ -1,16 +1,16 @@
-import {AbstractPackage} from '@genjs/genjs';
 import {
+    AbstractPackage,
     GitIgnoreTemplate,
     LicenseTemplate,
     ReadmeTemplate,
-    TerraformToVarsTemplate, MakefileTemplate
-} from "@genjs/genjs-templates";
-import {
+    TerraformToVarsTemplate,
+    MakefileTemplate,
     BuildableBehaviour,
     DeployableBehaviour,
     GenerateEnvLocalableBehaviour,
-    InstallableBehaviour, TestableBehaviour
-} from "@genjs/genjs-behaviours";
+    InstallableBehaviour,
+    TestableBehaviour,
+} from '@genjs/genjs';
 
 export default class Package extends AbstractPackage {
     protected getBehaviours() {

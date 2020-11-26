@@ -1,0 +1,73 @@
+name: Pull-Request to Env
+
+on:
+  pull_request:
+    branches:
+      - prod
+      - master
+      - release
+      - develop
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: <%- typeof node_version_constraint === 'undefined' ? '14.x' : node_version_constraint %>
+
+      - name: Set NPM Registry identity
+        uses: ohoareau/actions/npmrc-scope-authtoken-add@master
+        with:
+          scope: <%- npm_scope %>
+          token: ${{secrets.<%- package_registry_secret_var -%>}}
+          registry: <%- package_registry %>
+
+      - name: Set Env from current Branch
+        uses: ohoareau/actions/branch-to-env@master
+        with:
+          secrets: ${{toJson(secrets)}}
+          branch: ${{github.base_ref}}
+
+      - name: Install
+        run: make install
+
+      - name: Test
+        run: make test
+        env:
+          CI: true
+
+      - name: Add AWS Account Profile (default)
+        uses: ohoareau/actions/aws-account-profile-add@master
+        with:
+          name: default
+          aki: ${{secrets.AWS_DEPLOY_ACCOUNT_ACCESS_KEY_ID}}
+          sak: ${{secrets.AWS_DEPLOY_ACCOUNT_SECRET_ACCESS_KEY}}
+
+      - name: Add AWS Role Profile
+        uses: ohoareau/actions/aws-role-profile-add@master
+        with:
+          name: <%- typeof github_aws_profile === 'undefined' ? `${project_prefix}-${project_name}-\${{env.env}}` : github_aws_profile %>
+          source: default
+          role: ${{env.AWS_DEPLOY_ACCOUNT_ROLE_ARN}}
+
+      - name: Install Terraform (+ auth)
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: <%- typeof terraform_version === 'undefined' ? '0.13.5' : terraform_version %>
+          cli_config_credentials_token: ${{secrets.TERRAFORM_CLOUD_API_TOKEN}}
+          terraform_wrapper: false
+
+      - name: Init
+        run: make infra-init env=${{env.env}}
+
+      - name: Build (Pre-Plan)
+        run: make build-pre-plan env=${{env.env}}
+
+      - name: Plan
+        run: make infra-plan env=${{env.env}}

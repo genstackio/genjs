@@ -1,11 +1,11 @@
-import {AbstractPackage} from '@genjs/genjs';
 import {
+    AbstractPackage,
     GitIgnoreTemplate,
     LicenseTemplate,
     MakefileTemplate,
     ReadmeTemplate,
-    TerraformToVarsTemplate
-} from "@genjs/genjs-templates";
+    TerraformToVarsTemplate,
+} from '@genjs/genjs';
 import RootReadmeTemplate from "./RootReadmeTemplate";
 import {buildProjectsVars} from "./utils";
 

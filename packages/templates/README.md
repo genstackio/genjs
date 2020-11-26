@@ -1,1 +1,0 @@
-# genjs-templates
