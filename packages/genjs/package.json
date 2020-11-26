@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "author": {
     "email": "oss@genjs.dev",
@@ -41,6 +41,7 @@
     "dump": "./bin/genjs dump"
   },
   "dependencies": {
+    "@ohoareau/aws-parse": "^0.2.0",
     "@ohoareau/dir2obj": "^0.3.1",
     "@ohoareau/technologies-detector": "^0.2.0",
     "ejs": "^3.1.5",
@@ -48,8 +49,7 @@
     "stringify-object": "^3.3.0",
     "yaml": "^1.10.0",
     "yargonaut": "^1.1.4",
-    "yargs": "^16.1.1",
-    "@ohoareau/aws-parse": "^0.2.0"
+    "yargs": "^16.1.1"
   },
   "devDependencies": {
     "aws-sdk": "^2.797.0"
