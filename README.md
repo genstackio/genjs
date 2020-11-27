@@ -69,7 +69,7 @@ To install/refresh the dependencies of a package:
 
 ex:
 
-    make package-install p=react-xyz
+    make package-install p=xyz
 
 We are using the [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) feature, so all the dependencies of all the packages are merged and deduplicated inside the root `/node_modules/` directory.
 

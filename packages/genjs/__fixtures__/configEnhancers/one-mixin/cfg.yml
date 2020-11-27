@@ -1,0 +1,9 @@
+type: type1
+
+mixins:
+  - mixin1
+
+name: hello
+
+vars:
+  world: war

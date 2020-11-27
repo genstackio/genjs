@@ -5,6 +5,9 @@ import Microservice from './Microservice';
 import stringifyObject from 'stringify-object';
 import {TestFileConfig} from './TestFile';
 import MicroserviceTypeOperation, {MicroserviceTypeOperationConfig} from './MicroserviceTypeOperation';
+import MicroserviceTypeOperationConfigEnhancer from "./configEnhancers/MicroserviceTypeOperationConfigEnhancer";
+import MicroserviceTypeFunctionConfigEnhancer from "./configEnhancers/MicroserviceTypeFunctionConfigEnhancer";
+import MicroserviceTypeConfigEnhancer from "./configEnhancers/MicroserviceTypeConfigEnhancer";
 
 export type MicroserviceTypeConfig = {
     type?: string|undefined,
@@ -32,16 +35,18 @@ export default class MicroserviceType {
     private readonly rawAttributes;
     private readonly rawOperations;
     public readonly test: TestFileConfig|undefined;
-    constructor(microservice: Microservice, {type, ...cfg}: MicroserviceTypeConfig) {
+    constructor(microservice: Microservice, c: MicroserviceTypeConfig) {
         this.microservice = microservice;
-        cfg = type ? this.microservice.package.configEnhancer.enrichConfig(cfg, type) : cfg;
+        const configEnhancer = new MicroserviceTypeConfigEnhancer(this.microservice.package.getAsset.bind(this.microservice.package));
+        const cfg = c.type ? configEnhancer.enhance(c, c.type) : c;
         let {name, attributes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined} = cfg;
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
+        const operationConfigEnhancer = new MicroserviceTypeOperationConfigEnhancer(this.microservice.package.getAsset.bind(this.microservice.package))
         operations = Object.entries(operations).reduce((acc, [k, v]) => {
             let c;
             try {
-                c = this.microservice.package.configEnhancer.enrichConfigOperation({...((null === v || undefined === v || !v) ? {} : (('string' === typeof v) ? {type: v} : v))});
+                c = operationConfigEnhancer.enrich({...((null === v || undefined === v || !v) ? {} : (('string' === typeof v) ? {type: v} : v as any))});
             } catch (e) {
                 throw new Error(`Unable to prepare operation '${k}' for microservice type ${this.name}: ${e.message}`);
             }
@@ -58,9 +63,11 @@ export default class MicroserviceType {
             return acc;
         }, {});
         this.rawOperations = operations;
+        const functionConfigEnhancer = new MicroserviceTypeFunctionConfigEnhancer(this.microservice.package.getAsset.bind(this.microservice.package))
         this.functions = Object.entries(functions).reduce((acc, [k, v]) => {
             try {
-                acc[k] = this.microservice.package.configEnhancer.enrichConfigFunction(v as any);
+                acc[k] = functionConfigEnhancer.enrich(v as any);
+                acc[k]['type'] && (acc[k] = functionConfigEnhancer.enhance(acc[k], acc[k]['type']));
             } catch (e) {
                 throw new Error(`Unable to prepare function '${k}' for microservice type ${this.name}: ${e.message}`);
             }

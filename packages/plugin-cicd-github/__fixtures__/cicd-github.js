@@ -10,5 +10,13 @@ module.exports = {
     },
     root: {
         type: 'cicd-github',
+        vars: {
+            npm_scope: 'toto',
+            github: {
+                workflows: {
+                    'push-to-master': true,
+                }
+            }
+        }
     }
 };

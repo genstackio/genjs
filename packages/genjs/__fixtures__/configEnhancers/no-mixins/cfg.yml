@@ -1,0 +1,6 @@
+type: type1
+
+name: hello
+
+vars:
+  world: war

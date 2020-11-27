@@ -103,9 +103,13 @@ export class MakefileTemplate extends AbstractFileTemplate {
     getVars() {
         if (!this.customConsumed) {
             Object.entries(this.customConfig.targets || {}).forEach(([name, targetConfig]) => {
+                // noinspection SuspiciousTypeOfGuard
+                ('string' === typeof targetConfig) && (targetConfig = {steps: [targetConfig]});
                 this.addTargetFromConfig({name, ...targetConfig});
             });
             Object.entries(this.customConfig.globals || {}).forEach(([name, globalVarConfig]) => {
+                // noinspection SuspiciousTypeOfGuard
+                ('string' === typeof globalVarConfig) && (globalVarConfig = {defaultValue: [globalVarConfig]});
                 this.addGlobalVarFromConfig({name, ...globalVarConfig});
             });
             Object.entries(this.customConfig.exports || {}).forEach(([name, exportedVarConfig]) => {

@@ -1,5 +1,6 @@
 import Handler from './Handler';
 import MicroserviceType from './MicroserviceType';
+import MicroserviceTypeOperationConfigEnhancer from "./configEnhancers/MicroserviceTypeOperationConfigEnhancer";
 
 export type MicroserviceTypeOperationConfig = {
     microserviceType: MicroserviceType,
@@ -22,7 +23,8 @@ export default class MicroserviceTypeOperation {
     public readonly microserviceType: MicroserviceType;
     constructor(microserviceType, cfg: MicroserviceTypeOperationConfig) {
         this.microserviceType = microserviceType;
-        const {name, as = undefined, handler = true, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}} = cfg;
+        const configEnhancer = new MicroserviceTypeOperationConfigEnhancer(this.microserviceType.microservice.package.getAsset.bind(this.microserviceType.microservice.package));
+        const {name, as = undefined, handler = true, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}} = cfg.type ? configEnhancer.enhance(cfg, cfg.type) : cfg;
         this.name = name;
         this.handler = handler ? new Handler({name: `${microserviceType.name}_${this.name}`, type: 'service', middlewares, errorMiddlewares, directory: 'handlers', params: {
                 on: this.name,
@@ -112,7 +114,7 @@ export default class MicroserviceTypeOperation {
                 break;
         }
         Object.entries(hooks).forEach(([k, v]) => {
-            v.forEach(h => microserviceType.registerHook(this.name, k, h));
+            (v as any[]).forEach(h => microserviceType.registerHook(this.name, k, h));
         });
     }
     // noinspection JSUnusedLocalSymbols

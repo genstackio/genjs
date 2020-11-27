@@ -1,11 +1,14 @@
 import Handler from './Handler';
 import MicroserviceType from './MicroserviceType';
 import Package from './Package';
+import MicroserviceConfigEnhancer from "./configEnhancers/MicroserviceConfigEnhancer";
+import MicroserviceTypeConfigEnhancer from "./configEnhancers/MicroserviceTypeConfigEnhancer";
 
 export type MicroserviceConfig = {
     name: string,
     types?: any,
     handlers?: any,
+    type?: string,
 };
 
 export default class Microservice {
@@ -13,12 +16,15 @@ export default class Microservice {
     public readonly types: {[key: string]: MicroserviceType} = {};
     public readonly handlers: {[key: string]: Handler} = {};
     public readonly package: Package;
-    constructor(pkg: Package, {name, types = {}, handlers = {}}: MicroserviceConfig) {
+    constructor(pkg: Package, c: MicroserviceConfig) {
         this.package = pkg;
+        const configEnhancer = new MicroserviceConfigEnhancer(this.package.getAsset.bind(this.package))
+        const {name, types = {}, handlers = {}} = c.type ? configEnhancer.enhance(c, c.type) : c;
         this.name = name;
         Object.entries(types).forEach(
             ([name, c]: [string, any]) => {
-                c = this.package.configEnhancer.enrichConfigType({...((null === c || undefined === c || !c) ? {} : (('string' === typeof c) ? {type: c} : c))});
+                const typeConfigEnhancer = new MicroserviceTypeConfigEnhancer(this.package.getAsset.bind(this.package))
+                c = typeConfigEnhancer.enrich({...((null === c || undefined === c || !c) ? {} : (('string' === typeof c) ? {type: c} : c))});
                 this.types[name] = new MicroserviceType(this, {
                     microservice: this,
                     name,

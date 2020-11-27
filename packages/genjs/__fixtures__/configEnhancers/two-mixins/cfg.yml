@@ -1,0 +1,10 @@
+type: type3
+
+mixins:
+  - mixin1
+  - mixin2
+
+name: hello2
+
+vars:
+  world: war5

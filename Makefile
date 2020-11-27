@@ -1,4 +1,5 @@
 b ?= master
+f ?= $(subst plugin-,,$(p))
 
 all: install
 
@@ -31,16 +32,18 @@ install-root:
 
 package-build:
 	@cd packages/$(p) && yarn --silent build
-package-build-storybook:
-	@cd packages/$(p) && yarn --silent build-storybook
 package-clear-test:
 	@cd packages/$(p) && yarn --silent jest --clearCache
-package-generate-svg-components:
-	@cd packages/$(p) && yarn --silent generate-svg-components
+package-fixture:
+	@cd packages/$(p) && yarn --silent gen -c __fixtures__/$(f).js -t ../../generated/$(f)
+package-fixture-dir:
+	@cd packages/$(p) && yarn --silent gen -c __fixtures__/$(f) -t ../../generated/$(f)
+package-fixture-dir-dump:
+	@cd packages/$(p) && yarn --silent dump -c __fixtures__/$(f) -t ../../generated/$(f)
+package-fixture-dump:
+	@cd packages/$(p) && yarn --silent dump -c __fixtures__/$(f).js -t ../../generated/$(f)
 package-install:
 	@yarn --silent lerna bootstrap --scope @genjs/$(p)
-package-storybook:
-	@cd packages/$(p) && yarn --silent story
 package-test: package-build
 	@cd packages/$(p) && yarn --silent test --coverage --detectOpenHandles
 
@@ -62,7 +65,7 @@ test-only:
 		clean clean-buildinfo clean-coverage clean-lib clean-modules \
 		generate \
 		install install-packages install-root \
-		package-build package-build-storybook package-clear-test package-generate-svg-components package-install package-storybook package-test \
+		package-build package-clear-test package-fixture package-fixture-dir package-fixture-dir-dump package-fixture-dump package-install package-test \
 		pr \
 		publish \
 		test test-local test-only

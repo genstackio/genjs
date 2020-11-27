@@ -17,7 +17,7 @@ import {
     GenerateEnvLocalableBehaviour,
     TestableBehaviour,
 } from '@genjs/genjs';
-import ConfigEnhancer from "./ConfigEnhancer";
+import MicroserviceConfigEnhancer from "./configEnhancers/MicroserviceConfigEnhancer";
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
@@ -33,16 +33,15 @@ export default class Package extends AbstractPackage<PackageConfig> {
     public readonly starters: {[key: string]: Starter} = {};
     public readonly events: {[key: string]: any[]} = {};
     public readonly externalEvents: {[key: string]: any[]} = {};
-    public readonly configEnhancer: ConfigEnhancer;
     constructor(config: PackageConfig) {
         super(config);
-        this.configEnhancer = new ConfigEnhancer({getAsset: this.getAsset.bind(this)});
         const {events = {}, externalEvents = {}, handlers = {}, starters = {}, microservices = {}} = config;
         this.events = events || {};
         this.externalEvents = externalEvents || {};
+        const configEnhancer = new MicroserviceConfigEnhancer(this.getAsset.bind(this))
         Object.entries(microservices).forEach(
             ([name, c]: [string, any]) => {
-                c = this.configEnhancer.enrichConfigMicroservice({...((null === c || undefined === c || !c) ? {} : (('string' === typeof c) ? {type: c} : c))});
+                c = configEnhancer.enrich({...((null === c || undefined === c || !c) ? {} : (('string' === typeof c) ? {type: c} : c))});
                 this.microservices[name] = new Microservice(this, {name, ...c});
             }
         );

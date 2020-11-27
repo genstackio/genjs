@@ -9,6 +9,7 @@ import ITemplate, {isTemplate} from './ITemplate';
 import Template from './Template';
 import IRegistry from "./IRegistry";
 import {BaseRegistryConfig} from "./AbstractRegistry";
+import PackageConfigEnhancer from "./configEnhancers/PackageConfigEnhancer";
 
 const fs = require('fs');
 
@@ -207,6 +208,7 @@ export class Genjs implements IGenerator {
         return new pluginClass({...(plugin.config || {}), loadedFrom: path});
     }
     private async prepare(): Promise<[PackageGroup, IPackage[]][]> {
+        const configEnhancer = new PackageConfigEnhancer(this.getAsset.bind(this));
         return Object.values(this.groups).reduce((acc, g) => {
             const pkgs = (<PackageGroup>g).getPackages();
             this.applyGroupEventHooks(g, 'before_prepare', {packages: pkgs});
@@ -218,7 +220,7 @@ export class Genjs implements IGenerator {
                     }
                     if (!this.packagers[type]) throw new Error(`Unsupported package type '${type}'`);
                     const targetDir = g.getDir() === '.' ? name : `${g.getDir()}/${name}`;
-                    const localConfig = {...c, getAsset: this.getAsset.bind(this), packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}};
+                    const localConfig = configEnhancer.enrich({...c, getAsset: this.getAsset.bind(this), packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}});
                     const p = this.packagers[type](localConfig);
                     this.applyPackageEventHooks(p, 'created', localConfig);
                     return p;
@@ -241,7 +243,7 @@ export class Genjs implements IGenerator {
             await packages.reduce(async (acc, p) => {
                 await acc;
                 this.applyPackageEventHooks(p, 'before_describe');
-                populateData(description, await p.describe())
+                populateData(description, p.describe ? await p.describe() : {})
                 this.applyPackageEventHooks(p, 'after_describe', description);
             }, Promise.resolve());
         }, Promise.resolve());
@@ -260,14 +262,14 @@ export class Genjs implements IGenerator {
                 await acc;
                 description.projectData = {};
                 this.applyPackageEventHooks(p, 'before_hydrate', description);
-                await p.hydrate(description);
+                p.hydrate && await p.hydrate(description);
                 this.applyPackageEventHooks(p, 'after_hydrate', description);
                 delete description.projectData;
             }, Promise.resolve());
             const rr = (await Promise.all(packages.map(async p => {
                 const n = (<any>p).getName ? (<any>p).getName() : p['name'];
                 this.applyPackageEventHooks(p, 'before_generate');
-                const generateResult = await p.generate(vars);
+                const generateResult = p.generate ? await p.generate(vars) : {};
                 this.applyPackageEventHooks(p, 'after_generate', generateResult);
                 return [n, generateResult];
             })))

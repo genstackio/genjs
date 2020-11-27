@@ -1,0 +1,14 @@
+type: type3
+
+name: hello2
+
+mixins:
+  - mixin1
+  - mixin2
+
+what: nothing
+
+vars:
+  a: 13
+  b: 14
+  world: war5

@@ -111,9 +111,6 @@ export default class Package extends AbstractPackage {
         const scm = vars.scm || 'git';
         const m = {makefile: false !== vars.makefile, ...(vars.makefile || {})};
         const t = new MakefileTemplate(m)
-            .addPredefinedTarget('package-build-storybook', 'yarn-build-storybook', {dir: 'packages/$(p)'})
-            .addPredefinedTarget('package-generate-svg-components', 'yarn-generate-svg-components', {dir: 'packages/$(p)'})
-            .addPredefinedTarget('package-storybook', 'yarn-story', {dir: 'packages/$(p)'})
             .addPredefinedTarget('install-root', 'yarn-install')
             .addPredefinedTarget('install-packages', 'yarn-lerna-bootstrap')
             .addPredefinedTarget('build', 'yarn-lerna-run-build')
@@ -134,6 +131,17 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('clean', ['clean-lib', 'clean-modules', 'clean-coverage', 'clean-buildinfo'])
             .setDefaultTarget('install')
         ;
+        if (vars.storybooks) {
+            t
+                .addPredefinedTarget('package-build-storybook', 'yarn-build-storybook', {dir: 'packages/$(p)'})
+                .addPredefinedTarget('package-storybook', 'yarn-story', {dir: 'packages/$(p)'})
+            ;
+        }
+        if (vars.svg_components) {
+            t
+                .addPredefinedTarget('package-generate-svg-components', 'yarn-generate-svg-components', {dir: 'packages/$(p)'})
+            ;
+        }
         if (vars.generator_package) {
             t
                 .addTarget('new', ['yarn --silent yo ./packages/generator-package 2>/dev/null'])
