@@ -12,6 +12,7 @@ import {BaseRegistryConfig} from "./AbstractRegistry";
 import PackageConfigEnhancer from "./configEnhancers/PackageConfigEnhancer";
 
 const fs = require('fs');
+const path = require('path');
 
 export type GroupConfig = {
     name?: string,
@@ -22,6 +23,7 @@ export type GroupConfig = {
 export type GeneratorConfig = {
     rootDir: string,
     vars?: any,
+    locked?: string[],
     plugins?: (PluginConfig|string)[],
     groups?: {[key: string]: GroupConfig},
     [key: string]: any,
@@ -36,13 +38,15 @@ export class Genjs implements IGenerator {
     public readonly groups: {[key: string]: PackageGroup} = {};
     public readonly packagers: {[key: string]: (config: any) => IPackage} = {};
     public readonly vars: {[key: string]: any} = {};
+    public readonly locked: {[key: string]: any} = {};
     public readonly rootDir: string
     protected readonly packageEventHooks = {};
     protected readonly groupEventHooks = {};
     protected readonly globalEventHooks = {};
     private readonly globalContext = {};
-    constructor({rootDir, plugins = [], groups = {}, vars = {}, ...extra}: GenjsConfig) {
+    constructor({rootDir, plugins = [], groups = {}, locked = [], vars = {}, ...extra}: GenjsConfig) {
         this.rootDir = rootDir;
+        this.locked = {...locked.reduce((acc, k) => Object.assign(acc, {[k]: true}), {}), ...(vars.locked || {})};
         this.vars = {
             generator: 'genjs',
             license: 'MIT',
@@ -289,7 +293,7 @@ export class Genjs implements IGenerator {
             entries.forEach(([k, x]) => {
                 const [p, v] = <any>x;
                 const filePath = `${this.computeTargetDir(targetDir, g.getDir())}/${k}`;
-                if (!this.vars || !this.vars.locked || !this.vars.locked[k]) {
+                if (!this.isFileLocked(filePath, targetDir)) {
                     if (vars.verbose >= 1) console.log(g.getName(), k);
                     const t: ITemplate = isTemplate(v) ? v : new Template(v);
                     const fileCopy = (source, target) => copy(
@@ -318,6 +322,23 @@ export class Genjs implements IGenerator {
                 packages: {},
             })})
         );
+    }
+    private isFileLocked(targetPath, targetDir): boolean {
+        const a = path.resolve(targetPath);
+        const b = path.resolve(targetDir);
+        if (a.slice(0, b.length) === b) {
+            const c = a.slice(b.length);
+            if (!!this.locked[c]) return true;
+            const tokens = c.split(/\//g);
+            let cc;
+            do {
+                tokens.pop();
+                cc = tokens.join('/');
+                (cc !== '/') && (cc = `${cc}/`)
+            } while ((tokens.length > 1) && !this.locked[cc]);
+            return !!this.locked[cc];
+        }
+        return false;
     }
     private computeTargetDir(a: string, b: string): string {
         if ('.' === b) return a;
