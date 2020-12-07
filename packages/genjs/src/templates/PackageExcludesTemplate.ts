@@ -11,10 +11,10 @@ export class PackageExcludesTemplate extends AbstractFileTemplate {
     static create(vars: any): PackageExcludesTemplate {
         return new PackageExcludesTemplate(vars);
     }
-    constructor(config: PackageExcludesTemplateConfig = {package_exclude_type: 'default', package_excludes: []}) {
+    constructor({package_exclude_type = 'default', package_excludes = []}: PackageExcludesTemplateConfig = {}) {
         super();
         this.customConsumed = false;
-        this.customConfig = config;
+        this.customConfig = {package_exclude_type, package_excludes};
     }
     getTemplatePath() {
         return `${__dirname}/../../templates`;
