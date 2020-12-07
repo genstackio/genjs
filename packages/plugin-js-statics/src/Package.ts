@@ -51,7 +51,7 @@ export default class Package extends AbstractPackage {
         return new ReadmeTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        const t = new GitIgnoreTemplate(vars.gitignore || {})
+        const t = GitIgnoreTemplate.create(vars)
             .addComment('See https://help.github.com/articles/ignoring-files/ for more about ignoring files.')
             .addGroup('dependencies', [
                 '/node_modules', '/.pnp', '.pnp.js',

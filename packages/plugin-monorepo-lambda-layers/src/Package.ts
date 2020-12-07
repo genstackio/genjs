@@ -43,7 +43,7 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return new GitIgnoreTemplate(vars.gitignore || {})
+        return GitIgnoreTemplate.create(vars)
             .addIgnore('.idea/')
             .addIgnore('node_modules/')
             .addIgnore('/layers/*/build/')

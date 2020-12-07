@@ -39,7 +39,7 @@ export default class Package extends AbstractPackage {
         return new ReadmeTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return new GitIgnoreTemplate(vars.gitignore || {})
+        return GitIgnoreTemplate.create(vars)
             .addIgnore('.DS_Store')
             .addIgnore('node_modules')
             .addIgnore('.webpack')

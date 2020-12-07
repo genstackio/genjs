@@ -21,7 +21,7 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
         const d = (c.mixins || []).reduce((acc, m) => {
             const [asset, cfg] = this.enhanceConfig(`${this.location}-mixin`, ...this.parseTypeAndConfigFromRawValue(m))
             return this.merge(acc, this.merge(asset, cfg));
-        }, c);
+        }, {});
         return this.merge(d, c);
     }
     enhance(c: any, type: string) {

@@ -181,7 +181,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
         return new PackageExcludesTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return new GitIgnoreTemplate(vars.gitignore || {})
+        return GitIgnoreTemplate.create(vars)
             .addIgnore('/coverage/')
             .addIgnore('/node_modules/')
             .addIgnore('/.idea/')

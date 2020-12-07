@@ -10,4 +10,5 @@ coverage/
 /packages/*/public/
 .DS_Store
 public/
+generated/
 

@@ -18,6 +18,12 @@ export class GitIgnoreTemplate extends AbstractFileTemplate {
     private customConfig: GitIgnoreTemplateConfig ;
     private customConsumed: boolean;
     private groups: group[];
+    static create(vars: any): GitIgnoreTemplate {
+        const x = vars.gitignore || {};
+        x.ignores = x.ignores || [];
+        x.ignores = [...x.ignores, ...(vars.ignores || [])];
+        return new GitIgnoreTemplate(x);
+    }
     constructor(config: GitIgnoreTemplateConfig = {}) {
         super();
         this.groups = [];

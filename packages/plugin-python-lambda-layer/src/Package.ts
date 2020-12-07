@@ -56,7 +56,7 @@ export default class Package extends AbstractPackage {
         return new PackageExcludesTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return new GitIgnoreTemplate(vars.gitignore || {})
+        return GitIgnoreTemplate.create(vars)
             .addIgnore('/venv/')
             .addIgnore('/.idea/')
             .addIgnore('__pycache__/')

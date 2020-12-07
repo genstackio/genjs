@@ -39,7 +39,7 @@ export default class Package extends AbstractPackage {
         return new RootReadmeTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return new GitIgnoreTemplate(vars.gitignore || {})
+        return GitIgnoreTemplate.create(vars)
             .addGroup('Logs', [
                 'logs', '*.log', 'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*',
             ])

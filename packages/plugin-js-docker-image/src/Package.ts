@@ -60,7 +60,7 @@ export default class Package extends AbstractPackage {
         return new ReadmeTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return new GitIgnoreTemplate(vars.gitignore || {});
+        return GitIgnoreTemplate.create(vars);
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         return new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})

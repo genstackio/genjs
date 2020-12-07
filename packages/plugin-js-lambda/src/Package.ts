@@ -80,7 +80,7 @@ export default class Package extends AbstractPackage {
         return new PackageExcludesTemplate(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return new GitIgnoreTemplate(vars.gitignore || {})
+        return GitIgnoreTemplate.create(vars)
             .addIgnore('/coverage/')
             .addIgnore('/node_modules/')
             .addIgnore('/.idea/')
