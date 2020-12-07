@@ -178,7 +178,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
         return new ReadmeTemplate(vars);
     }
     protected buildPackageExcludes(vars: any): PackageExcludesTemplate {
-        return new PackageExcludesTemplate(vars);
+        return PackageExcludesTemplate.create(vars);
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return GitIgnoreTemplate.create(vars)

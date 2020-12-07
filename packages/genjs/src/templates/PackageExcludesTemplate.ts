@@ -1,13 +1,17 @@
 import AbstractFileTemplate from '../AbstractFileTemplate';
 
 export type PackageExcludesTemplateConfig = {
+    package_exclude_type?: string,
     package_excludes?: string[],
 };
 
 export class PackageExcludesTemplate extends AbstractFileTemplate {
     private customConfig: PackageExcludesTemplateConfig ;
     private customConsumed: boolean;
-    constructor(config: PackageExcludesTemplateConfig = {package_excludes: []}) {
+    static create(vars: any): PackageExcludesTemplate {
+        return new PackageExcludesTemplate(vars);
+    }
+    constructor(config: PackageExcludesTemplateConfig = {package_exclude_type: 'default', package_excludes: []}) {
         super();
         this.customConsumed = false;
         this.customConfig = config;
@@ -16,7 +20,7 @@ export class PackageExcludesTemplate extends AbstractFileTemplate {
         return `${__dirname}/../../templates`;
     }
     getName() {
-        return 'package-excludes.lst.ejs';
+        return `package-excludes/${this.customConfig.package_exclude_type}.lst.ejs`;
     }
     getVars() {
         if (!this.customConsumed) {
