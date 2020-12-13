@@ -3,7 +3,14 @@ name: Deploy to Env
 on:
   push:
     branches:
+<% if ('undefined' !== typeof only_master) { %>
       - master
+<% } else { -%>
+      - prod
+      - master
+      - release
+      - develop
+<% } %>
 
 jobs:
   build:
