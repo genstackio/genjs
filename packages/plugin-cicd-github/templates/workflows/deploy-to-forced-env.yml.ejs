@@ -3,10 +3,7 @@ name: Deploy to Env
 on:
   push:
     branches:
-      - prod
       - master
-      - release
-      - develop
 
 jobs:
   build:
@@ -33,6 +30,13 @@ jobs:
         with:
           secrets: ${{toJson(secrets)}}
           branch: ${{github.base_ref}}
+<% if ('undefined' !== typeof forced_env) { %>
+      - name: Set some env vars from forced env (dev)
+        uses: ohoareau/actions/env-vars-from-env@master
+        with:
+          secrets: ${{toJson(secrets)}}
+          env: <%- forced_env %>
+<% } %>
       - name: Install
         run: make install
 
@@ -55,27 +59,6 @@ jobs:
           source: default
           role: ${{env.AWS_DEPLOY_ACCOUNT_ROLE_ARN}}
 
-      - name: Install Terraform (+ auth)
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: <%- typeof terraform_version === 'undefined' ? '0.13.5' : terraform_version %>
-          cli_config_credentials_token: ${{secrets.TERRAFORM_CLOUD_API_TOKEN}}
-          terraform_wrapper: false
-
-      - name: Build (Pre-Provision)
-        run: make build-pre-provision env=${{env.env}}
-
-      - name: Provision
-        run: make provision env=${{env.env}}
-
-      - name: Fetch Infrastructure Env Config
-        run: make outputs env=${{env.env}}
-
-      - name: Build (Post-Provision)
-        run: make build-post-provision env=${{env.env}}
-        env:
-          AWS_DEPLOY_ACCOUNT_ACCESS_KEY_ID: ${{secrets.AWS_DEPLOY_ACCOUNT_ACCESS_KEY_ID}}
-          AWS_DEPLOY_ACCOUNT_SECRET_ACCESS_KEY: ${{secrets.AWS_DEPLOY_ACCOUNT_SECRET_ACCESS_KEY}}
-
       - name: Deploy
         run: make deploy env=${{env.env}}
+
