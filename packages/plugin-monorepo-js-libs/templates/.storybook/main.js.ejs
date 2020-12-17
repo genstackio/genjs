@@ -42,6 +42,10 @@ module.exports = {
             test: /\.svg$/,
             use: ["@svgr/webpack", "url-loader"],
         })
+        config.resolve.alias = {
+            ...config.resolve.alias,
+            'fs': require('path').resolve(__dirname, 'fsMock.js')
+        };
         return config;
     },
 };
