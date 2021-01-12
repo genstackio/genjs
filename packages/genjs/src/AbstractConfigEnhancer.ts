@@ -99,10 +99,10 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
     }
     protected mergeMapOfLists(a: any = {}, b: any = {}) {
         return Object.keys(b).reduce((acc, k) => {
-            acc[k] = acc[k] || [];
+            acc[k] = [...(acc[k] || [])];
             acc[k] = acc[k].concat(b[k] || []);
             return acc;
-        }, a);
+        }, {...a});
     }
     protected mergeObjects(a: any = {}, b: any = {}) {
         return {...a, ...b};
