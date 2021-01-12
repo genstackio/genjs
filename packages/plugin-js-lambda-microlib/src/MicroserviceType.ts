@@ -14,6 +14,7 @@ export type MicroserviceTypeConfig = {
     microservice: Microservice,
     name: string,
     attributes: {[key: string]: any},
+    indexes: {[key: string]: any},
     handlers?: any,
     operations?: {[key: string]: MicroserviceTypeOperationConfig},
     functions?: {[key: string]: {args?: any, code?: string}},
@@ -39,7 +40,7 @@ export default class MicroserviceType {
         this.microservice = microservice;
         const configEnhancer = new MicroserviceTypeConfigEnhancer(this.microservice.package.getAsset.bind(this.microservice.package));
         const cfg = c.type ? configEnhancer.enhance(c, c.type) : c;
-        let {name, attributes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined} = cfg;
+        let {name, attributes = {}, indexes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined} = cfg;
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
         const operationConfigEnhancer = new MicroserviceTypeOperationConfigEnhancer(this.microservice.package.getAsset.bind(this.microservice.package))
@@ -73,7 +74,7 @@ export default class MicroserviceType {
             }
             return acc;
         }, {});
-        this.model = new SchemaParser().parse({name: this.name, attributes, operations});
+        this.model = new SchemaParser().parse({name: this.name, attributes, operations, indexes});
         this.backends = (<any>backends).reduce((acc, b) => {
             if ('string' === typeof b) b = {type: 'backend', name: b};
             return Object.assign(acc, {[b.name]: b});
