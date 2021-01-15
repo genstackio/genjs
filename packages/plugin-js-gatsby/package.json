@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-gatsby",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
