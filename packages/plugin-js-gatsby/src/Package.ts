@@ -132,7 +132,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'GATSBY'})
-            .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort'), sourceLocalEnvLocal: vars.sourceLocalEnvLocale})
+            .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort'), sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('serve', 'yarn-serve', {port: this.getParameter('servePort')})
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
@@ -143,7 +143,7 @@ export default class Package extends AbstractPackage {
             t
                 .addPredefinedTarget('build-publish-image', 'docker-build', {tag: vars.publish_image.tag, path: vars.publish_image.dir || '.', buildArgs: vars.publish_image.buildArgs || {}})
                 .addPredefinedTarget('deploy-publish-image', 'docker-push', {...vars.publish_image})
-                .addPredefinedTarget('build-code', 'yarn-build', {sourceLocalEnvLocal: vars.sourceLocalEnvLocale})
+                .addPredefinedTarget('build-code', 'yarn-build', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
                 .addMetaTarget('build', vars.publish_image.noPreBuildCode ? ['build-publish-image'] : ['build-code', 'build-publish-image'])
                 .addMetaTarget('deploy', ['deploy-publish-image'])
                 .addMetaTarget('deploy-raw', ['deploy-code', 'invalidate-cache'])
