@@ -163,6 +163,9 @@ type Mutation {
                                 update: {},
                                 delete: {},
                                 find: {},
+                            },
+                            authorizations: {
+                                create: {a: 12, b: "c"}
                             }
                         }
                     }
