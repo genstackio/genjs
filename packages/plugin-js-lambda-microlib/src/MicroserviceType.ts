@@ -94,7 +94,7 @@ export default class MicroserviceType {
                         backend: c.backend || this.defaultBackendName,
                         config: {
                             ...(c.config || {}),
-                            authorization: c.config.authorization || (authorizations ? authorizations[name] : undefined) || undefined,
+                            authorization: c.config.authorization || (authorizations ? this.findAuthorizationFor(name, authorizations) : undefined) || undefined,
                         }
                     }
                 )
@@ -619,5 +619,21 @@ export default class MicroserviceType {
         return stringifyObject(o, {indent: '', inlineCharacterLimit: 1024, singleQuotes: true, transform: (obj, prop, originalResult) => {
             return this.stringifyValueForHook(originalResult, options);
         }});
+    }
+    private findAuthorizationFor(name, authorizations = {}) {
+        const x = Object.keys(authorizations).find(a => {
+            if (name === a) return true;
+            if (a.includes('*')) {
+                if ('^' !== a.slice(0, 1)) {
+                    a = `^${a.replace(/\*/g, '.*')}$`;
+                }
+                return new RegExp(a).test(name);
+            }
+            if ('^' === a.slice(0, 1)) {
+                return new RegExp(a).test(name);
+            }
+            return false;
+        });
+        return x ? authorizations[x] : undefined;
     }
 }

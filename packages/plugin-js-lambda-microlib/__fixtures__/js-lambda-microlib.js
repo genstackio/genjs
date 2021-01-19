@@ -165,7 +165,7 @@ type Mutation {
                                 find: {},
                             },
                             authorizations: {
-                                create: {a: 12, b: "c"}
+                                '*': {a: 12, b: "c"}
                             }
                         }
                     }
