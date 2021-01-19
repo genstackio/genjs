@@ -75,7 +75,7 @@ export default class Handler {
             globalCfg.errorMiddlewares = [...this.errorMiddlewares, ...errorMiddlewares];
             globalCfg.hasMiddlewares = !!globalCfg.middlewares.length;
             globalCfg.hasErrorMiddlewares = !!globalCfg.errorMiddlewares.length;
-            const cnf = {...this.params, ...config};
+            const cnf = {...this.params, ...config, z: offsetDir};
             const cfrms = {};
             const cfems = {};
             needCnf = ((true === needCnf) || globalCfg.hasMiddlewares || globalCfg.hasErrorMiddlewares) as any;

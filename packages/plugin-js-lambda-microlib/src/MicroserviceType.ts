@@ -21,6 +21,7 @@ export type MicroserviceTypeConfig = {
     middlewares?: string[],
     backends?: string[] | {type: string, name: string}[],
     test?: TestFileConfig,
+    authorizations?: any,
 };
 
 export default class MicroserviceType {
@@ -40,7 +41,7 @@ export default class MicroserviceType {
         this.microservice = microservice;
         const configEnhancer = new MicroserviceTypeConfigEnhancer(this.microservice.package.getAsset.bind(this.microservice.package));
         const cfg = c.type ? configEnhancer.enhance(c, c.type) : c;
-        let {name, attributes = {}, indexes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined} = cfg;
+        let {name, attributes = {}, indexes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined, authorizations = undefined} = cfg;
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
         const operationConfigEnhancer = new MicroserviceTypeOperationConfigEnhancer(this.microservice.package.getAsset.bind(this.microservice.package))
@@ -91,6 +92,10 @@ export default class MicroserviceType {
                         ...c,
                         middlewares: [...middlewares, ...(c.middlewares || [])],
                         backend: c.backend || this.defaultBackendName,
+                        config: {
+                            ...(c.config || {}),
+                            authorization: c.config.authorization || (authorizations ? authorizations[name] : undefined) || undefined,
+                        }
                     }
                 )
         );

@@ -16,6 +16,7 @@ export class MicroserviceTypeConfigEnhancer extends AbstractConfigEnhancer {
             operations: this.mergeOperations(a.operations, b.operations),
             functions: this.mergeFunctions(a.functions, b.functions),
             indexes: this.mergeIndexes(a.indexes, b.indexes),
+            authorizations: this.mergeAuthorizations(a.authorizations, b.authorizations),
         };
     }
     mergeHandlers(a: any = {}, b: any = {}) {
@@ -28,6 +29,9 @@ export class MicroserviceTypeConfigEnhancer extends AbstractConfigEnhancer {
         return this.mergeListOfStringsOrObjects(a, b);
     }
     mergeAttributes(a: any = {}, b: any = {}) {
+        return this.mergeObjects(a, b);
+    }
+    mergeAuthorizations(a: any = {}, b: any = {}) {
         return this.mergeObjects(a, b);
     }
     mergeFunctions(a: any = {}, b: any = {}) {

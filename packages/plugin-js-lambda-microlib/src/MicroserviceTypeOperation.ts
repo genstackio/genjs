@@ -15,6 +15,7 @@ export type MicroserviceTypeOperationConfig = {
     hooks: {[key: string]: any[]},
     handler: boolean,
     wrap?: any,
+    config?: {[key: string]: any},
 };
 
 export default class MicroserviceTypeOperation {
@@ -24,12 +25,13 @@ export default class MicroserviceTypeOperation {
     constructor(microserviceType, cfg: MicroserviceTypeOperationConfig) {
         this.microserviceType = microserviceType;
         const configEnhancer = new MicroserviceTypeOperationConfigEnhancer(this.microserviceType.microservice.package.getAsset.bind(this.microserviceType.microservice.package));
-        const {name, as = undefined, handler = true, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}} = cfg.type ? configEnhancer.enhance(cfg, cfg.type) : cfg;
+        const {name, as = undefined, handler = true, config: extraOperationConfig = {}, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}} = cfg.type ? configEnhancer.enhance(cfg, cfg.type) : cfg;
         this.name = name;
         this.handler = handler ? new Handler({name: `${microserviceType.name}_${this.name}`, type: 'service', middlewares, errorMiddlewares, directory: 'handlers', params: {
                 on: this.name,
                 m: microserviceType.name,
                 b: backend,
+                ...extraOperationConfig,
             }, vars: {
                 ...vars,
                 service: `crud/${microserviceType.name}`,
