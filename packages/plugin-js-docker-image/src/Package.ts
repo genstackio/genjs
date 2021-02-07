@@ -63,7 +63,7 @@ export default class Package extends AbstractPackage {
         return GitIgnoreTemplate.create(vars);
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        return new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('env', 'dev')
             .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)

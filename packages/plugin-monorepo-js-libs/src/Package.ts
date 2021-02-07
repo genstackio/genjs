@@ -109,7 +109,7 @@ export default class Package extends AbstractPackage {
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         const scm = vars.scm || 'git';
-        const m = {makefile: false !== vars.makefile, ...(vars.makefile || {})};
+        const m = {relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})};
         const t = new MakefileTemplate(m)
             .addPredefinedTarget('install-root', 'yarn-install')
             .addPredefinedTarget('install-packages', 'yarn-lerna-bootstrap')

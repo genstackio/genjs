@@ -48,6 +48,7 @@ export type MakefileTemplateConfig = {
     globals?: {[name: string]: Omit<GlobalVarConfig, 'name'>},
     exports?: {[name: string]: Omit<ExportedVarConfig, 'name'>},
     defines?: {[name: string]: Omit<DefineConfig, 'name'>},
+    relativeToRoot?: string,
     defaultTarget?: string,
 };
 
@@ -58,10 +59,12 @@ export class MakefileTemplate extends AbstractFileTemplate {
     private exportedVars: any[] = [];
     private customConfig: MakefileTemplateConfig;
     private customConsumed: boolean;
-    constructor(config: MakefileTemplateConfig = {targets: {}, globals: {}, exports: {}, defines: {}}) {
+    private readonly relativeToRoot: string;
+    constructor(config: MakefileTemplateConfig = {targets: {}, globals: {}, exports: {}, defines: {}, relativeToRoot: '..'}) {
         super();
         this.customConsumed = false;
         this.customConfig = config;
+        this.relativeToRoot = config.relativeToRoot || '..';
         config.defaultTarget && this.setDefaultTarget(config.defaultTarget);
     }
     getTemplatePath() {
@@ -164,7 +167,7 @@ export class MakefileTemplate extends AbstractFileTemplate {
     addPredefinedTarget(name: string, type?: string, options: any = {}, extraSteps: string[] = [], extraDependencies: string[] = []): this {
         const tName = `${(type || name).split(/-/g).map(t => `${t.slice(0, 1).toUpperCase()}${t.slice(1)}`).join('')}Target`;
         if (!predefinedTargets[tName]) throw new Error(`Unknown predefined target with name ${type || name}`);
-        this.targets.push(new predefinedTargets[tName]({name, steps: extraSteps, dependencies: extraDependencies, options}));
+        this.targets.push(new predefinedTargets[tName]({name, steps: extraSteps, dependencies: extraDependencies, options: {relativeToRoot: this.relativeToRoot, ...options}}));
         return this;
     }
     addDefine(name: string, code: string): this {

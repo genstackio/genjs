@@ -2,12 +2,17 @@ export class GenericTarget {
     public name: string;
     public steps: string[];
     public dependencies: string[];
+    public relativeToRoot: string;
     constructor({name, steps = [], dependencies = [], options = {}}: {name: string, steps?: string[], dependencies?: string[], options?: any}) {
         this.name = name;
         options = this.buildOptions(options);
+        this.relativeToRoot = options.relativeToRoot || '..';
         const localSteps = [...this.buildSteps(options), ...steps].filter(x => !!x) as string[];
         this.dependencies = [...this.buildDependencies(options), ...dependencies].filter(x => !!x) as string[];
         this.steps = this.convertSteps(this.dependencies.length ? localSteps : (localSteps.length ? localSteps : ['true']), options);
+    }
+    buildRelativeToRootPath(path: string): string {
+        return `${this.relativeToRoot}/${path}`;
     }
     buildOptions(options: any): any {
         return options;

@@ -30,6 +30,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     public readonly features: any;
     public readonly extraOptions: any;
     public readonly assetFetcher: (type: string, name: string) => any;
+    public readonly relativeToRoot: string;
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
     constructor(config: C) {
         const {getAsset, name, description, packageType, sources = [], files = {}, vars =  {}, enabled_features = [], disabled_features = [], targetDir, ...extra} = config;
@@ -41,7 +42,8 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         this.packageType = packageType;
         this.sources = sources;
         this.files = files;
-        this.vars = {targetDir};
+        this.relativeToRoot = (!targetDir || ('.' === targetDir)) ? '.' : [...Array((targetDir || '').split('/').length).keys()].map(() => '..').join('/');
+        this.vars = {targetDir, relativeToRoot: this.relativeToRoot};
         const [xFeatures, xExtraOptions] = Object.entries(<any>extra).reduce((acc, [k, v]) => {
             if ('boolean' === typeof v) acc[0][k] = v;
             else acc[1][k] = v;

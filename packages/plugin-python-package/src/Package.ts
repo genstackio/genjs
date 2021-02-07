@@ -66,7 +66,7 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate({makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        return new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('pypi_repo', undefined, vars.pypi_repo)
             .addMetaTarget('pre-install', ['create-venv'])
