@@ -51,3 +51,5 @@ export {default as integer} from './integer';
 export {default as positiveInteger} from './positiveInteger';
 export {default as negativeInteger} from './negativeInteger';
 export {default as features} from './features';
+export {default as isbn} from './isbn';
+export {default as visaNumber} from './visaNumber';

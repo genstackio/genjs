@@ -69,7 +69,7 @@ export default class SchemaParser {
                 validators: [].concat(officialDef.validators || [], forcedDef.validators || []),
             };
             const {
-                type = 'string', prefetch = false, list = false, volatile = false, required = false, index = [], internal = false, validators = undefined, primaryKey = false,
+                unique = false, type = 'string', prefetch = false, list = false, volatile = false, required = false, index = [], internal = false, validators = undefined, primaryKey = false,
                 value = undefined, default: rawDefaultValue = undefined, defaultValue = undefined, updateValue = undefined, updateDefault: rawUpdateDefaultValue = undefined, updateDefaultValue = undefined,
                 upper = false, lower = false, transform = undefined, reference = undefined, ownedReferenceList = undefined, refAttribute = undefined,
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
@@ -96,8 +96,9 @@ export default class SchemaParser {
             }
             (undefined !== reference) && (acc.referenceFields[k] = reference);
             (undefined !== ownedReferenceList) && (acc.ownedReferenceListFields[k] = ownedReferenceList);
-            (validators && 0 < validators.length) && (acc.validators[k] = validators);
-            (authorizers && 0 < authorizers.length) && (acc.authorizers[k] = [...acc.authorizers[k], ...authorizers]);
+            (validators && 0 < validators.length) && (acc.validators[k] = [...(acc.validators[k] || []), ...validators]);
+            (authorizers && 0 < authorizers.length) && (acc.authorizers[k] = [...(acc.authorizers[k] || []), ...authorizers]);
+            unique && (acc.validators[k].push({type: '@unique', config: {type: schema.name, index: k}}));
             (undefined !== value) && (acc.values[k] = value);
             (undefined !== updateValue) && (acc.updateValues[k] = updateValue);
             (undefined !== defaultValue) && (acc.defaultValues[k] = defaultValue);
@@ -202,11 +203,15 @@ export default class SchemaParser {
     parseFieldString(string, name, schema: any): any {
         const d = {
             type: string, config: {},
-            internal: false, required: false, primaryKey: false, volatile: false,
+            internal: false, required: false, primaryKey: false, volatile: false, unique: false,
             reference: <any>undefined, refAttribute: <any>undefined, validators: [],
             ownedReferenceList: <any>undefined,
             index: <any>[],
         };
+        if (/^!/.test(d.type)) {
+            d.unique = true;
+            d.type = d.type.substr(1);
+        }
         if (/!$/.test(d.type)) {
             d.required = true;
             d.type = d.type.substr(0, d.type.length - 1);
