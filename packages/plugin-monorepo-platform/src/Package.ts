@@ -158,28 +158,28 @@ export default class Package extends AbstractPackage {
             t.addTarget(`switch-${env}`, generateEnvLocalableProjects.map(p => `make -C . generate-env-local-${p.name} env=${env}`))
         });
         preInstallableProjects.forEach(p => {
-            t.addSubTarget(`pre-install-${p.name}`, p.name, 'pre-install');
+            t.addSubTarget(`pre-install-${p.name}`, p.dir, 'pre-install');
         });
         installableProjects.forEach(p => {
-            t.addSubTarget(`install-${p.name}`, p.name, 'install');
+            t.addSubTarget(`install-${p.name}`, p.dir, 'install');
         });
         testableProjects.forEach(p => {
-            t.addSubTarget(`test-${p.name}`, p.name, 'test');
+            t.addSubTarget(`test-${p.name}`, p.dir, 'test');
         });
         generateEnvLocalableProjects.forEach(p => {
-            t.addSubTarget(`generate-env-local-${p.name}`, p.name, 'generate-env-local', {env: '$(env)'});
+            t.addSubTarget(`generate-env-local-${p.name}`, p.dir, 'generate-env-local', {env: '$(env)'});
         });
         buildableProjects.forEach(p => {
-            t.addSubTarget(`build-${p.name}`, p.name, 'build', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : []);
+            t.addSubTarget(`build-${p.name}`, p.dir, 'build', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : []);
         });
         deployableProjects.forEach(p => {
-            !!p.deployable && t.addSubTarget(`deploy-${p.name}`, p.name, 'deploy', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
+            !!p.deployable && t.addSubTarget(`deploy-${p.name}`, p.dir, 'deploy', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
         });
         refreshableProjects.forEach(p => {
             !!p.refreshable && t.addSubTarget(`refresh-${p.name}`, 'infra', 'provision', {env: '$(env)', layer: p.name}, ['generate-terraform', `build-${p.name}`]);
         });
         startableProjects.forEach(p => {
-            !!p.startable && t.addSubTarget(`start-${p.name}`, p.name, 'start', {env: '$(env)'});
+            !!p.startable && t.addSubTarget(`start-${p.name}`, p.dir, 'start', {env: '$(env)'});
         });
         ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
         return t;

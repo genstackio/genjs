@@ -155,7 +155,7 @@ export class Genjs implements IGenerator {
             }));
         }, <any[]>[]);
     }
-    protected applyPackageEventHooks(p: IPackage, eventType: string, data: any = {}): void {
+    protected applyPackageEventHooks(p: IPackage, eventType: string, data: any = {}, g: PackageGroup): void {
         let hooks = <Function[]>[];
         const packageType = p.getPackageType ? p.getPackageType() : (p['packageType'] ? p['packageType'] : undefined);
         if (!packageType) return;
@@ -171,7 +171,7 @@ export class Genjs implements IGenerator {
             if (this.packageEventHooks['*']['*'])
                 hooks = hooks.concat(this.packageEventHooks['*'][eventType]);
         }
-        const ctx = {data, globalContext: this.globalContext};
+        const ctx = {data, globalContext: this.globalContext, group: g};
         hooks.forEach(h => h(p, eventType, ctx));
     }
     protected applyGroupEventHooks(g: PackageGroup, eventType: string, data: any = {}): void {
@@ -238,7 +238,7 @@ export class Genjs implements IGenerator {
                     const targetDir = g.getDir() === '.' ? name : `${g.getDir()}/${name}`;
                     const localConfig = configEnhancer.enrich({...c, getAsset: this.getAsset.bind(this), packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}});
                     const p = this.packagers[type](localConfig);
-                    this.applyPackageEventHooks(p, 'created', localConfig);
+                    this.applyPackageEventHooks(p, 'created', localConfig, g);
                     return p;
                 }
             )]);
@@ -253,14 +253,14 @@ export class Genjs implements IGenerator {
     }
     private async preGenerate(groupments: [PackageGroup, IPackage[]][], vars: any): Promise<any> {
         const description = {};
-        await groupments.reduce(async (acc, [_, packages]) => {
+        await groupments.reduce(async (acc, [g, packages]) => {
             await acc;
             vars.verbose = vars.verbose || process.env.GENJS_VERBOSE || 0;
             await packages.reduce(async (acc, p) => {
                 await acc;
-                this.applyPackageEventHooks(p, 'before_describe');
+                this.applyPackageEventHooks(p, 'before_describe', {}, g);
                 populateData(description, p.describe ? await p.describe() : {})
-                this.applyPackageEventHooks(p, 'after_describe', description);
+                this.applyPackageEventHooks(p, 'after_describe', description, g);
             }, Promise.resolve());
         }, Promise.resolve());
         return description;
@@ -277,16 +277,16 @@ export class Genjs implements IGenerator {
             await packages.reduce(async (acc, p) => {
                 await acc;
                 description.projectData = {};
-                this.applyPackageEventHooks(p, 'before_hydrate', description);
+                this.applyPackageEventHooks(p, 'before_hydrate', description, g);
                 p.hydrate && await p.hydrate(description);
-                this.applyPackageEventHooks(p, 'after_hydrate', description);
+                this.applyPackageEventHooks(p, 'after_hydrate', description, g);
                 delete description.projectData;
             }, Promise.resolve());
             const rr = (await Promise.all(packages.map(async p => {
                 const n = (<any>p).getName ? (<any>p).getName() : p['name'];
-                this.applyPackageEventHooks(p, 'before_generate');
+                this.applyPackageEventHooks(p, 'before_generate', {}, g);
                 const generateResult = p.generate ? await p.generate(vars) : {};
-                this.applyPackageEventHooks(p, 'after_generate', generateResult);
+                this.applyPackageEventHooks(p, 'after_generate', generateResult, g);
                 return [n, generateResult];
             })))
                 .reduce(

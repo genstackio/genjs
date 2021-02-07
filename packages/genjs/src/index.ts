@@ -5,6 +5,7 @@ export * from './IPlugin';
 export * from './IRegistry';
 export * from './IConfigEnhancer';
 export * from './ITemplate';
+export * from './PackageGroup';
 export * from './AbstractPackage';
 export * from './AbstractConfigEnhancer';
 export * from './AbstractTemplate';
