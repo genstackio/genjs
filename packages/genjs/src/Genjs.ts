@@ -74,6 +74,12 @@ export class Genjs implements IGenerator {
             acc[k] = new PackageGroup(this, {name: k, packages: extra[key] || {}, dir});
             return acc;
         }, {});
+        const requiredPackagers = Object.values(this.groups).reduce((acc, g) => {
+            return g.getRequiredPackagers().reduce((acc2, p) => {
+                acc2[p] = true;
+                return acc;
+            }, acc);
+        }, {} as {[key: string]: boolean});
         const localPlugin = `${rootDir}/.genjs/.local`;
         try {
             const localPluginPath = fs.realpathSync(localPlugin);
@@ -90,6 +96,12 @@ export class Genjs implements IGenerator {
         }
         this.loadPlugins(plugins);
         this.registerPlugin(new FilesPlugin());
+        const notListedRequiredPackagerNames = Object.keys(requiredPackagers).filter(p =>
+            !Object.keys(this.packagers).find(pp => p === pp)
+        );
+        if (0 < notListedRequiredPackagerNames.length) {
+            throw new Error(`Please update your GenJS plugins list to add plugin(s) that enable the following packager types:\n\n${notListedRequiredPackagerNames.map(x => `  - ${x}\n`).join('')}`)
+        }
     }
     protected loadPlugins(plugins: any[]): void {
         plugins.forEach(p => {

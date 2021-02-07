@@ -1,0 +1,1 @@
+# genjs-plugin-ts-lambda
