@@ -3,7 +3,7 @@ import {IGenerator, IPlugin, IPackage, PackageGroup} from '@genjs/genjs';
 import {buildProjectsVars} from "./utils";
 
 export default class Plugin implements IPlugin {
-    onPackageCreated(p: IPackage, eventType: string, ctx: {data: any, globalContext: any}, g: PackageGroup): void {
+    onPackageCreated(p: IPackage, eventType: string, ctx: {data: any, globalContext: any, group: PackageGroup}): void {
         if ('.' === p.getName()) return;
         ctx.globalContext.projects = ctx.globalContext.projects || {};
         const features = {
@@ -19,7 +19,7 @@ export default class Plugin implements IPlugin {
         ctx.globalContext.projects[p.getName()] = {
             name: p.getName(),
             description: p.getDescription(),
-            dir: (g.getDir() === '.') ? p.getName() : `${g.getDir()}/${p.getName()}`,
+            dir: (ctx.group.getDir() === '.') ? p.getName() : `${ctx.group.getDir()}/${p.getName()}`,
             ...features,
             ...extraOptions,
         };
