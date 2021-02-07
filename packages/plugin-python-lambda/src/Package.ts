@@ -5,9 +5,22 @@ import {
     ReadmeTemplate,
     PackageExcludesTemplate,
     TerraformToVarsTemplate,
+    BuildableBehaviour,
+    CleanableBehaviour,
+    InstallableBehaviour,
+    GenerateEnvLocalableBehaviour, TestableBehaviour,
 } from '@genjs/genjs';
 
 export default class Package extends AbstractPackage {
+    protected getBehaviours() {
+        return [
+            new BuildableBehaviour(),
+            new CleanableBehaviour(),
+            new InstallableBehaviour(),
+            new GenerateEnvLocalableBehaviour(),
+            new TestableBehaviour(),
+        ];
+    }
     protected getDefaultExtraOptions(): any {
         return {
             phase: 'pre',
