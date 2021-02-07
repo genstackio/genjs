@@ -19,7 +19,7 @@ export default class Plugin implements IPlugin {
         ctx.globalContext.projects[p.getName()] = {
             name: p.getName(),
             description: p.getDescription(),
-            dir: (ctx.group.getDir() === '.') ? p.getName() : `${ctx.group.getDir()}/${p.getName()}`,
+            fullDir: (ctx.group.getDir() === '.') ? p.getName() : `${ctx.group.getDir()}/${p.getName()}`,
             ...features,
             ...extraOptions,
         };
