@@ -81,7 +81,7 @@ export default class Package extends AbstractPackage {
         }
         if (withLayers) {
             t
-                .addGlobalVar('layers', '$(shell cd layers && ls -d */ 2>/dev/null)')
+                .addGlobalVar('layers', '$(shell cd layers && ls -d */ 2>/dev/null | sed s,/,,)')
                 .addGlobalVar('makeable_layers', '$(shell cd layers && ls -d */Makefile 2>/dev/null | sed s,/Makefile,,)')
                 .addTarget('install-layers', ['$(foreach l,$(makeable_layers),make -C layers/$(l)/ install;)'], ['install-root'])
                 .addTarget('build-layers', ['$(foreach l,$(makeable_layers),make -C layers/$(l)/ build;)'], ['install-root'])
@@ -92,26 +92,26 @@ export default class Package extends AbstractPackage {
             ;
             if (withTerraformDocs) {
                 t
-                    .addTarget('layer-generate-docs', ['cd layers/$(l) && terraform-docs markdown . > README.md && cd ..'], ['install-root'])
-                    .addTarget('generate-docs-layers', ['$(foreach l,$(layers),cd layers/$(l) && terraform-docs markdown . > README.md && cd ..;)'], ['install-root'])
+                    .addTarget('layer-generate-docs', ['cd layers/$(l) && terraform-docs markdown . > README.md && cd ../..'], ['install-root'])
+                    .addTarget('generate-docs-layers', ['$(foreach l,$(layers),cd layers/$(l) && terraform-docs markdown . > README.md && cd ../..;)'], ['install-root'])
                 ;
             }
         }
         if (withModules) {
             t
-                .addGlobalVar('modules', '$(shell cd modules && ls -d */ 2>/dev/null)')
+                .addGlobalVar('modules', '$(shell cd modules && ls -d */ 2>/dev/null | sed s,/,,)')
                 .addGlobalVar('makeable_modules', '$(shell cd modules && ls -d */Makefile 2>/dev/null | sed s,/Makefile,,)')
                 .addTarget('install-modules', ['$(foreach m,$(makeable_modules),make -C modules/$(m)/ install;)'], ['install-root'])
                 .addTarget('build-modules', ['$(foreach m,$(makeable_modules),make -C modules/$(m)/ build;)'], ['install-root'])
                 .addTarget('test-modules', ['$(foreach m,$(makeable_modules),make -C modules/$(m)/ test;)'], ['install-root'])
-                .addSubTarget('module-install', 'module/$(m)', 'install')
-                .addSubTarget('module-build', 'module/$(m)', 'build')
-                .addSubTarget('module-test', 'module/$(m)', 'test')
+                .addSubTarget('module-install', 'modules/$(m)', 'install')
+                .addSubTarget('module-build', 'modules/$(m)', 'build')
+                .addSubTarget('module-test', 'modules/$(m)', 'test')
             ;
             if (withTerraformDocs) {
                 t
-                    .addTarget('module-generate-docs', ['cd modules/$(m) && terraform-docs markdown . > README.md && cd ..'], ['install-root'])
-                    .addTarget('generate-docs-modules', ['$(foreach m,$(modules),cd modules/$(l) && terraform-docs markdown . > README.md && cd ..;)'], ['install-root'])
+                    .addTarget('module-generate-docs', ['cd modules/$(m) && terraform-docs markdown . > README.md && cd ../..'], ['install-root'])
+                    .addTarget('generate-docs-modules', ['$(foreach m,$(modules),cd modules/$(m) && terraform-docs markdown . > README.md && cd ../..;)'], ['install-root'])
                 ;
             }
         }
