@@ -16,7 +16,7 @@ deploy-code:
 
 generate-env-local:
 	@../node_modules/.bin/env REACT_APP_ > ./.env.local
-	@../node_modules/.bin/generate-vars-from-terraform-outputs $(env) ./terraform-to-vars.json >> ./.env.local
+	@../node_modules/.bin/generate-vars-from-terraform-outputs ../outputs/$(env) ./terraform-to-vars.json >> ./.env.local
 
 install:
 	@yarn --silent install

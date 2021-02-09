@@ -24,7 +24,7 @@ deploy-raw: deploy-code invalidate-cache
 
 generate-env-local:
 	@../node_modules/.bin/env GATSBY_ > ./.env.local
-	@../node_modules/.bin/generate-vars-from-terraform-outputs $(env) ./terraform-to-vars.json >> ./.env.local
+	@../node_modules/.bin/generate-vars-from-terraform-outputs ../outputs/$(env) ./terraform-to-vars.json >> ./.env.local
 
 install:
 	@yarn --silent install
