@@ -207,7 +207,7 @@ export default class MicroserviceType {
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before'})));
         }, []);
-        const afters = ['after', 'convert', 'notify', 'clean', 'end'].reduce((acc, n) => {
+        const afters = ['after', 'convert', 'postpopulate', 'notify', 'clean', 'end'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after'})));

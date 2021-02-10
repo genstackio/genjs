@@ -62,6 +62,7 @@ export default class MicroserviceTypeOperation {
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@create-owned-items', config: {...v, field: k, mode: 'post'}})
                 );
+                this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
                 break;
             case 'update':
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
@@ -90,9 +91,11 @@ export default class MicroserviceTypeOperation {
                 break;
             case 'get':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
+                this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
                 break;
             case 'find':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}, loop: 'items'});
+                this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
                 break;
             case 'delete':
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
@@ -154,6 +157,8 @@ export default class MicroserviceTypeOperation {
                     default:
                         return false;
                 }
+            case 'dynamics':
+                return !!Object.keys(microserviceType.model.dynamics).length;
             case 'prepare':
                 return !!Object.keys(microserviceType.model.volatileFields).length;
             case 'after':

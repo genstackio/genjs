@@ -31,6 +31,7 @@ export default class SchemaParser {
             authorizers: {},
             mutators: {},
             pretransformers: {},
+            dynamics: {},
             converters: {},
             shortName: (def.name || '').replace(/^.+_([^_]+)$/, '$1'),
         };
@@ -74,6 +75,7 @@ export default class SchemaParser {
                 upper = false, lower = false, transform = undefined, reference = undefined, ownedReferenceList = undefined, refAttribute = undefined,
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
                 pretransform = undefined, convert = undefined, mutate = undefined,
+                dynamic = undefined,
             } = def;
             acc.fields[k] = {
                 type, primaryKey, volatile,
@@ -116,11 +118,13 @@ export default class SchemaParser {
             upper && (acc.transformers[k].push({type: '@upper'}));
             lower && (acc.transformers[k].push({type: '@lower'}));
             prefetch && ((acc.prefetchs['update'] = acc.prefetchs['update'] || {})[k] = true);
+            dynamic && (acc.dynamics[k] = dynamic);
             if (!acc.transformers[k].length) delete acc.transformers[k];
             if (!acc.authorizers[k].length) delete acc.authorizers[k];
             if (!acc.pretransformers[k].length) delete acc.pretransformers[k];
             if (!acc.converters[k].length) delete acc.converters[k];
             if (!acc.mutators[k].length) delete acc.mutators[k];
+            if (!acc.dynamics[k]) delete acc.dynamics[k];
             return acc;
         }, schema);
     }
@@ -201,7 +205,7 @@ export default class SchemaParser {
         return a;
     }
     parseFieldString(string, name, schema: any): any {
-        const d = {
+        const d: any = {
             type: string, config: {},
             internal: false, required: false, primaryKey: false, volatile: false, unique: false,
             reference: <any>undefined, refAttribute: <any>undefined, validators: [],
@@ -244,6 +248,90 @@ export default class SchemaParser {
                 fetchedFields: [],
             };
             d.type = 'string';
+        }
+        if (/^dyn:/.test(d.type)) {
+            const [dynType, ...tokens] = d.type.substr(4).split(':');
+            d.dynamic = {
+                type: dynType,
+                config: {
+                    [dynType]: tokens.join(':'),
+                }
+            };
+            d.type = 'string';
+        }
+        if (/^dyn_o:/.test(d.type)) {
+            const [dynType, ...tokens] = d.type.substr(4).split(':');
+            d.dynamic = {
+                type: dynType,
+                config: {
+                    [dynType]: tokens.join(':'),
+                }
+            };
+            d.type = 'object';
+        }
+        if (/^dyn_b:/.test(d.type)) {
+            const [dynType, ...tokens] = d.type.substr(4).split(':');
+            d.dynamic = {
+                type: dynType,
+                config: {
+                    [dynType]: tokens.join(':'),
+                }
+            };
+            d.type = 'boolean';
+        }
+        if (/^dyn_n:/.test(d.type)) {
+            const [dynType, ...tokens] = d.type.substr(4).split(':');
+            d.dynamic = {
+                type: dynType,
+                config: {
+                    [dynType]: tokens.join(':'),
+                }
+            };
+            d.type = 'number';
+        }
+        if (/^dyn_a:/.test(d.type)) {
+            const [dynType, ...tokens] = d.type.substr(4).split(':');
+            d.dynamic = {
+                type: dynType,
+                config: {
+                    [dynType]: tokens.join(':'),
+                }
+            };
+            d.type = 'string';
+            d.list = true;
+        }
+        if (/^dyn_ao:/.test(d.type)) {
+            const [dynType, ...tokens] = d.type.substr(4).split(':');
+            d.dynamic = {
+                type: dynType,
+                config: {
+                    [dynType]: tokens.join(':'),
+                }
+            };
+            d.type = 'object';
+            d.list = true;
+        }
+        if (/^dyn_ab:/.test(d.type)) {
+            const [dynType, ...tokens] = d.type.substr(4).split(':');
+            d.dynamic = {
+                type: dynType,
+                config: {
+                    [dynType]: tokens.join(':'),
+                }
+            };
+            d.type = 'boolean';
+            d.list = true;
+        }
+        if (/^dyn_an:/.test(d.type)) {
+            const [dynType, ...tokens] = d.type.substr(4).split(':');
+            d.dynamic = {
+                type: dynType,
+                config: {
+                    [dynType]: tokens.join(':'),
+                }
+            };
+            d.type = 'number';
+            d.list = true;
         }
         if (/^reflist:/.test(d.type)) {
             const tokens = d.type.substr(8).split(':');
