@@ -254,7 +254,7 @@ export default class SchemaParser {
             d.dynamic = {
                 type: dynType,
                 config: {
-                    [dynType]: tokens.join(':'),
+                    [dynType.replace(/^@/, '')]: tokens.join(':'),
                 }
             };
             d.type = 'string';
@@ -264,7 +264,7 @@ export default class SchemaParser {
             d.dynamic = {
                 type: dynType,
                 config: {
-                    [dynType]: tokens.join(':'),
+                    [dynType.replace(/^@/, '')]: tokens.join(':'),
                 }
             };
             d.type = 'object';
@@ -274,7 +274,7 @@ export default class SchemaParser {
             d.dynamic = {
                 type: dynType,
                 config: {
-                    [dynType]: tokens.join(':'),
+                    [dynType.replace(/^@/, '')]: tokens.join(':'),
                 }
             };
             d.type = 'boolean';
@@ -284,7 +284,7 @@ export default class SchemaParser {
             d.dynamic = {
                 type: dynType,
                 config: {
-                    [dynType]: tokens.join(':'),
+                    [dynType.replace(/^@/, '')]: tokens.join(':'),
                 }
             };
             d.type = 'number';
@@ -294,7 +294,7 @@ export default class SchemaParser {
             d.dynamic = {
                 type: dynType,
                 config: {
-                    [dynType]: tokens.join(':'),
+                    [dynType.replace(/^@/, '')]: tokens.join(':'),
                 }
             };
             d.type = 'string';
@@ -305,7 +305,7 @@ export default class SchemaParser {
             d.dynamic = {
                 type: dynType,
                 config: {
-                    [dynType]: tokens.join(':'),
+                    [dynType.replace(/^@/, '')]: tokens.join(':'),
                 }
             };
             d.type = 'object';
@@ -316,7 +316,7 @@ export default class SchemaParser {
             d.dynamic = {
                 type: dynType,
                 config: {
-                    [dynType]: tokens.join(':'),
+                    [dynType.replace(/^@/, '')]: tokens.join(':'),
                 }
             };
             d.type = 'boolean';
@@ -327,7 +327,7 @@ export default class SchemaParser {
             d.dynamic = {
                 type: dynType,
                 config: {
-                    [dynType]: tokens.join(':'),
+                    [dynType.replace(/^@/, '')]: tokens.join(':'),
                 }
             };
             d.type = 'number';
