@@ -423,6 +423,10 @@ export default class MicroserviceType {
             requirements['after'] = true;
             return `    ${conditionCode || ''}await after(result, query);`;
         }
+        if ('@dynamics' === type) {
+            requirements['dynamics'] = true;
+            return `    ${conditionCode || ''}await dynamics(result, query);`;
+        }
         if ('@prefetch' === type) {
             requirements['prefetch'] = true;
             return `    ${conditionCode || ''}await prefetch(query);`;
