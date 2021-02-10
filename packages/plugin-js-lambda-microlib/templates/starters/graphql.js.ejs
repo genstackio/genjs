@@ -1,9 +1,19 @@
 const AWS = require('aws-sdk');
 const {ApolloServer, gql} = require('apollo-server');
+function extractRootSelectedFieldsFromInfo(info) {
+    if (!infos) return [];
+    if ('Page' === `${info.returnType}`.slice(-4)) {
+        return ((((((((((info.operation || {}).selectionSet || {}).selections || [])[0] || {}).selectionSet || {}).selections || [])[0] || {}).selectionSet || {}).selections || {}).filter(x => x.kind === 'Field').map(s => s.name.value);
+    }
+    return info.operation.selectionSet.selections[0].selectionSet.selections.filter(x => x.kind === 'Field').map(s => s.name.value);
+}
+
 const r = n => {
     const h = require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/${n}`).handler;
     return async (parent, params = {}, {event, context}, info) => {
         const handlerEvent = {params};
+        handlerEvent.params = handlerEvent.params || {};
+        handlerEvent.params.fields = handlerEvent.params.fields || extractRootSelectedFieldsFromInfo(info);
         (!!event && !!event.user) && (handlerEvent.user = event.user);
         !!parent && (handlerEvent.params.parent = parent);
         return h(handlerEvent, {...context, info});
