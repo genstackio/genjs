@@ -425,7 +425,7 @@ export default class MicroserviceType {
         }
         if ('@dynamics' === type) {
             requirements['dynamics'] = true;
-            return `    ${conditionCode || ''}await dynamics(result, query);`;
+            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await dynamics(result, query)`, 'result', returnValue)});` : `${this.buildHookStatement(`await dynamics(result, query)`, 'result', returnValue)};`}`;
         }
         if ('@prefetch' === type) {
             requirements['prefetch'] = true;
