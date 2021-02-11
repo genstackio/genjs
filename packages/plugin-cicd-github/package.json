@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-cicd-github",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,7 +25,7 @@
     "@genjs/genjs": "^0"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.3.10",
+    "@genjs/genjs": "^0.3.11",
     "aws-sdk": "^2.797.0"
   }
 }
