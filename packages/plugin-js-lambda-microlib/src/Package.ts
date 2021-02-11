@@ -14,6 +14,7 @@ import {
     BuildableBehaviour,
     CleanableBehaviour,
     InstallableBehaviour,
+    MigratableBehaviour,
     GenerateEnvLocalableBehaviour,
     TestableBehaviour,
 } from '@genjs/genjs';
@@ -103,6 +104,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             new GenerateEnvLocalableBehaviour(),
             new TestableBehaviour(),
             new StartableBehaviour(),
+            new MigratableBehaviour(),
         ];
     }
     protected getDefaultExtraOptions(): any {
@@ -118,6 +120,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
         vars = {...staticVars, ...super.buildVars(vars)};
         vars.scripts = {
             ...staticVars.scripts,
+            ...(this.hasFeature('migratable') ? {migrate: 'echo "migrate script not yet implemented in package.json"'}: {}),
             ...(vars.deployable ? {deploy: 'deploy-package'} : {}),
             ...(vars.scripts || {}),
         };
@@ -202,6 +205,11 @@ export default class Package extends AbstractPackage<PackageConfig> {
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
         ;
+        if (this.hasFeature('migratable')) {
+            t
+                .addPredefinedTarget('migrate', 'yarn-migrate')
+            ;
+        }
         let index = 0;
         if (this.hasStarters()) {
             t

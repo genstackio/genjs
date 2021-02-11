@@ -109,6 +109,7 @@ export default class Package extends AbstractPackage {
         const scm = vars.scm || 'git';
         const {
             deployableProjects,
+            migratableProjects,
             buildablePostProjects,
             buildablePreProjects,
             buildableProjects,
@@ -154,6 +155,11 @@ export default class Package extends AbstractPackage {
             .addTarget('start', [vars.startCmd || `npx concurrently -n ${startableProjects.map(p => p.name)} ${startableProjects.map(p => `"make start-${p.name}"`).join(' ')}`])
             .setDefaultTarget('install')
         ;
+        if (0 < migratableProjects.length) {
+            t.addMetaTarget('migrate', [...migratableProjects.map(p => `migrate-${p.name}`)]);
+        } else {
+            t.addNoopTarget('migrate');
+        }
         Object.keys(vars.project_envs || {}).forEach(env => {
             t.addTarget(`switch-${env}`, generateEnvLocalableProjects.map(p => `make -C . generate-env-local-${p.name} env=${env}`))
         });
@@ -174,6 +180,9 @@ export default class Package extends AbstractPackage {
         });
         deployableProjects.forEach(p => {
             !!p.deployable && t.addSubTarget(`deploy-${p.name}`, p.fullDir, 'deploy', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
+        });
+        migratableProjects.forEach(p => {
+            !!p.migratable && t.addSubTarget(`migrate-${p.name}`, p.fullDir, 'migrate', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
         });
         refreshableProjects.forEach(p => {
             !!p.refreshable && t.addSubTarget(`refresh-${p.name}`, 'infra', 'provision', {env: '$(env)', layer: p.name}, ['generate-terraform', `build-${p.name}`]);

@@ -9,3 +9,4 @@ export * from './CleanableBehaviour';
 export * from './ServableBehaviour';
 export * from './ValidatableBehaviour';
 export * from './CleanableBehaviour';
+export * from './MigratableBehaviour';

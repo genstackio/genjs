@@ -79,3 +79,6 @@ jobs:
 
       - name: Deploy
         run: make deploy env=${{env.env}}
+
+      - name: Migrate
+        run: make migrate env=${{env.env}}

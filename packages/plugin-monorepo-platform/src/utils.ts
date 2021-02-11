@@ -67,6 +67,7 @@ export const buildProjectsVars = (vars: any): {
     originalProjects: any,
     sortedProjects: any[],
     deployableProjects: any[],
+    migratableProjects: any[],
     buildableProjects: any[],
     buildablePreProjects: any[],
     buildablePostProjects: any[],
@@ -84,6 +85,7 @@ export const buildProjectsVars = (vars: any): {
     }, <any[]>[]);
     sortedProjects.sort((a, b) => a.name > b.name ? 1 : (a.name === b.name ? 0 : -1));
     const deployableProjects = sortedProjects.filter(p => !!p.deployable);
+    const migratableProjects = sortedProjects.filter(p => !!p.migratable);
     const buildableProjects = sortedProjects.filter(p => !!p.buildable);
     const buildablePreProjects = buildableProjects.filter(p => 'pre' === p.phase);
     const buildablePostProjects = buildableProjects.filter(p => 'pre' !== p.phase);
@@ -96,6 +98,7 @@ export const buildProjectsVars = (vars: any): {
     return {
         originalProjects,
         sortedProjects,
+        migratableProjects,
         deployableProjects,
         buildableProjects,
         buildablePreProjects,

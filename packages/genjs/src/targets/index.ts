@@ -58,3 +58,4 @@ export * from './ComposerInstallTarget';
 export * from './ComposerInstallProdTarget';
 export * from './ComposerTestTarget';
 export * from './ComposerUpdateTarget';
+export * from './YarnMigrateTarget';

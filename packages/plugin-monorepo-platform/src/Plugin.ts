@@ -11,6 +11,7 @@ export default class Plugin implements IPlugin {
             testable: false,
             deployable: false,
             preInstallable: false,
+            migratable: false,
             ...p.getFeatures(),
         };
         const extraOptions = {
