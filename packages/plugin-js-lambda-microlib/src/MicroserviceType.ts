@@ -207,7 +207,7 @@ export default class MicroserviceType {
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before'})));
         }, []);
-        const afters = ['after', 'convert', 'postpopulate', 'notify', 'clean', 'end'].reduce((acc, n) => {
+        const afters = ['after', 'postpopulate', 'convert', 'latepopulate', 'notify', 'clean', 'end'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after'})));
@@ -427,6 +427,10 @@ export default class MicroserviceType {
             requirements['dynamics'] = true;
             return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await dynamics(result, query)`, 'result', returnValue)});` : `${this.buildHookStatement(`await dynamics(result, query)`, 'result', returnValue)};`}`;
         }
+        if ('@requires' === type) {
+            requirements['requires'] = true;
+            return `    ${conditionCode || ''}await requires(query);`;
+        }
         if ('@prefetch' === type) {
             requirements['prefetch'] = true;
             return `    ${conditionCode || ''}await prefetch(query);`;
@@ -457,7 +461,7 @@ export default class MicroserviceType {
         }
         if ('@convert' === type) {
             requirements['convert'] = true;
-            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await convert(result, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'result', returnValue)});` : `${this.buildHookStatement(`await convert(result, '${config['type']}'${config['config'] ? `, ${this.stringifyForHook(config['config'], options)}` : ''})`, 'result', returnValue)};`}`;
+            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await convert(result, query)`, 'result', returnValue)});` : `${this.buildHookStatement(`await convert(result, query)`, 'result', returnValue)};`}`;
         }
         if ('@populate' === type) {
             requirements['populate'] = true;

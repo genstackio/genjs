@@ -92,10 +92,12 @@ export default class MicroserviceTypeOperation {
             case 'get':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
                 this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
+                this.hasHooks('requires', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@requires', config: {}});
                 break;
             case 'find':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}, loop: 'items'});
                 this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
+                this.hasHooks('requires', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@requires', config: {}});
                 break;
             case 'delete':
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
@@ -126,45 +128,47 @@ export default class MicroserviceTypeOperation {
     hasHooks(type: string, operation: string, microserviceType: MicroserviceType, realOperationName: string): boolean {
         switch (type) {
             case 'authorize':
-                return !!Object.keys(microserviceType.model.authorizers).length;
+                return !!Object.keys(microserviceType.model.authorizers || {}).length;
             case 'prefetch':
-                return !!Object.keys(microserviceType.model.prefetchs).length;
+                return !!Object.keys(microserviceType.model.prefetchs || {}).length;
             case 'validate':
-                return !!Object.keys(microserviceType.model.fields).length;
+                return !!Object.keys(microserviceType.model.fields || {}).length;
             case 'transform':
-                return !!Object.keys(microserviceType.model.transformers).length;
+                return !!Object.keys(microserviceType.model.transformers || {}).length;
             case 'pretransform':
-                return !!Object.keys(microserviceType.model.pretransformers).length;
+                return !!Object.keys(microserviceType.model.pretransformers || {}).length;
             case 'convert':
-                return !!Object.keys(microserviceType.model.converters).length;
+                return !!Object.keys(microserviceType.model.converters || {}).length;
             case 'mutator':
-                return !!Object.keys(microserviceType.model.mutators).length;
+                return !!Object.keys(microserviceType.model.mutators || {}).length;
             case 'prepopulate':
                 switch (operation) {
                     case 'create':
-                        return !!Object.keys(microserviceType.model.defaultValues).length || !!Object.keys(microserviceType.model.cascadeValues).length;
+                        return !!Object.keys(microserviceType.model.defaultValues || {}).length || !!Object.keys(microserviceType.model.cascadeValues || {}).length;
                     case 'update':
-                        return !!Object.keys(microserviceType.model.updateDefaultValues).length || !!Object.keys(microserviceType.model.cascadeValues).length;
+                        return !!Object.keys(microserviceType.model.updateDefaultValues || {}).length || !!Object.keys(microserviceType.model.cascadeValues || {}).length;
                     default:
                         return false;
                 }
             case 'populate':
                 switch (operation) {
                     case 'create':
-                        return !!Object.keys(microserviceType.model.values).length;
+                        return !!Object.keys(microserviceType.model.values || {}).length;
                     case 'update':
-                        return !!Object.keys(microserviceType.model.updateValues).length;
+                        return !!Object.keys(microserviceType.model.updateValues || {}).length;
                     default:
                         return false;
                 }
             case 'dynamics':
-                return !!Object.keys(microserviceType.model.dynamics).length;
+                return !!Object.keys(microserviceType.model.dynamics || {}).length;
+            case 'requires':
+                return !!Object.keys(microserviceType.model.requires || {}).length;
             case 'prepare':
-                return !!Object.keys(microserviceType.model.volatileFields).length;
+                return !!Object.keys(microserviceType.model.volatileFields || {}).length;
             case 'after':
-                return !!Object.keys(microserviceType.model.volatileFields).length;
+                return !!Object.keys(microserviceType.model.volatileFields || {}).length;
             case 'autoTransitionTo':
-                return !!Object.keys(microserviceType.model.autoTransitionTo).length;
+                return !!Object.keys(microserviceType.model.autoTransitionTo || {}).length;
             default:
                 return false;
         }

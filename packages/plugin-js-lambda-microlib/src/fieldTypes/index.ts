@@ -53,3 +53,6 @@ export {default as negativeInteger} from './negativeInteger';
 export {default as features} from './features';
 export {default as isbn} from './isbn';
 export {default as visaNumber} from './visaNumber';
+export {default as autoLongVerificationCode} from './autoLongVerificationCode';
+export {default as autoShortVerificationCode} from './autoShortVerificationCode';
+export {default as autoVerificationCode} from './autoVerificationCode';

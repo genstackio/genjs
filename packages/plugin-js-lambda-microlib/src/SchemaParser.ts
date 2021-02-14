@@ -1,4 +1,11 @@
 import * as fieldTypes from './fieldTypes';
+import * as fieldModifiers from './fieldModifiers';
+import * as fieldPrefixes from './fieldPrefixes';
+
+const modifiers = ['unique', 'required', 'primaryKey', 'internal', 'volatile', 'indexed', 'userReference'];
+const parsers = Object.values(fieldPrefixes).reduce((acc, {prefixes, parse}: any) =>
+        prefixes.reduce((acc2, p) => Object.assign(acc2, {[p]: parse}), acc)
+    , {} as any) as any;
 
 export default class SchemaParser {
     public readonly fieldTypes: {[key: string]: Function} = {};
@@ -32,15 +39,23 @@ export default class SchemaParser {
             mutators: {},
             pretransformers: {},
             dynamics: {},
+            froms: {},
+            requires: {},
             converters: {},
             shortName: (def.name || '').replace(/^.+_([^_]+)$/, '$1'),
         };
         this.parseAttributes(def, schema);
         this.parseRefAttributeFields(def, schema);
         this.parseIndexes(def, schema);
-        this.parseJob(def, schema);
         this.parseOperations(def, schema);
-        return schema;
+        return Object.entries(schema).reduce((acc, [k, v]) => {
+            if (undefined === v) return acc;
+            if (null === v) return acc;
+            if (Array.isArray(v) && (0 === v.length)) return acc;
+            if (('object' === typeof v) && (0 === Object.keys(v).length)) return acc;
+            acc[k] = v;
+            return acc;
+        }, {} as any);
     }
     parseOperations(def: any, schema: any) {
         Object.entries(def.operations).reduce((acc, [k, d]) => {
@@ -58,8 +73,15 @@ export default class SchemaParser {
     parseAttributes(def: any, schema: any) {
         Object.entries(def.attributes).reduce((acc, [k, d]) => {
             d = {
-                ...('string' === typeof d) ? this.parseFieldString(d, k, schema) : d,
+                config: {},
+                internal: false, required: false, primaryKey: false, volatile: false, unique: false,
+                reference: <any>undefined, refAttribute: <any>undefined, validators: [],
+                ownedReferenceList: <any>undefined,
+                index: <any>[],
+                type: 'string',
+                ...(('string' === typeof d) ? {type: d} : (d as object)),
             };
+            this.parseField(d, k, schema)
             const forcedDef: any = {...(<any>d || {})};
             delete forcedDef.config;
             delete forcedDef.type;
@@ -75,14 +97,16 @@ export default class SchemaParser {
                 upper = false, lower = false, transform = undefined, reference = undefined, ownedReferenceList = undefined, refAttribute = undefined,
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
                 pretransform = undefined, convert = undefined, mutate = undefined,
-                dynamic = undefined,
+                dynamic = undefined, from = undefined, requires = undefined,
             } = def;
+            const detectedRequires = this.buildDetectedRequires(def);
             acc.fields[k] = {
                 type, primaryKey, volatile,
                 ...((index && index.length > 0) ? {index} : {}),
                 ...(list ? {list} : {}),
             };
             acc.authorizers[k] = [];
+            acc.requires[k] = [];
             acc.mutators[k] = mutate ? (Array.isArray(mutate) ? [...mutate] : [mutate]) : [];
             acc.pretransformers[k] = pretransform ? (Array.isArray(pretransform) ? [...pretransform] : [pretransform]) : [];
             acc.converters[k] = convert ? (Array.isArray(convert) ? [...convert] : [convert]) : [];
@@ -119,14 +143,38 @@ export default class SchemaParser {
             lower && (acc.transformers[k].push({type: '@lower'}));
             prefetch && ((acc.prefetchs['update'] = acc.prefetchs['update'] || {})[k] = true);
             dynamic && (acc.dynamics[k] = dynamic);
+            requires && (acc.requires[k] = Array.isArray(requires) ? [...acc.requires[k], ...requires] : [...acc.requires[k], requires]);
+            detectedRequires && (acc.requires[k] = Array.isArray(detectedRequires) ? [...acc.requires[k], ...detectedRequires] : [...acc.requires[k], detectedRequires]);
+            detectedRequires && detectedRequires.forEach(dr => {
+                (acc.prefetchs['update'] = acc.prefetchs['update'] || {})[dr] = true;
+            })
+            from && (acc.froms[k] = from) && (acc.dynamics[k] = {type: '@from', config: {name: from}});
             if (!acc.transformers[k].length) delete acc.transformers[k];
             if (!acc.authorizers[k].length) delete acc.authorizers[k];
             if (!acc.pretransformers[k].length) delete acc.pretransformers[k];
             if (!acc.converters[k].length) delete acc.converters[k];
             if (!acc.mutators[k].length) delete acc.mutators[k];
             if (!acc.dynamics[k]) delete acc.dynamics[k];
+            if (!acc.requires[k] || !acc.requires[k].length) delete acc.requires[k];
+            if (!acc.froms[k]) delete acc.froms[k];
             return acc;
         }, schema);
+    }
+    buildDetectedRequires(value) {
+        if (!value || (true === value) || ('number' === typeof value)) return [];
+        if ('string' === typeof value) {
+            const r = new RegExp('\{\{([^\}]+)\}\}', 'g');
+            const matches = [...(value as any).matchAll(r)];
+            return matches.reduce((acc, m) => {
+                for (let i = 0; i < (m.length - 1); i++) {
+                    acc.push(m[i+1]);
+                }
+                return acc;
+            }, []);
+        }
+        if (Array.isArray(value)) return value.reduce((acc, v) => [...acc, ...this.buildDetectedRequires(v)], []);
+        if ('object' === typeof value) return Object.values(value).reduce((acc: string[], v) => [...acc, ...this.buildDetectedRequires(v)], []);
+        return [];
     }
     parseRefAttributeFields(def: any, schema: any) {
         Object.entries(schema.refAttributeFields).forEach(([k, vList]) => {
@@ -156,40 +204,6 @@ export default class SchemaParser {
             );
         });
     }
-    parseJob(def: any, schema: any) {
-        /*
-        const operations = {
-            delete: {complete: 'delete', virtualComplete: true},
-            create: {},
-            update: {},
-        };
-        Object.entries(operations).forEach(([operation, operationDef]) => {
-            const key = `${operation}Job`;
-            if (!def[key]) return;
-            const mode = {pendingInput: () => ({}), completeInput: () => ({}), failureInput: () => ({}), ...def[key]};
-            registerEventListener(c, `${c.type}_${operation}_complete`, async (payload, { config: { operation } }) =>
-                operation(`${c.type}.${(<any>operationDef).complete || 'update'}`, {params: {id: payload.id, complete: true, input: {...(await mode.completeInput(payload))}}})
-            );
-            registerEventListener(c, `${c.type}_${operation}_failure`, async (payload, { config: { operation } }) =>
-                operation(`${c.type}.${(<any>operationDef).failure || 'update'}`, {params: {id: payload.id, input: {...(await mode.failureInput(payload))}}})
-            );
-            if ((<any>operationDef).virtualComplete) {
-                registerOperation(c, operation, c => async (payload) =>
-                    c.operation(`${c.type}.update`, {params: {id: payload.id, input: {...(await mode.pendingInput(payload))}}})
-                );
-                registerOperation(c, `complete_${operation}`, () => async (payload, options, process) =>
-                    process(operation)
-                );
-            } else {
-                c.registerHooks([
-                    [`populate_${operation}`, async action => {
-                        Object.assign(action.req.payload.data, await mode.pendingInput(action.req.payload));
-                    }],
-                ]);
-            }
-        });
-         */
-    }
     mergeCascades(a, b) {
         a = {...(a || {})};
         b = b || {};
@@ -204,154 +218,13 @@ export default class SchemaParser {
 
         return a;
     }
-    parseFieldString(string, name, schema: any): any {
-        const d: any = {
-            type: string, config: {},
-            internal: false, required: false, primaryKey: false, volatile: false, unique: false,
-            reference: <any>undefined, refAttribute: <any>undefined, validators: [],
-            ownedReferenceList: <any>undefined,
-            index: <any>[],
-        };
-        if (/^!/.test(d.type)) {
-            d.unique = true;
-            d.type = d.type.substr(1);
+    parseField(d: any, name, schema: any) {
+        const ctx = {buildTypeName: this.buildTypeName.bind(this)};
+        modifiers.forEach(modifier => fieldModifiers[modifier](d, name, schema, ctx));
+        if (0 <= d.type.indexOf(':')) {
+            const [prefix, ...tokens] = d.type.split(/:/g);
+            (parsers[prefix]) && parsers[prefix](prefix, tokens, d, name, schema, ctx);
         }
-        if (/!$/.test(d.type)) {
-            d.required = true;
-            d.type = d.type.substr(0, d.type.length - 1);
-        }
-        if (/^&/.test(d.type)) {
-            d.primaryKey = true;
-            d.type = d.type.substr(1);
-        }
-        if (/^:/.test(d.type)) {
-            d.internal = true;
-            d.type = d.type.substr(1);
-        }
-        if (/^#/.test(d.type)) {
-            d.volatile = true;
-            d.type = d.type.substr(1);
-        }
-        if (/^@/.test(d.type)) {
-            d.type = d.type.substr(1);
-            d.index.push({name});
-        }
-        if (/^user_ref:/.test(d.type)) {
-            d.type = d.type.substr(5);
-            d['value'] = {type: '@user_id'};
-        }
-        if (/^ref:/.test(d.type)) {
-            const tokens = d.type.substr(4).split(':');
-            d.reference = {
-                reference: tokens[0],
-                ...this.buildIdFieldInfos(tokens[1]),
-                fetchedFields: [],
-            };
-            d.type = 'string';
-        }
-        if (/^dyn:/.test(d.type)) {
-            const [dynType, ...tokens] = d.type.substr(4).split(':');
-            d.dynamic = {
-                type: dynType,
-                config: {
-                    [dynType.replace(/^@/, '')]: tokens.join(':'),
-                }
-            };
-            d.type = 'string';
-        }
-        if (/^dyn_o:/.test(d.type)) {
-            const [dynType, ...tokens] = d.type.substr(4).split(':');
-            d.dynamic = {
-                type: dynType,
-                config: {
-                    [dynType.replace(/^@/, '')]: tokens.join(':'),
-                }
-            };
-            d.type = 'object';
-        }
-        if (/^dyn_b:/.test(d.type)) {
-            const [dynType, ...tokens] = d.type.substr(4).split(':');
-            d.dynamic = {
-                type: dynType,
-                config: {
-                    [dynType.replace(/^@/, '')]: tokens.join(':'),
-                }
-            };
-            d.type = 'boolean';
-        }
-        if (/^dyn_n:/.test(d.type)) {
-            const [dynType, ...tokens] = d.type.substr(4).split(':');
-            d.dynamic = {
-                type: dynType,
-                config: {
-                    [dynType.replace(/^@/, '')]: tokens.join(':'),
-                }
-            };
-            d.type = 'number';
-        }
-        if (/^dyn_a:/.test(d.type)) {
-            const [dynType, ...tokens] = d.type.substr(4).split(':');
-            d.dynamic = {
-                type: dynType,
-                config: {
-                    [dynType.replace(/^@/, '')]: tokens.join(':'),
-                }
-            };
-            d.type = 'string';
-            d.list = true;
-        }
-        if (/^dyn_ao:/.test(d.type)) {
-            const [dynType, ...tokens] = d.type.substr(4).split(':');
-            d.dynamic = {
-                type: dynType,
-                config: {
-                    [dynType.replace(/^@/, '')]: tokens.join(':'),
-                }
-            };
-            d.type = 'object';
-            d.list = true;
-        }
-        if (/^dyn_ab:/.test(d.type)) {
-            const [dynType, ...tokens] = d.type.substr(4).split(':');
-            d.dynamic = {
-                type: dynType,
-                config: {
-                    [dynType.replace(/^@/, '')]: tokens.join(':'),
-                }
-            };
-            d.type = 'boolean';
-            d.list = true;
-        }
-        if (/^dyn_an:/.test(d.type)) {
-            const [dynType, ...tokens] = d.type.substr(4).split(':');
-            d.dynamic = {
-                type: dynType,
-                config: {
-                    [dynType.replace(/^@/, '')]: tokens.join(':'),
-                }
-            };
-            d.type = 'number';
-            d.list = true;
-        }
-        if (/^reflist:/.test(d.type)) {
-            const tokens = d.type.substr(8).split(':');
-            d.ownedReferenceList = {
-                type: this.buildTypeName(tokens[0], schema.name),
-                ...this.buildParentIdFieldInfos(tokens[1], schema),
-            };
-            d.type = 'object';
-            d['list'] = true;
-        }
-        if (/^refattr:/.test(d.type)) {
-            const [parentField, sourceField] = d.type.substr(8).split(/:/);
-            d.refAttribute = {
-                parentField,
-                sourceField,
-                field: name,
-            };
-            d.type = 'string';
-        }
-        return d;
     }
     createField(def: any) {
         let tt = def.type;
@@ -381,23 +254,6 @@ export default class SchemaParser {
             fullType = tokens.join('_');
         }
         return fullType;
-    }
-    buildIdFieldInfos(idField: string|string[] = 'id') {
-        idField = ('string' === typeof idField) ? idField.split(/\s*,\s*/g) : idField;
-        let targetIdFieldIndex = idField.findIndex(x => '*' === (x.slice(x.length - 1, x.length)));
-        if (-1 < targetIdFieldIndex) {
-            idField[targetIdFieldIndex] = idField[targetIdFieldIndex].slice(0, idField[targetIdFieldIndex].length - 1);
-        } else {
-            targetIdFieldIndex = 0;
-        }
-        const targetIdField = idField[targetIdFieldIndex];
-        (1 === idField.length) && (idField = idField[0]);
-        const infos = {idField};
-        ('string' !== typeof idField) && (infos['targetIdField'] = targetIdField);
-        return infos;
-    }
-    buildParentIdFieldInfos(parentIdField: string|undefined = undefined, schema) {
-        return parentIdField || schema.shortName;
     }
     buildReferenceValidator(def: {[key: string]: any}, localField: string, modelName: string) {
         const config = {
