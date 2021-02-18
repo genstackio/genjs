@@ -7,7 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@ohoareau/microlib": "^0.13.2",
+    "@ohoareau/microlib": "^0.13.3",
     "@ohoareau/aws-apigw-vx": "^0.2.0"
   },
   "devDependencies": {
