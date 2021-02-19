@@ -56,3 +56,4 @@ export {default as visaNumber} from './visaNumber';
 export {default as autoLongVerificationCode} from './autoLongVerificationCode';
 export {default as autoShortVerificationCode} from './autoShortVerificationCode';
 export {default as autoVerificationCode} from './autoVerificationCode';
+export {default as image} from './image';

@@ -75,7 +75,9 @@ export default class MicroserviceType {
             }
             return acc;
         }, {});
-        this.model = new SchemaParser().parse({name: this.name, attributes, operations, indexes});
+        this.model = new SchemaParser({fieldTypes: microservice.package.getCustomPluginsByType('fieldTypes')}).parse(
+            {name: this.name, attributes, operations, indexes}
+            );
         this.backends = (<any>backends).reduce((acc, b) => {
             if ('string' === typeof b) b = {type: 'backend', name: b};
             return Object.assign(acc, {[b.name]: b});

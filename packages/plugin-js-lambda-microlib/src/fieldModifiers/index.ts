@@ -1,7 +1,7 @@
-export * from './unique';
-export * from './required';
-export * from './primaryKey';
-export * from './internal';
-export * from './volatile';
-export * from './indexed';
-export * from './userReference';
+export {default as unique} from './unique';
+export {default as required} from './required';
+export {default as primaryKey} from './primaryKey';
+export {default as internal} from './internal';
+export {default as volatile} from './volatile';
+export {default as indexed} from './indexed';
+export {default as userReference} from './userReference';

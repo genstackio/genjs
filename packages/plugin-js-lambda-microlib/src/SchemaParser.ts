@@ -2,15 +2,30 @@ import * as fieldTypes from './fieldTypes';
 import * as fieldModifiers from './fieldModifiers';
 import * as fieldPrefixes from './fieldPrefixes';
 
-const modifiers = ['unique', 'required', 'primaryKey', 'internal', 'volatile', 'indexed', 'userReference'];
-const parsers = Object.values(fieldPrefixes).reduce((acc, {prefixes, parse}: any) =>
-        prefixes.reduce((acc2, p) => Object.assign(acc2, {[p]: parse}), acc)
-    , {} as any) as any;
-
 export default class SchemaParser {
     public readonly fieldTypes: {[key: string]: Function} = {};
-    constructor() {
+    public readonly fieldModifiers: {[key: string]: {priority: number, parse: Function}} = {};
+    public readonly parsers: {[key: string]: Function} = {};
+    public readonly fieldPrefixes: {[key: string]: {prefixes: string[], parse: Function}} = {};
+    public readonly modifiers: {priority: number, name: string, parse: Function}[];
+    constructor({fieldTypes: customFieldTypes = {}, fieldModifiers: customFieldModifiers = {}, fieldPrefixes: customFieldPrefixes = {}} = {}) {
+        // fieldTypes
         Object.entries(fieldTypes).forEach(([k, v]) => this.fieldTypes[k] = v);
+        Object.entries(customFieldTypes).forEach(([k, v]) => this.fieldTypes[k] = v as Function);
+        // fieldModifiers
+        Object.entries(fieldModifiers).forEach(([k, v]) => this.fieldModifiers[k] = v);
+        Object.entries(customFieldModifiers).forEach(([k, v]) => this.fieldModifiers[k] = v as {priority: number, parse: Function});
+        this.modifiers = Object.entries(this.fieldModifiers).reduce((acc, [k, v]) => {
+            acc.push({name: k, ...v});
+            return acc;
+        }, [] as any[]);
+        this.modifiers.sort((a, b) => a.priority - b.priority);
+        // fieldPrefixes
+        Object.entries(fieldPrefixes).forEach(([k, v]) => this.fieldPrefixes[k] = v);
+        Object.entries(customFieldPrefixes).forEach(([k, v]) => this.fieldPrefixes[k] = v as {prefixes: [], parse: Function});
+        this.parsers = Object.values(this.fieldPrefixes).reduce((acc, {prefixes, parse}: any) =>
+                prefixes.reduce((acc2, p) => Object.assign(acc2, {[p]: parse}), acc)
+            , {} as any) as any;
     }
     parse(def: any): any {
         def = {name: 'unknown', shortName: 'unknown', attributes: {}, operations: {}, indexes: {}, hooks: {}, ...def};
@@ -220,10 +235,16 @@ export default class SchemaParser {
     }
     parseField(d: any, name, schema: any) {
         const ctx = {buildTypeName: this.buildTypeName.bind(this)};
-        modifiers.forEach(modifier => fieldModifiers[modifier](d, name, schema, ctx));
+        this.modifiers.forEach(modifier => {
+            try {
+                modifier.parse(d, name, schema, ctx);
+            } catch (e) {
+                throw new Error(`Error when parsing with field modifier '${modifier.name}': ${e.message}`);
+            }
+        });
         if (0 <= d.type.indexOf(':')) {
             const [prefix, ...tokens] = d.type.split(/:/g);
-            (parsers[prefix]) && parsers[prefix](prefix, tokens, d, name, schema, ctx);
+            (this.parsers[prefix]) && this.parsers[prefix](prefix, tokens, d, name, schema, ctx);
         }
     }
     createField(def: any) {

@@ -31,6 +31,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     public readonly extraOptions: any;
     public readonly assetFetcher: (type: string, name: string) => any;
     public readonly relativeToRoot: string;
+    public readonly absoluteTargetDir: string;
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
     constructor(config: C) {
         const {getAsset, name, description, packageType, sources = [], files = {}, vars =  {}, enabled_features = [], disabled_features = [], targetDir, ...extra} = config;
@@ -42,6 +43,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         this.packageType = packageType;
         this.sources = sources;
         this.files = files;
+        this.absoluteTargetDir = (!targetDir || ('.' === targetDir)) ? process.cwd() : require('path').resolve(targetDir);
         this.relativeToRoot = (!targetDir || ('.' === targetDir)) ? '.' : [...Array((targetDir || '').split('/').length).keys()].map(() => '..').join('/');
         this.vars = {targetDir, relativeToRoot: this.relativeToRoot};
         const [xFeatures, xExtraOptions] = Object.entries(<any>extra).reduce((acc, [k, v]) => {
@@ -63,6 +65,19 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         enabled_features.forEach(f => this.features[f] = true);
         disabled_features.forEach(f => this.features[f] = false);
         Object.assign(this.extraOptions, bbExtraOptions, xExtraOptions);
+    }
+    public getCustomPluginsByType<T extends object = any>(type: string, defaultValue: T = {} as T): T {
+        const customPaths = [
+            `${this.absoluteTargetDir}/.genjs/${type}`,
+            `${this.absoluteTargetDir}/.genjs/${type.toLowerCase()}`,
+            `${this.absoluteTargetDir}/${type}`,
+            `${this.absoluteTargetDir}/${type.toLowerCase()}`,
+        ];
+        const customPath = customPaths.find(d => fs.existsSync(d) || fs.existsSync(`${d}.js`));
+        if (!customPath) return defaultValue;
+        const value = require(customPath);
+        if (!value || ('object' !== typeof value)) return defaultValue;
+        return value;
     }
     public getAsset(type: string, name: string) {
         return this.assetFetcher(type, name);

@@ -1,9 +1,9 @@
 // noinspection JSUnusedLocalSymbols
-export function indexed(d: any, name: string, schema: any, ctx: any) {
+export function parse(d: any, name: string, schema: any, ctx: any) {
     if (!/^@/.test(d.type)) return;
 
     d.type = d.type.substr(1);
     d.index.push({name});
 }
 
-export default indexed
+export default {priority: 60, parse}
