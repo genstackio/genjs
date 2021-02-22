@@ -477,6 +477,18 @@ export default class MicroserviceType {
             requirements['updateRefs'] = true;
             return `    ${conditionCode || ''}await updateRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['targetIdField'] || config['idField']});`
         }
+        if ('@create-stats' === type) {
+            requirements['stats'] = true;
+            return `    ${conditionCode || ''}await stats(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, 'create', result, query);`
+        }
+        if ('@update-stats' === type) {
+            requirements['stats'] = true;
+            return `    ${conditionCode || ''}await stats(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, 'update', result, query);`
+        }
+        if ('@delete-stats' === type) {
+            requirements['stats'] = true;
+            return `    ${conditionCode || ''}await stats(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, 'delete', result, query);`
+        }
         if (!rawOpts && '@operation' === type) {
             requirements['call'] = true;
             return `    ${conditionCode || ''}await call('${config['operation']}', ${this.stringifyForHook(config['params'], options)});`;

@@ -46,6 +46,16 @@ export default class MicroserviceTypeOperation {
                 listener
             )
         ;
+        const registerStatEventListener = (v, operation, listener) => {
+            ((<any>v).track || []).filter(track => track.on.slice(- operation.length - 1) === `_${operation}`).forEach(track => {
+                microserviceType.microservice.package.registerEventListener(
+                    (<any>track).on,
+                    {join: track.join, action: track.action, ...listener}
+                )
+
+            })
+        }
+        ;
         const opType = as || name;
         switch (opType) {
             case 'create':
@@ -63,6 +73,15 @@ export default class MicroserviceTypeOperation {
                     microserviceType.registerHook(name, 'after', {type: '@create-owned-items', config: {...v, field: k, mode: 'post'}})
                 );
                 this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
+                Object.entries(model.statFields || {}).forEach(([k, v]: [string, any]) =>
+                    registerStatEventListener(v, 'create', {
+                        type: '@create-stats',
+                        config: {
+                            name: microserviceType.name,
+                            key: k,
+                        },
+                    })
+                );
                 break;
             case 'update':
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
@@ -87,6 +106,15 @@ export default class MicroserviceTypeOperation {
                 );
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@update-owned-items', config: {...v, field: k, mode: 'post'}})
+                );
+                Object.entries(model.statFields || {}).forEach(([k, v]: [string, any]) =>
+                    registerStatEventListener(v, 'update', {
+                        type: '@update-stats',
+                        config: {
+                            name: microserviceType.name,
+                            key: k,
+                        },
+                    })
                 );
                 break;
             case 'get':
@@ -115,6 +143,15 @@ export default class MicroserviceTypeOperation {
                 );
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@delete-owned-items', config: {...v, field: k, mode: 'post'}})
+                );
+                Object.entries(model.statFields || {}).forEach(([k, v]: [string, any]) =>
+                    registerStatEventListener(v, 'delete', {
+                        type: '@delete-stats',
+                        config: {
+                            name: microserviceType.name,
+                            key: k,
+                        },
+                    })
                 );
                 break;
             default:

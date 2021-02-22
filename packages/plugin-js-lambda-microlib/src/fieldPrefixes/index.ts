@@ -6,3 +6,4 @@ export {default as storageAttribute}  from './storageAttribute';
 export {default as storage}  from './storage';
 export {default as fingerprint}  from './fingerprint';
 export {default as image}  from './image';
+export {default as stat}  from './stat';

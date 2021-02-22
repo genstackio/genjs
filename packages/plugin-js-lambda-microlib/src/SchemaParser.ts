@@ -57,6 +57,7 @@ export default class SchemaParser {
             froms: {},
             requires: {},
             converters: {},
+            statFields: {},
             shortName: (def.name || '').replace(/^.+_([^_]+)$/, '$1'),
         };
         this.parseAttributes(def, schema);
@@ -112,7 +113,7 @@ export default class SchemaParser {
                 upper = false, lower = false, transform = undefined, reference = undefined, ownedReferenceList = undefined, refAttribute = undefined,
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
                 pretransform = undefined, convert = undefined, mutate = undefined,
-                dynamic = undefined, from = undefined, requires = undefined,
+                dynamic = undefined, from = undefined, requires = undefined, stat = undefined,
             } = def;
             const detectedRequires = this.buildDetectedRequires(def);
             acc.fields[k] = {
@@ -164,6 +165,7 @@ export default class SchemaParser {
                 (acc.prefetchs['update'] = acc.prefetchs['update'] || {})[dr] = true;
             })
             from && (acc.froms[k] = from) && (acc.dynamics[k] = {type: '@from', config: {name: from}});
+            (undefined !== stat) && (acc.statFields[k] = stat);
             if (!acc.transformers[k].length) delete acc.transformers[k];
             if (!acc.authorizers[k].length) delete acc.authorizers[k];
             if (!acc.pretransformers[k].length) delete acc.pretransformers[k];
@@ -172,6 +174,7 @@ export default class SchemaParser {
             if (!acc.dynamics[k]) delete acc.dynamics[k];
             if (!acc.requires[k] || !acc.requires[k].length) delete acc.requires[k];
             if (!acc.froms[k]) delete acc.froms[k];
+            if (!acc.statFields[k]) delete acc.statFields[k];
             return acc;
         }, schema);
     }
