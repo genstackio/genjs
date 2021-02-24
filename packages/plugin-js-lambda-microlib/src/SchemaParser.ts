@@ -167,7 +167,7 @@ export default class SchemaParser {
                 acc.targetFields[v.targetField] = true;
                 acc.values[v.targetField] = acc.updateValues[v.targetField] = {
                     type: '@ref-attribute-field',
-                    config: acc.multiRefAttributeTargetFields[v.targetField]?.length
+                    config: (acc.multiRefAttributeTargetFields || {})[v.targetField]?.length
                         ? {
                             sources: acc.multiRefAttributeTargetFields[v.targetField].map(xxx => ({
                                 key: xxx.parentField,
