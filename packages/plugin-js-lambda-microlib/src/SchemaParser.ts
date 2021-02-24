@@ -28,61 +28,17 @@ export default class SchemaParser {
             , {} as any) as any;
     }
     parse(def: any): any {
-        def = {name: 'unknown', shortName: 'unknown', attributes: {}, operations: {}, indexes: {}, hooks: {}, ...def};
-        const schema = {
-            primaryKey: <any>undefined,
-            fields: {},
-            privateFields: {},
-            requiredFields: {},
-            validators: {},
-            values: {},
-            updateValues: {},
-            defaultValues: {},
-            updateDefaultValues: {},
-            indexes: {},
-            volatileFields: {},
-            transformers: {},
-            referenceFields: {},
-            ownedReferenceListFields: {},
-            refAttributeFields: {},
-            hooks: def.hooks,
-            name: def.name,
-            prefetchs: {},
-            autoTransitionTo: {},
-            cascadeValues: {},
-            authorizers: {},
-            mutators: {},
-            pretransformers: {},
-            dynamics: {},
-            froms: {},
-            requires: {},
-            converters: {},
-            statFields: {},
-            shortName: (def.name || '').replace(/^.+_([^_]+)$/, '$1'),
-        };
+        def = {name: 'unknown', attributes: {}, operations: {}, ...def};
+        const schema = this.createSchema(def);
         this.parseAttributes(def, schema);
         this.parseRefAttributeFields(def, schema);
-        this.parseIndexes(def, schema);
         this.parseOperations(def, schema);
-        return Object.entries(schema).reduce((acc, [k, v]) => {
-            if (undefined === v) return acc;
-            if (null === v) return acc;
-            if (Array.isArray(v) && (0 === v.length)) return acc;
-            if (('object' === typeof v) && (0 === Object.keys(v).length)) return acc;
-            acc[k] = v;
-            return acc;
-        }, {} as any);
+        return this.cleanSchema(schema);
     }
     parseOperations(def: any, schema: any) {
         Object.entries(def.operations).reduce((acc, [k, d]) => {
             if (!d || !(<any>d)['prefetch']) return acc;
             Object.assign(acc.prefetchs[k] = acc.prefetchs[k] || {}, (<any>d).prefetch.reduce((acc2, k) => Object.assign(acc2, {[k]: true}), {}));
-            return acc;
-        }, schema);
-    }
-    parseIndexes(def: any, schema: any) {
-        Object.entries(def.indexes || {}).reduce((acc, [k, v]) => {
-            acc.indexes[k] = [...(acc.indexes[k] || []), ...<any>v];
             return acc;
         }, schema);
     }
@@ -123,18 +79,26 @@ export default class SchemaParser {
             };
             acc.authorizers[k] = [];
             acc.requires[k] = [];
+            acc.multiRefAttributeTargetFields[k] = [];
+            acc.indexes[k] = acc.indexes[k] || [];
             acc.mutators[k] = mutate ? (Array.isArray(mutate) ? [...mutate] : [mutate]) : [];
             acc.pretransformers[k] = pretransform ? (Array.isArray(pretransform) ? [...pretransform] : [pretransform]) : [];
             acc.converters[k] = convert ? (Array.isArray(convert) ? [...convert] : [convert]) : [];
             acc.transformers[k] = transform ? (Array.isArray(transform) ? [...transform] : [transform]) : [];
             required && (acc.requiredFields[k] = true);
             if (refAttribute) {
-                if (!acc.refAttributeFields[refAttribute.parentField]) acc.refAttributeFields[refAttribute.parentField] = [];
-                acc.refAttributeFields[refAttribute.parentField].push({
-                    sourceField: refAttribute.sourceField,
-                    targetField: k,
-                    field: refAttribute.field
-                });
+                const refAttributes = Array.isArray(refAttribute) ? refAttribute : [refAttribute];
+                refAttributes.forEach(ra => {
+                    if (!acc.refAttributeFields[ra.parentField]) acc.refAttributeFields[ra.parentField] = [];
+                    acc.refAttributeFields[ra.parentField].push({
+                        sourceField: ra.sourceField,
+                        targetField: k,
+                        field: ra.field
+                    });
+                })
+                if (refAttributes.length > 1) {
+                    acc.multiRefAttributeTargetFields[k] = [...refAttributes];
+                }
             }
             (undefined !== reference) && (acc.referenceFields[k] = reference);
             (undefined !== ownedReferenceList) && (acc.ownedReferenceListFields[k] = ownedReferenceList);
@@ -152,7 +116,7 @@ export default class SchemaParser {
             (undefined !== cascadeClear) && (acc.cascadeValues[k] = this.mergeCascades(acc.cascadeValues[k], cascadeClear));
             (undefined !== permissions) && (acc.authorizers[k].push({type: '@permissions', config: {permissions}}));
             internal && (acc.privateFields[k] = true);
-            index && (index.length > 0) && (acc.indexes[k] = index);
+            index && (index.length > 0) && (acc.indexes[k] = [...(acc.indexes[k] || []), ...index]);
             volatile && (acc.volatileFields[k] = true);
             primaryKey && (acc.primaryKey = k);
             upper && (acc.transformers[k].push({type: '@upper'}));
@@ -166,6 +130,7 @@ export default class SchemaParser {
             })
             from && (acc.froms[k] = from) && (acc.dynamics[k] = {type: '@from', config: {name: from}});
             (undefined !== stat) && (acc.statFields[k] = stat);
+            if (!acc.indexes[k].length) delete acc.indexes[k];
             if (!acc.transformers[k].length) delete acc.transformers[k];
             if (!acc.authorizers[k].length) delete acc.authorizers[k];
             if (!acc.pretransformers[k].length) delete acc.pretransformers[k];
@@ -175,6 +140,7 @@ export default class SchemaParser {
             if (!acc.requires[k] || !acc.requires[k].length) delete acc.requires[k];
             if (!acc.froms[k]) delete acc.froms[k];
             if (!acc.statFields[k]) delete acc.statFields[k];
+            if (!acc.multiRefAttributeTargetFields[k].length) delete acc.multiRefAttributeTargetFields[k];
             return acc;
         }, schema);
     }
@@ -201,11 +167,19 @@ export default class SchemaParser {
                 acc.targetFields[v.targetField] = true;
                 acc.values[v.targetField] = acc.updateValues[v.targetField] = {
                     type: '@ref-attribute-field',
-                    config: {
-                        key: k,
-                        prefix: this.buildTypeName(schema.referenceFields[k].reference, schema.name),
-                        sourceField: v.sourceField,
-                    }
+                    config: acc.multiRefAttributeTargetFields[v.targetField]?.length
+                        ? {
+                            sources: acc.multiRefAttributeTargetFields[v.targetField].map(xxx => ({
+                                key: xxx.parentField,
+                                prefix: this.buildTypeName(schema.referenceFields[xxx.parentField].reference, schema.name),
+                                sourceField: xxx.sourceField,
+                            })),
+                          }
+                        : {
+                            key: k,
+                            prefix: this.buildTypeName(schema.referenceFields[k].reference, schema.name),
+                            sourceField: v.sourceField,
+                          }
                 };
                 return acc;
             }, {targetFields: [], sourceFields: [], values: [], updateValues: []});
@@ -290,6 +264,50 @@ export default class SchemaParser {
         return {
             type: '@reference',
             config,
+        };
+    }
+    protected cleanSchema(schema: any): any {
+        return Object.entries(schema).reduce((acc, [k, v]) => {
+            if (undefined === v) return acc;
+            if (null === v) return acc;
+            if (Array.isArray(v) && (0 === v.length)) return acc;
+            if (('object' === typeof v) && (0 === Object.keys(v as any).length)) return acc;
+            acc[k] = v;
+            return acc;
+        }, {} as any);
+    }
+    protected createSchema({indexes = {}, hooks = {}, name, shortName = undefined}): any {
+        return {
+            primaryKey: <any>undefined,
+            fields: {},
+            privateFields: {},
+            requiredFields: {},
+            validators: {},
+            values: {},
+            updateValues: {},
+            defaultValues: {},
+            updateDefaultValues: {},
+            indexes,
+            volatileFields: {},
+            transformers: {},
+            referenceFields: {},
+            ownedReferenceListFields: {},
+            refAttributeFields: {},
+            hooks,
+            name,
+            prefetchs: {},
+            autoTransitionTo: {},
+            cascadeValues: {},
+            authorizers: {},
+            mutators: {},
+            pretransformers: {},
+            dynamics: {},
+            froms: {},
+            requires: {},
+            converters: {},
+            statFields: {},
+            multiRefAttributeTargetFields: {},
+            shortName: shortName || (name || '').replace(/^.+_([^_]+)$/, '$1'),
         };
     }
 }
