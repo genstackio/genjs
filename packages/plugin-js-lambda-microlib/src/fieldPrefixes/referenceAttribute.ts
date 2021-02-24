@@ -3,8 +3,8 @@ function parse(type, tokens, d: any, name: string, schema: any, ctx: any) {
     const [parentField, sourceField, format = 'string'] = tokens;
     const sources: {parentField: string, sourceField: string, field: string}[] = [];
     if (-1 !== parentField.indexOf(',')) {
-        const xx = parentField.split(/\*,\*/g);
-        const yy = sourceField.split(/\*,\*/g);
+        const xx = parentField.split(',');
+        const yy = sourceField.split(',');
         xx.forEach((x, i) => {
             sources.push({parentField: x, sourceField: (i < yy.length) ? yy[i] : yy[yy.length - 1], field: name});
         });
