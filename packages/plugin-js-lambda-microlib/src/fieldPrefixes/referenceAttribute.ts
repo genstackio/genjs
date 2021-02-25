@@ -6,15 +6,20 @@ function parse(type, tokens, d: any, name: string, schema: any, ctx: any) {
         const xx = parentField.split(',');
         const yy = sourceField.split(',');
         xx.forEach((x, i) => {
-            sources.push({parentField: x, sourceField: (i < yy.length) ? yy[i] : yy[yy.length - 1], field: name});
+            sources.push({parentField: x, sourceField: convertSourceField((i < yy.length) ? yy[i] : yy[yy.length - 1]), field: name});
         });
     } else {
-        sources.push({parentField, sourceField, field: name});
+        sources.push({parentField, sourceField: convertSourceField(sourceField), field: name});
     }
     d.refAttribute = (sources.length > 1) ? sources : sources[0];
     applyFormat(format, d);
 }
 
+function convertSourceField(v) {
+    v = v.split('|');
+    if (1 === v.length) return v[0];
+    return v;
+}
 function applyFormat(format, d: any) {
     switch (format) {
         case 'number':

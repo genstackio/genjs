@@ -163,7 +163,13 @@ export default class SchemaParser {
     parseRefAttributeFields(def: any, schema: any) {
         Object.entries(schema.refAttributeFields).forEach(([k, vList]) => {
             const x = (<any[]>vList).reduce((acc, v) => {
-                acc.sourceFields[v.sourceField] = true;
+                if (Array.isArray(v.sourceField)) {
+                    v.sourceField.forEach(sf => {
+                        acc.sourceFields[sf] = true;
+                    })
+                } else {
+                    acc.sourceFields[v.sourceField] = true;
+                }
                 acc.targetFields[v.targetField] = true;
                 acc.values[v.targetField] = acc.updateValues[v.targetField] = {
                     type: '@ref-attribute-field',
