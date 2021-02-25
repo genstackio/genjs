@@ -31,6 +31,11 @@ function applyFormat(format, d: any) {
         case 'string':
             d.type = 'string';
             break;
+        case 'list':
+            d.type = 'string';
+            d.list = true;
+            d.transform = {type: '@list'};
+            break;
         default:
             if ('t>' === format.slice(0, 2)) {
                 d.transform = [...(d.transform ? (Array.isArray(d.transform) ? d.transform : [d.transform]) : []), {type: format.slice(2)}];
