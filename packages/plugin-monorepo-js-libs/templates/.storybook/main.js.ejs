@@ -25,6 +25,15 @@ module.exports = {
                 presets: ['@babel/preset-typescript', '@babel/preset-react'],
             },
         });
+<% if (('undefined' !== typeof postcss) && !!postcss) { %>
+        config.module.rules.push({
+            test: /\.css$/,
+            loader: require.resolve('postcss-loader'),
+            options: {
+                sourceMap: true,
+            },
+        });
+<% } %>
         config.resolve.extensions.push('.ts', '.tsx');
         config.module.rules = config.module.rules.map(rule => {
             if (
