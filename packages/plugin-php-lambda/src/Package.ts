@@ -106,6 +106,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-dev', 'composer-test', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'composer-test', {local: true})
             .addPredefinedTarget('test-ci', 'composer-test', {ci: true})
+            .addExportedVar('CI')
         ;
         if (!!vars.env_local_required) {
             t

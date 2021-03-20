@@ -80,6 +80,7 @@ export default class Package extends AbstractPackage {
             .setDefaultTarget('install')
             .addMetaTarget('deploy', ['push'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local')
+            .addExportedVar('CI')
         ;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {

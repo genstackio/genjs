@@ -35,6 +35,7 @@ export type GlobalVarConfig = {
 
 export type ExportedVarConfig = {
     name: string,
+    value?: string
 };
 
 export type DefineConfig = {
@@ -98,7 +99,15 @@ export class MakefileTemplate extends AbstractFileTemplate {
         return this.addGlobalVar(config.name, config.defaultValue, config.value);
     }
     addExportedVarFromConfig(config: ExportedVarConfig): this {
-        return this.addExportedVar(config.name);
+        return this.addExportedVar(config.name, config.value);
+    }
+    addExportedVars(configs: (ExportedVarConfig|string|undefined|false)[]): this {
+        configs.forEach(v => {
+            if (!v) return;
+            if ('string' === typeof v) this.addExportedVar(v as string);
+            else this.addExportedVarFromConfig(v as ExportedVarConfig);
+        });
+        return this;
     }
     addDefineFromConfig(config: DefineConfig): this {
         return this.addDefine(config.name, config.code);
@@ -135,7 +144,9 @@ export class MakefileTemplate extends AbstractFileTemplate {
             g.targets.sort(nameSorter);
         });
         const globalVars = Object.values(this.globalVars.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name, type: g.defaultValue ? '?=' : '=', value: g.value || g.defaultValue}));
-        const exportedVars = Object.values(this.exportedVars.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name}));
+        const ex = this.exportedVars;
+        ex.sort((a, b) => (a && a.name) ? (a.name > b.name ? 1 : ((a.name < b.name) ? -1 : 0)) : 1)
+        const exportedVars = Object.values(ex.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name, value: g.value}));
         const defines = Object.values(this.defines.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((d: any) => ({name: d.name, code: d.code}));
         return {
             globalVars,
@@ -163,8 +174,8 @@ export class MakefileTemplate extends AbstractFileTemplate {
         this.globalVars.push({name, defaultValue, value});
         return this;
     }
-    addExportedVar(name: string): this {
-        this.exportedVars.push({name});
+    addExportedVar(name: string, value: string|undefined = undefined): this {
+        this.exportedVars.push({name, value});
         return this;
     }
     addPredefinedTarget(name: string, type?: string, options: any = {}, extraSteps: string[] = [], extraDependencies: string[] = []): this {

@@ -74,6 +74,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('install-root', 'yarn-install')
             .addMetaTarget('install', ['install-root', withLayers && 'install-layers', withModules && 'install-modules'].filter(x => !!x) as string[])
             .setDefaultTarget('install')
+            .addExportedVar('CI')
         ;
         if (withTerraformDocs && (withLayers || withModules)) {
             t

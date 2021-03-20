@@ -130,6 +130,7 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('install', ['install-root', 'install-packages', 'build'])
             .addMetaTarget('clean', ['clean-lib', 'clean-modules', 'clean-coverage', 'clean-buildinfo'])
             .setDefaultTarget('install')
+            .addExportedVar('CI')
         ;
         if (vars.storybooks) {
             t

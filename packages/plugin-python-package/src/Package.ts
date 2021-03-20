@@ -84,6 +84,7 @@ export default class Package extends AbstractPackage {
             .addTarget('test-ci', ['source venv/bin/activate && python -m unittest tests/*.py -v'])
             .addTarget('test-cov', ['source venv/bin/activate && python -m unittest tests/*.py -v'])
             .setDefaultTarget('install')
+            .addExportedVar('CI')
         ;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {

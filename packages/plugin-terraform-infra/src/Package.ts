@@ -99,6 +99,12 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('outputs', 'outputs')
             .addMetaTarget('provision', ['init', 'sync'])
             .addMetaTarget('provision-full', ['init-full', 'sync-full'])
+            .addExportedVars([
+                'CI',
+                'TF_LOG', 'TF_LOG_PATH', 'TF_INPUT', 'TF_CLI_ARGS', 'TF_DATA_DIR', 'TF_WORKSPACE', 'TF_IN_AUTOMATION',
+                'TF_REGISTRY_DISCOVERY_RETRY', 'TF_REGISTRY_CLIENT_TIMEOUT', 'TF_CLI_CONFIG_FILE', 'TF_IGNORE',
+                'TF_PLUGIN_CACHE_DIR',
+            ])
         ;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {

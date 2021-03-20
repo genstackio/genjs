@@ -131,6 +131,7 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('deploy', ['deploy-assets', 'invalidate-cache'])
             .addTarget('start', [`SYMFONY_DEBUG=true SYMFONY_ENV=dev app/console server:run --ansi -n -p ${this.getParameter('startPort')}`], [], {sourceLocalEnvLocal: !!vars.env_local_required})
             .addTarget('build-cache', [`SYMFONY_ENV=$(symfony_env) app/console cache:warmup --ansi -n --no-debug`], [], {sourceLocalEnvLocal: !!vars.env_local_required})
+            .addExportedVar('CI')
         ;
         const buildSteps = ['build-assets', 'clean-web-bundles', 'build-package'];
         if (vars.download_on_build) {

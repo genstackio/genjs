@@ -53,6 +53,7 @@ export default class Package extends AbstractPackage {
             .addShellTarget('clean', './bin/clean')
             .addShellTarget('install', './bin/install')
             .setDefaultTarget('install')
+            .addExportedVar('CI')
         ;
         vars.deployable && t.addTarget('deploy');
         return t;

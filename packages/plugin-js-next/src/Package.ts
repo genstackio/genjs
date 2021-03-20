@@ -104,6 +104,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true, coverage: false})
             .addPredefinedTarget('validate', 'yarn-lint')
+            .addExportedVar('CI')
         ;
         if (vars.publish_image) {
             t

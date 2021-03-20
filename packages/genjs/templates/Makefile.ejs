@@ -5,7 +5,7 @@
 <% } -%>
 <% if (exportedVars.length) { -%>
 <% exportedVars.forEach(exportedVar => { -%>
-export <%- exportedVar.name %>
+export <%- exportedVar.name %><%- (undefined === exportedVar.value) ? '' : `=${exportedVar.value}` %>
 <% }) %>
 <% } -%>
 <% if (defines.length) { -%>

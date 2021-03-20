@@ -154,7 +154,30 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('install', ['install-root', ...installableProjects.map(p => `install-${p.name}`)])
             .addTarget('start', [vars.startCmd || `npx concurrently -n ${startableProjects.map(p => p.name)} ${startableProjects.map(p => `"make start-${p.name}"`).join(' ')}`])
             .setDefaultTarget('install')
+            .addExportedVar('CI')
         ;
+        this.hasFeature('github_vars') && t.addExportedVars([
+            'GITHUB_WORKFLOW', 'GITHUB_RUN_ID', 'GITHUB_RUN_NUMBER', 'GITHUB_ACTION', 'GITHUB_ACTIONS',
+            'GITHUB_ACTOR', 'GITHUB_REPOSITORY', 'GITHUB_EVENT_NAME', 'GITHUB_EVENT_PATH', 'GITHUB_WORKSPACE',
+            'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_HEAD_REF', 'GITHUB_BASE_REF', 'GITHUB_SERVER_URL', 'GITHUB_API_URL',
+            'GITHUB_GRAPHQL_URL',
+        ]);
+        this.hasFeature('aws_cli_vars') && t.addExportedVars([
+            'AWS_ACCESS_KEY_ID', 'AWS_CA_BUNDLE', 'AWS_CLI_AUTO_PROMPT', 'AWS_CLI_FILE_ENCODING', 'AWS_CONFIG_FILE',
+            'AWS_DEFAULT_OUTPUT', 'AWS_DEFAULT_REGION', 'AWS_EC2_METADATA_DISABLED', 'AWS_MAX_ATTEMPTS', 'AWS_PAGER',
+            'AWS_RETRY_MODE', 'AWS_ROLE_SESSION_NAME', 'AWS_SECRET_ACCESS_KEY', 'AWS_SESSION_TOKEN', 'AWS_SHARED_CREDENTIALS_FILE',
+            'AWS_STS_REGIONAL_ENDPOINTS',
+        ]);
+        this.hasFeature('linux_vars') && t.addExportedVars([
+            'USER', 'SHELL', 'HOSTNAME', 'HOME', 'LANG', 'TZ', 'TERM', 'EDITOR', 'OSTYPE', 'MACHTYPE',
+        ]);
+        this.hasFeature('terraform_shared_cache') && t.addExportedVar(
+            'TF_PLUGIN_CACHE_DIR', '$(shell pwd)/.terraform/caches/plugins'
+        );
+        this.hasFeature('terraform_vars') && t.addExportedVars([
+            'TF_LOG', 'TF_LOG_PATH', 'TF_INPUT', 'TF_CLI_ARGS', 'TF_DATA_DIR', 'TF_WORKSPACE', 'TF_IN_AUTOMATION',
+            'TF_REGISTRY_DISCOVERY_RETRY', 'TF_REGISTRY_CLIENT_TIMEOUT', 'TF_CLI_CONFIG_FILE', 'TF_IGNORE',
+        ]);
         if (0 < migratableProjects.length) {
             t.addMetaTarget('migrate', [...migratableProjects.map(p => `migrate-${p.name}`)]);
         } else {

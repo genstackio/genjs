@@ -1,7 +1,7 @@
 prefix ?= myprefix
 
-export a
 export B_C
+export a
 
 all: install
 

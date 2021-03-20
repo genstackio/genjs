@@ -97,7 +97,8 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
-            ;
+            .addExportedVar('CI')
+        ;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
         return new TerraformToVarsTemplate(vars);
