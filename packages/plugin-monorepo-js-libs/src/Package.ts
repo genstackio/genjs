@@ -131,6 +131,7 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('clean', ['clean-lib', 'clean-modules', 'clean-coverage', 'clean-buildinfo'])
             .setDefaultTarget('install')
             .addExportedVar('CI')
+            .addExportedVar('FORCE_COLOR')
         ;
         if (vars.storybooks) {
             t

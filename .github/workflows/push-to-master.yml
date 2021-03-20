@@ -34,7 +34,10 @@ jobs:
       - name: Install
         shell: 'script -q -e -c "bash {0}"'
         run: make install
-
+        env:
+          FORCE_COLOR: 3
       - name: Test
         shell: 'script -q -e -c "bash {0}"'
         run: make test
+        env:
+          FORCE_COLOR: 3

@@ -2,6 +2,7 @@ b ?= master
 f ?= $(subst plugin-,,$(p))
 
 export CI
+export FORCE_COLOR
 
 all: install
 
