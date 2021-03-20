@@ -32,9 +32,9 @@ jobs:
           branch: ${{github.base_ref}}
 
       - name: Install
+        shell: 'script -q -e -c "bash {0}"'
         run: make install
 
       - name: Test
+        shell: 'script -q -e -c "bash {0}"'
         run: make test
-        env:
-          CI: true
