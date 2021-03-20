@@ -1,6 +1,8 @@
 b ?= master
 f ?= $(subst plugin-,,$(p))
 
+export CI
+
 all: install
 
 build:
