@@ -38,11 +38,17 @@ jobs:
           env: <%- forced_env %>
 <% } %>
       - name: Install
+        shell: 'script -q -e -c "bash {0}"'
         run: make install
+        env:
+          FORCE_COLOR: 3
+          CI: true
 
       - name: Test
+        shell: 'script -q -e -c "bash {0}"'
         run: make test
         env:
+          FORCE_COLOR: 3
           CI: true
 
       - name: Add AWS Account Profile (default)
@@ -60,8 +66,16 @@ jobs:
           role: ${{env.AWS_DEPLOY_ACCOUNT_ROLE_ARN}}
 
       - name: Deploy
+        shell: 'script -q -e -c "bash {0}"'
         run: make deploy env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true
 
       - name: Migrate
+        shell: 'script -q -e -c "bash {0}"'
         run: make migrate env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true
 

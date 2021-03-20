@@ -35,11 +35,17 @@ jobs:
           branch: ${{github.base_ref}}
 
       - name: Install
+        shell: 'script -q -e -c "bash {0}"'
         run: make install
+        env:
+          FORCE_COLOR: 3
+          CI: true
 
       - name: Test
+        shell: 'script -q -e -c "bash {0}"'
         run: make test
         env:
+          FORCE_COLOR: 3
           CI: true
 
       - name: Add AWS Account Profile (default)
@@ -64,10 +70,22 @@ jobs:
           terraform_wrapper: false
 
       - name: Init
+        shell: 'script -q -e -c "bash {0}"'
         run: make infra-init env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true
 
       - name: Build (Pre-Plan)
+        shell: 'script -q -e -c "bash {0}"'
         run: make build-pre-plan env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true
 
       - name: Plan
+        shell: 'script -q -e -c "bash {0}"'
         run: make infra-plan env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true
