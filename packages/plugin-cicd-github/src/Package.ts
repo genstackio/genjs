@@ -13,6 +13,7 @@ export default class Package extends AbstractPackage {
         return {
             package_registry: 'registry.npmjs.org',
             package_registry_secret_var: 'CUSTOM_NPM_TOKEN',
+            github_workflow_job_os: 'ubuntu-18.04'
         };
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
