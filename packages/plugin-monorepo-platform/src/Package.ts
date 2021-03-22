@@ -171,9 +171,12 @@ export default class Package extends AbstractPackage {
         this.hasFeature('linux_vars') && t.addExportedVars([
             'USER', 'SHELL', 'HOSTNAME', 'HOME', 'LANG', 'TZ', 'TERM', 'EDITOR', 'OSTYPE', 'MACHTYPE',
         ]);
-        this.hasFeature('terraform_shared_cache') && t.addExportedVar(
-            'TF_PLUGIN_CACHE_DIR', '$(shell pwd)/.terraform/caches/plugins'
-        );
+        if (this.hasFeature('terraform_shared_cache')) {
+            t.addExportedVar('TF_PLUGIN_CACHE_DIR', '$(shell pwd)/.terraform/caches/plugins');
+            t.addSubTarget('generate-terraform-code', 'infra', 'generate')
+            t.addTarget('ensure-terraform-cache-dir', ['mkdir -p $(TF_PLUGIN_CACHE_DIR)']);
+            t.addMetaTarget('generate-terraform', ['ensure-terraform-cache-dir', 'generate-terraform-code']);
+        }
         this.hasFeature('terraform_vars') && t.addExportedVars([
             'TF_LOG', 'TF_LOG_PATH', 'TF_INPUT', 'TF_CLI_ARGS', 'TF_DATA_DIR', 'TF_WORKSPACE', 'TF_IN_AUTOMATION',
             'TF_REGISTRY_DISCOVERY_RETRY', 'TF_REGISTRY_CLIENT_TIMEOUT', 'TF_CLI_CONFIG_FILE', 'TF_IGNORE',
