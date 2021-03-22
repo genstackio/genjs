@@ -52,10 +52,10 @@ function applyFormat(format, d: any) {
             d.list = true;
             break;
         default:
-            if ('[object]' === format.slice(0, 8)) {
+            if ('[object]>' === format.slice(0, 9)) {
                 d.type = 'object';
                 d.list = true;
-                d.props = JSON.parse(format.slice(8));
+                d.props = convertSimplifiedFormatToObject(format.slice(9));
             } else if ('t>' === format.slice(0, 2)) {
                 d.transform = [...(d.transform ? (Array.isArray(d.transform) ? d.transform : [d.transform]) : []), {type: format.slice(2)}];
                 d.type = 'string';
@@ -66,6 +66,13 @@ function applyFormat(format, d: any) {
     }
 }
 
+function convertSimplifiedFormatToObject(s) {
+    return s.split(/\s*,\s*/).reduce((acc, x) => {
+        const [a, b = undefined] = x.split('=');
+        acc[a] = {type: b || 'string'};
+        return acc;
+    }, {});
+}
 export default {
     prefixes: ['refattr'],
     parse,
