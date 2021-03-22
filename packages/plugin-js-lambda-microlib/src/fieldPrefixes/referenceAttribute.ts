@@ -33,6 +33,9 @@ function applyFormat(format, d: any) {
             d.type = 'string';
             d.upper = true;
             break;
+        case 'boolean':
+            d.type = 'boolean';
+            break;
         case 'string':
             d.type = 'string';
             break;
@@ -41,11 +44,24 @@ function applyFormat(format, d: any) {
             d.list = true;
             d.transform = {type: '@list'};
             break;
+        case 'object':
+            d.type = 'object';
+            break;
+        case '[object]':
+            d.type = 'object';
+            d.list = true;
+            break;
         default:
-            if ('t>' === format.slice(0, 2)) {
+            if ('[object]' === format.slice(0, 8)) {
+                d.type = 'object';
+                d.list = true;
+                d.props = JSON.parse(format.slice(8));
+            } else if ('t>' === format.slice(0, 2)) {
                 d.transform = [...(d.transform ? (Array.isArray(d.transform) ? d.transform : [d.transform]) : []), {type: format.slice(2)}];
+                d.type = 'string';
+            } else {
+                d.type = 'string';
             }
-            d.type = 'string';
             break;
     }
 }
