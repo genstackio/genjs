@@ -70,12 +70,14 @@ export default class SchemaParser {
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
                 pretransform = undefined, convert = undefined, mutate = undefined,
                 dynamic = undefined, from = undefined, requires = undefined, stat = undefined,
+                props = undefined,
             } = def;
             const detectedRequires = this.buildDetectedRequires(def);
             acc.fields[k] = {
                 type, primaryKey, volatile,
                 ...((index && index.length > 0) ? {index} : {}),
                 ...(list ? {list} : {}),
+                ...(props ? {props} : {}),
             };
             acc.authorizers[k] = [];
             acc.requires[k] = [];
