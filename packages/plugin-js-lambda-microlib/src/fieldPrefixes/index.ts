@@ -8,3 +8,4 @@ export {default as fingerprint}  from './fingerprint';
 export {default as image}  from './image';
 export {default as stat}  from './stat';
 export {default as constant}  from './constant';
+export {default as objectList}  from './objectList';

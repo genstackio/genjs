@@ -1,4 +1,6 @@
 // noinspection JSUnusedLocalSymbols
+import {convertSimplifiedFormatToObject} from "../utils";
+
 function parse(type, tokens, d: any, name: string, schema: any, ctx: any) {
     const [parentField, sourceField, format = 'string'] = tokens;
     const sources: {parentField: string, sourceField: string, field: string}[] = [];
@@ -66,13 +68,6 @@ function applyFormat(format, d: any) {
     }
 }
 
-function convertSimplifiedFormatToObject(s) {
-    return s.split(/\s*,\s*/).reduce((acc, x) => {
-        const [a, b = undefined] = x.split('=');
-        acc[a] = {type: b || 'string'};
-        return acc;
-    }, {});
-}
 export default {
     prefixes: ['refattr'],
     parse,
