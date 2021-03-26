@@ -189,11 +189,11 @@ export default class Package extends AbstractPackage {
             t.addNoopTarget('migrate');
         }
         t.addTarget('infra-layer-plugins-upgrade', [
-            `echo "Cleaning Terraform plugins directory: $(layer)`,
+            `echo "Cleaning Terraform plugins directory: $(layer)"`,
             ...sortedProjectEnvs.map(e => `rm -rf infra/environments/${e.id}/$(layer)/.terraform/(plugins|providers)`),
-            `echo "Fetching Terraform plugins: $(layer)`,
+            `echo "Fetching Terraform plugins: $(layer)"`,
             ...sortedProjectEnvs.map(e => `make infra-init-upgrade layer=$(layer) env=${e.id}`),
-            `echo "Initializing: $(layer)`,
+            `echo "Initializing: $(layer)"`,
             ...sortedProjectEnvs.map(e => `make infra-init layer=$(layer) env=${e.id}`),
         ]);
         Object.keys(vars.project_envs || {}).forEach(env => {
