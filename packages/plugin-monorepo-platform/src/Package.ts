@@ -190,7 +190,7 @@ export default class Package extends AbstractPackage {
         }
         t.addTarget('infra-layer-plugins-upgrade', [
             `echo "Cleaning Terraform plugins directory: $(layer)"`,
-            ...sortedProjectEnvs.map(e => `rm -rf infra/environments/${e.id}/$(layer)/(.terraform/plugins|.terraform/providers|.terraform.lock.hcl)`),
+            ...sortedProjectEnvs.map(e => `rm -rf infra/environments/${e.id}/$(layer)/.terraform/plugins infra/environments/${e.id}/$(layer)/.terraform/providers infra/environments/${e.id}/$(layer)/.terraform.lock.hcl`),
             `echo "Fetching Terraform plugins: $(layer)"`,
             ...sortedProjectEnvs.map(e => `make infra-init-upgrade layer=$(layer) env=${e.id}`),
             `echo "Initializing: $(layer)"`,
