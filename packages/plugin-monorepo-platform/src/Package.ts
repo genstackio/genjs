@@ -7,7 +7,7 @@ import {
     TerraformToVarsTemplate,
 } from '@genjs/genjs';
 import RootReadmeTemplate from "./RootReadmeTemplate";
-import {buildProjectsVars} from "./utils";
+import {buildProjectEnvsVars, buildProjectsVars} from "./utils";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -120,6 +120,7 @@ export default class Package extends AbstractPackage {
             startableProjects,
             testableProjects,
         } = buildProjectsVars(vars);
+        const {sortedProjectEnvs} = buildProjectEnvsVars(vars);
         const t = new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'develop')
@@ -187,6 +188,14 @@ export default class Package extends AbstractPackage {
         } else {
             t.addNoopTarget('migrate');
         }
+        t.addTarget('infra-layer-plugins-upgrade', [
+            `echo "Cleaning Terraform plugins directory: $(layer)`,
+            ...sortedProjectEnvs.map(e => `rm -rf infra/environments/${e.id}/$(layer)/.terraform/(plugins|providers)`),
+            `echo "Fetching Terraform plugins: $(layer)`,
+            ...sortedProjectEnvs.map(e => `make infra-init-upgrade layer=$(layer) env=${e.id}`),
+            `echo "Initializing: $(layer)`,
+            ...sortedProjectEnvs.map(e => `make infra-init layer=$(layer) env=${e.id}`),
+        ]);
         Object.keys(vars.project_envs || {}).forEach(env => {
             t.addTarget(`switch-${env}`, generateEnvLocalableProjects.map(p => `make -C . generate-env-local-${p.name} env=${env}`))
         });
