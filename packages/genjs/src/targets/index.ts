@@ -16,6 +16,7 @@ export * from './TflayerInitTarget';
 export * from './TflayerPlanTarget';
 export * from './TflayerListLayersTarget';
 export * from './TflayerProvidersLockTarget';
+export * from './TflayerCleanDirsTarget';
 export * from './TflayerProvidersLockDeleteTarget';
 export * from './TflayerInitUpgradeTarget';
 export * from './TflayerInitFullTarget';

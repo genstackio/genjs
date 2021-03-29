@@ -89,6 +89,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('init-upgrade', 'tflayer-init-upgrade')
             .addPredefinedTarget('list-layers', 'tflayer-list-layers')
             .addPredefinedTarget('plan', 'tflayer-plan')
+            .addPredefinedTarget('clean-dirs', 'tflayer-clean-dirs')
             .addPredefinedTarget('refresh', 'tflayer-refresh')
             .addPredefinedTarget('sync', 'tflayer-sync')
             .addPredefinedTarget('sync-full', 'tflayer-sync-full')

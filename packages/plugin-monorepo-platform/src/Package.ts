@@ -141,6 +141,7 @@ export default class Package extends AbstractPackage {
             .addSubTarget('infra-apply', 'infra', 'apply', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-refresh', 'infra', 'refresh', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-update', 'infra', 'update', {env: '$(env)'}, ['generate-terraform'])
+            .addSubTarget('infra-clean-dirs', 'infra', 'clean-dirs', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-lock-providers', 'infra', 'lock-providers', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-list-layers', 'infra', 'list-layers', {env: '$(env)'}, ['generate-terraform'])
             .addSubTarget('infra-init-full', 'infra', 'init-full', {env: '$(env)'}, ['generate-terraform'])
