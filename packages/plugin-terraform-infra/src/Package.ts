@@ -73,7 +73,7 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('env', 'dev')
             .addGlobalVar('layer', '"all"')
@@ -88,7 +88,6 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('init-full-upgrade', 'tflayer-init-full-upgrade')
             .addPredefinedTarget('init-upgrade', 'tflayer-init-upgrade')
             .addPredefinedTarget('list-layers', 'tflayer-list-layers')
-            .addPredefinedTarget('lock-providers', 'tflayer-providers-lock')
             .addPredefinedTarget('plan', 'tflayer-plan')
             .addPredefinedTarget('refresh', 'tflayer-refresh')
             .addPredefinedTarget('sync', 'tflayer-sync')
@@ -107,6 +106,14 @@ export default class Package extends AbstractPackage {
                 'TF_PLUGIN_CACHE_DIR',
             ])
         ;
+        if (vars.disable_delete_terraform_lock_file) {
+            t.addPredefinedTarget('lock-providers', 'tflayer-providers-lock');
+        } else {
+            t.addTarget('delete-provider-lock-file', ['rm -f environments/$(env)/$(layer).terraform.lock.hcl']);
+            t.addPredefinedTarget('lock-providers-base', 'tflayer-providers-lock');
+            t.addMetaTarget('lock-providers', ['delete-provider-lock-file', 'lock-providers-base']);
+        }
+        return t;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
         return new TerraformToVarsTemplate(vars);
