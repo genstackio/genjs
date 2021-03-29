@@ -109,7 +109,7 @@ export default class Package extends AbstractPackage {
         if (vars.disable_delete_terraform_lock_file) {
             t.addPredefinedTarget('lock-providers', 'tflayer-providers-lock');
         } else {
-            t.addTarget('delete-provider-lock-file', ['rm -f environments/$(env)/$(layer).terraform.lock.hcl']);
+            t.addTarget('delete-provider-lock-file', ['rm -f environments/$(env)/$(layer)/.terraform.lock.hcl']);
             t.addPredefinedTarget('lock-providers-base', 'tflayer-providers-lock');
             t.addMetaTarget('lock-providers', ['delete-provider-lock-file', 'lock-providers-base']);
         }
