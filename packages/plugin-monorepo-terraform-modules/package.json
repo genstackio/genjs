@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-monorepo-terraform-modules",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,6 +25,6 @@
     "@genjs/genjs": "^0"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.3.15"
+    "@genjs/genjs": "^0.3.16"
   }
 }
