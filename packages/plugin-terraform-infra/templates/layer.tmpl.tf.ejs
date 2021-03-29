@@ -1,0 +1,63 @@
+terraform {
+  required_version = ">= {{terraform_version}}"
+<% if (('undefined' !== typeof requiredProviders) && (0 < requiredProviders.length)) { %>
+  required_providers {
+<% requiredProviders.forEach(requirement => { %>
+    <%- requirement.name -%> = {source = "<%- requirement.source -%>", version = "<%- requirement.version -%>"}
+<% }) %>
+  }
+<% } %>
+<% if ('undefined' === typeof backend) { %>
+  backend "local" {
+      path = "terraform.tfstate"
+  }
+<% } else if ('remote' === backend) { %>
+  backend "remote" {
+    hostname     = "<%- backend.hostname || 'app.terraform.io' -%>"
+    organization = "<%- backend.organization || '{{terraform_organization}}' -%>"
+    workspaces {
+      name = "<%- backend.workspace || '{{layer_full_name}}' -%>"
+    }
+  }
+<% } else { %>
+  backend "local" {
+      path = "<%- backend.path || 'terraform.tfstate' -%>"
+  }
+<% } %>
+}
+
+<% providers.forEach(provider => { %>
+provider "<%- provider.type -%>" {
+<% if (provider.alias) { %>  alias  = "<%- provider.alias -%>"<% } %>
+  region = "<%- provider.region -%>"
+}
+<% }) %>
+<% remoteStates.forEach(remoteState => { %>
+data "terraform_remote_state" "<%- remoteState.name -%>" {
+  backend = "remote"
+  config  = {
+    organization = "{{terraform_organization}}"
+    workspaces   = {
+      name = "{{layer_name_prefix}}-<%- remoteState.name -%>"
+    }
+  }
+}
+<% }) %>
+module "main" {
+  source      = "genstackio/layer-admin/aws"
+  version     = "0.1.0"
+  bucket_name = "{{env}}-gotombola-platform-admin"
+  dns         = "admin.{{dns}}"
+  dns_zone    = data.terraform_remote_state.dns.outputs.zone
+  providers   = {
+    aws     = aws
+    aws.acm = aws.acm
+  }
+}
+
+output "dns" {
+  value = module.main.dns
+}
+output "cloudfront_id" {
+  value = module.main.cloudfront_id
+}

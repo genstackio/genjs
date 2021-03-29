@@ -128,7 +128,7 @@ export default class Package extends AbstractPackage {
         , {});
     }
     protected buildLayersFiles(model: model, vars: any, cfg: any): {[name: string]: any} {
-        if (!this.hasVarsCategoryFeature(vars, 'infra', 'layers')) return {
+        if (!(model.layers || []).find(l => !!l.type)) return {
             ['layers/.gitkeep']: () => '',
         };
         return model.layers.reduce((acc, l) =>
@@ -150,21 +150,62 @@ export default class Package extends AbstractPackage {
         return {};
     }
     protected buildLayerFiles(layer: layer, model: model, vars: any, cfg: any): any {
-        if (!this.hasVarsCategoryFeature(vars, 'infra', `layer_${layer.name}`, true)) {
-            return {}
-        }
+        if (!layer || !layer.type) return {};
         return {
-            [`layers/${layer.name}.tmpl.tf`]: `// ${layer.name}`,
+            [`layers/${layer.name}.tmpl.tf`]: this.buildLayerTemplateFile(layer, model, vars, cfg),
         };
+    }
+    protected buildLayerTemplateFile(layer: layer, model: model, vars: any, cfg: any): Function {
+        let layerType: Function = () => ({});
+        try {
+            layerType = require(`${__dirname}/layer-types/${layer.type}`).default;
+        } catch (e) {
+            throw new Error(`Unable to load layer type '${layer.type}'`);
+        }
+        const def = layerType(layer, vars, cfg, model);
+        const components = [...(layer['components'] || []), ...(def['components'] || [])];
+        const x = components.reduce((acc, c) => {
+            const {type, ...componentDef} = c;
+            let componentType: Function = () => ({});
+            try {
+                componentType = require(`${__dirname}/layer-components/${type}`).default;
+            } catch (e) {
+                throw new Error(`Unable to load layer component type '${type}' for layer ${layer.name} of type '${layer.type}'`);
+            }
+            const d = {providers: [], remoteStates: {}, modules: {}, outputs: {}, ...componentType(componentDef)};
+            acc.providers = [...acc.providers, ...d.providers];
+            acc.remoteStates = {...acc.remoteStates, ...d.remoteStates};
+            acc.modules = {...acc.modules, ...d.modules};
+            acc.outputs = {...acc.outputs, ...d.outputs};
+            return acc;
+        }, {modules: [], outputs: [], providers: [], remoteStates: []})
+        const definition = {
+            ...def,
+            ...x,
+            providers: [...(def.providers || []), ...(x.providers || [])],
+            remoteStates: Object.entries({...(def.remoteStates || {}), ...(x.remoteStates || {})}).reduce((acc, [k, v]) => {
+                acc.push({name: k, ...(v as any)});
+                return acc;
+            }, <any[]>[]),
+            modules: Object.entries({...(def.modules || {}), ...(x.modules || {})}).reduce((acc, [k, v]) => {
+                acc.push({name: k, ...(v as any)});
+                return acc;
+            }, <any[]>[]),
+            outputs: Object.entries({...(def.outputs || {}), ...(x.outputs || {})}).reduce((acc, [k, v]) => {
+                acc.push({name: k, ...(v as any)});
+                return acc;
+            }, <any[]>[]),
+        };
+        return ({renderFile}) => renderFile(cfg)('layer.tmpl.tf.ejs', {...vars, ...definition});
     }
     protected buildModuleFilesFromLayer(layer: layer, model: model, vars: any, cfg: any): any {
         if (!this.hasVarsCategoryFeature(vars, 'infra', `module_${layer.name}`, true)) {
             return {}
         }
         return {
-            [`modules/${layer.name}/main.tf`]: ({renderFile}) => renderFile(cfg)(`modules/${layer.type}/main.tf.ejs`, vars),
-            [`modules/${layer.name}/outputs.tf`]: ({renderFile}) => renderFile(cfg)(`modules/${layer.type}/outputs.tf.ejs`, vars),
-            [`modules/${layer.name}/variables.tf`]: ({renderFile}) => renderFile(cfg)(`modules/${layer.type}/variables.tf.ejs`, vars),
+            [`modules/${layer.name}/main.tf`]: ({renderFile}) => renderFile(cfg)(`modules/${layer.name}/main.tf.ejs`, vars),
+            [`modules/${layer.name}/outputs.tf`]: ({renderFile}) => renderFile(cfg)(`modules/${layer.name}/outputs.tf.ejs`, vars),
+            [`modules/${layer.name}/variables.tf`]: ({renderFile}) => renderFile(cfg)(`modules/${layer.name}/variables.tf.ejs`, vars),
         };
     }
     protected buildConfigFileIfNeeded(model: model, vars: any, cfg: any): {[name: string]: any} {
@@ -189,7 +230,7 @@ export default class Package extends AbstractPackage {
         }
         return {
             environments: Object.entries(vars.environments || {}).reduce((acc, [k, v]) => [...acc, {name: k, ...<any>v}], <environment[]>[]),
-            layers: Object.entries(vars.layers || {}).reduce((acc, [k, v]) => [...acc, {name: k, type: k, ...<any>v}], <layer[]>[]),
+            layers: Object.entries(vars.layers || {}).reduce((acc, [k, v]) => [...acc, {name: k, type: undefined, ...<any>v}], <layer[]>[]),
             config: (0 < Object.keys(config.environments).length) ? config : undefined,
         };
     }
