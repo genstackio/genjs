@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-react-app-admin",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,6 +25,6 @@
     "@genjs/genjs": "^0"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.3.14"
+    "@genjs/genjs": "^0.3.15"
   }
 }
