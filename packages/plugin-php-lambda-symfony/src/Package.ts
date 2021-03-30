@@ -143,15 +143,29 @@ export default class Package extends AbstractPackage {
             buildSteps.push('build-downloads');
         }
         if (!!vars.env_local_required) {
-            t
-                .addPredefinedTarget('install-php', 'composer-install', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
-                .addPredefinedTarget('install-php-prod', 'composer-install-prod', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
-            ;
+            if (!!vars.bref) {
+                t.addMetaTarget('install-php', ['install-php-bref', 'install-php-code'])
+                t.addPredefinedTarget('install-php-code', 'composer-install', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
+                t.addPredefinedTarget('install-php-bref', 'composer-install', {dir: 'bref', sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
+                t.addMetaTarget('install-php-prod', ['install-php-prod-bref', 'install-php-prod-code']);
+                t.addPredefinedTarget('install-php-prod-code', 'composer-install-prod', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local']);
+                t.addPredefinedTarget('install-php-prod-target', 'composer-install-prod', {dir: 'bref', sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local']);
+            } else {
+                t.addPredefinedTarget('install-php', 'composer-install', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
+                t.addPredefinedTarget('install-php-prod', 'composer-install-prod', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local']);
+            }
         } else {
-            t
-                .addPredefinedTarget('install-php', 'composer-install')
-                .addPredefinedTarget('install-php-prod', 'composer-install-prod')
-            ;
+            if (!!vars.bref) {
+                t.addMetaTarget('install-php', ['install-php-bref', 'install-php-code']);
+                t.addPredefinedTarget('install-php-code', 'composer-install');
+                t.addPredefinedTarget('install-php-bref', 'composer-install', {dir: 'bref'});
+                t.addMetaTarget('install-php-prod', ['install-php-prod-bref', 'install-php-prod-code']);
+                t.addPredefinedTarget('install-php-prod-code', 'composer-install-prod');
+                t.addPredefinedTarget('install-php-prod-bref', 'composer-install-prod', {dir: 'bref'});
+            } else {
+                t.addPredefinedTarget('install-php', 'composer-install');
+                t.addPredefinedTarget('install-php-prod', 'composer-install-prod');
+            }
         }
         t
             .addMetaTarget('build', ['install-php-prod', ...(vars.build_cache_before_deploy ? ['build-cache'] : []), ...buildSteps, 'install-php'])
