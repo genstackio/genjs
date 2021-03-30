@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-react-app",
-  "version": "0.3.18",
+  "version": "0.3.19",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
