@@ -149,7 +149,7 @@ export default class Package extends AbstractPackage {
                 t.addPredefinedTarget('install-php-bref', 'composer-install', {dir: 'bref', sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
                 t.addMetaTarget('install-php-prod', ['install-php-prod-bref', 'install-php-prod-code']);
                 t.addPredefinedTarget('install-php-prod-code', 'composer-install-prod', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local']);
-                t.addPredefinedTarget('install-php-prod-target', 'composer-install-prod', {dir: 'bref', sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local']);
+                t.addPredefinedTarget('install-php-prod-bref', 'composer-install-prod', {dir: 'bref', sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local']);
             } else {
                 t.addPredefinedTarget('install-php', 'composer-install', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
                 t.addPredefinedTarget('install-php-prod', 'composer-install-prod', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local']);
