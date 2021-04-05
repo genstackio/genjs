@@ -28,6 +28,11 @@ export default class Package extends AbstractPackage {
             new ValidatableBehaviour(),
         ]
     }
+    protected getDefaultExtraOptions(): any {
+        return {
+            phase: 'pre',
+        };
+    }
     protected getTemplateRoot(): string {
         return `${__dirname}/../templates`;
     }
@@ -139,10 +144,12 @@ export default class Package extends AbstractPackage {
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()})`)
             .setDefaultTarget('install')
             .addPredefinedTarget('install', 'yarn-install')
-            .addPredefinedTarget('build', 'yarn-build', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
+            .addPredefinedTarget('build-code', 'yarn-build', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
+            .addPredefinedTarget('build-package', 'yarn-package', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'public/'})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
+            .addMetaTarget('build', ['build-code', 'build-package'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'NEXT'})
             .addPredefinedTarget('start', 'yarn-dev', {options: {port: this.getParameter('startPort')}, sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('serve', 'yarn-start', {options: {port: this.getParameter('servePort')}, sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
@@ -157,8 +164,7 @@ export default class Package extends AbstractPackage {
             t
                 .addPredefinedTarget('build-publish-image', 'docker-build', {tag: vars.publish_image.tag, path: vars.publish_image.dir || '.', buildArgs: vars.publish_image.buildArgs || {}})
                 .addPredefinedTarget('deploy-publish-image', 'docker-push', {...vars.publish_image})
-                .addPredefinedTarget('build-code', 'yarn-build', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
-                .addMetaTarget('build', vars.publish_image.noPreBuildCode ? ['build-publish-image'] : ['build-code', 'build-publish-image'])
+                .addMetaTarget('build', vars.publish_image.noPreBuildCode ? ['build-publish-image'] : ['build-code', 'build-package', 'build-publish-image'])
                 .addMetaTarget('deploy', ['deploy-publish-image'])
                 .addMetaTarget('deploy-raw', ['deploy-code', 'invalidate-cache'])
             ;
