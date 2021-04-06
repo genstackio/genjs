@@ -146,7 +146,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build-code', 'yarn-build', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('build-package', 'yarn-package', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
-            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'public/'})
+            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: vars.s3_source_dir || 'public/', targetDir: vars.s3_target_dir})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addMetaTarget('build', ['build-code', 'build-package'])
