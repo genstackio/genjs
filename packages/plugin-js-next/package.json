@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-next",
-  "version": "0.3.22",
+  "version": "0.3.23",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
