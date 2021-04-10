@@ -93,6 +93,7 @@ export default class Package extends AbstractPackage {
             .addNoopTarget('test-ci')
             .addExportedVar('CI')
         ;
+        
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
         return new TerraformToVarsTemplate(vars);
