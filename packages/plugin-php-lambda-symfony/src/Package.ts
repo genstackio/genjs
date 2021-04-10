@@ -1,11 +1,5 @@
+import {AwsLambdaPackage} from '@genjs/genjs-bundle-aws-lambda';
 import {
-    AbstractPackage,
-    GitIgnoreTemplate,
-    LicenseTemplate,
-    MakefileTemplate,
-    ReadmeTemplate,
-    PackageExcludesTemplate,
-    TerraformToVarsTemplate,
     DeployableBehaviour,
     StartableBehaviour,
     BuildableBehaviour,
@@ -15,9 +9,13 @@ import {
     TestableBehaviour,
 } from '@genjs/genjs';
 
-export default class Package extends AbstractPackage {
+export default class Package extends AwsLambdaPackage {
+    constructor(config: any) {
+        super(config, __dirname);
+    }
     protected getBehaviours() {
         return [
+            ...super.getBehaviours(),
             new BuildableBehaviour(),
             new CleanableBehaviour(),
             new InstallableBehaviour(),
@@ -27,17 +25,10 @@ export default class Package extends AbstractPackage {
             new DeployableBehaviour(),
         ];
     }
-    protected getDefaultExtraOptions(): any {
-        return {
-            phase: 'pre',
-        };
-    }
-    protected getTemplateRoot(): string {
-        return `${__dirname}/../templates`;
-    }
     // noinspection JSUnusedLocalSymbols
-    protected buildDefaultVars(vars: any): any {
+    protected buildDefaultVars(vars: any) {
         return {
+            ...super.buildDefaultVars(vars),
             project_name: 'project',
             scripts: {
                 "build": "build-package"
@@ -48,38 +39,27 @@ export default class Package extends AbstractPackage {
         };
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
+    protected async buildDynamicFiles(vars: any, cfg: any) {
         return {
-            ['package.json']: () => JSON.stringify({
-                name: vars.name,
-                license: vars.license,
-                dependencies: vars.dependencies,
-                scripts: vars.scripts,
-                devDependencies: vars.devDependencies,
-                version: vars.version,
-                description: vars.description,
-                author: (vars.author && ('object' === typeof vars.author)) ? vars.author : {name: vars.author_name, email: vars.author_email},
-                private: true,
-            }, null, 4),
-            ['LICENSE.md']: this.buildLicense(vars),
-            ['README.md']: this.buildReadme(vars),
-            ['package-excludes.lst']: this.buildPackageExcludes(vars),
-            ['.gitignore']: this.buildGitIgnore(vars),
-            ['Makefile']: this.buildMakefile(vars),
-            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
+            ...(await super.buildDynamicFiles({licenseFile: 'LICENSE.md', ...vars}, cfg)),
+            ['package.json']: this.buildPackageJson(vars),
         };
     }
-    protected buildLicense(vars: any): LicenseTemplate {
-        return new LicenseTemplate(vars);
+    protected buildPackageJson(vars: any) {
+        return () => JSON.stringify({
+            name: vars.name,
+            license: vars.license,
+            dependencies: vars.dependencies,
+            scripts: vars.scripts,
+            devDependencies: vars.devDependencies,
+            version: vars.version,
+            description: vars.description,
+            author: (vars.author && ('object' === typeof vars.author)) ? vars.author : {name: vars.author_name, email: vars.author_email},
+            private: true,
+        }, null, 4);
     }
-    protected buildReadme(vars: any): ReadmeTemplate {
-        return new ReadmeTemplate(vars);
-    }
-    protected buildPackageExcludes(vars: any): PackageExcludesTemplate {
-        return PackageExcludesTemplate.create(vars);
-    }
-    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return GitIgnoreTemplate.create(vars)
+    protected buildGitIgnore(vars: any) {
+        return super.buildGitIgnore(vars)
             .addIgnore('/coverage/')
             .addIgnore('/node_modules/')
             .addIgnore('/vendor/')
@@ -101,16 +81,15 @@ export default class Package extends AbstractPackage {
             .addIgnore('/app/config/parameters.yml')
         ;
     }
-    protected buildMakefile(vars: any): MakefileTemplate {
-        const t = new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+    protected buildMakefile(vars: any) {
+        const t = super.buildMakefile(vars)
             .addGlobalVar('prefix', vars.project_prefix)
-            .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
             .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
+            .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-${vars.name}-assets`)
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()}_ASSETS)`)
             .addGlobalVar('symfony_env', vars.symfony_env ? vars.symfony_env : `$(env)`)
-            .setDefaultTarget('install')
             .addMetaTarget('install', ['install-js', 'install-php'])
             .addPredefinedTarget('install-js', 'yarn-install')
             .addPredefinedTarget('build-package', 'yarn-build')
@@ -131,7 +110,6 @@ export default class Package extends AbstractPackage {
             .addMetaTarget('deploy', ['deploy-assets', 'invalidate-cache'])
             .addTarget('start', [`SYMFONY_DEBUG=true SYMFONY_ENV=dev app/console server:run --ansi -n -p ${this.getParameter('startPort')}`], [], {sourceLocalEnvLocal: !!vars.env_local_required})
             .addTarget('build-cache', [`SYMFONY_ENV=$(symfony_env) app/console cache:warmup --ansi -n --no-debug`], [], {sourceLocalEnvLocal: !!vars.env_local_required})
-            .addExportedVar('CI')
         ;
         const buildSteps = ['build-assets', 'clean-web-bundles', 'build-package'];
         if (vars.download_on_build) {
@@ -172,26 +150,19 @@ export default class Package extends AbstractPackage {
         ;
         return t;
     }
-    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
-        return new TerraformToVarsTemplate(vars);
-    }
-    protected getTechnologies(): any {
+    protected getTechnologies() {
         return [
+            ...super.getTechnologies(),
             'symfony',
             'php',
             'phpenv',
-            'make',
-            'aws_cli',
-            'aws_lambda',
             'node',
             'es6',
             'yarn',
             'nvm',
             'npm',
             'markdown',
-            'git',
             'composer',
-            'json',
         ];
     }
 }

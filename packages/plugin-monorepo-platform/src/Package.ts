@@ -121,7 +121,7 @@ export default class Package extends AbstractPackage {
             testableProjects,
         } = buildProjectsVars(vars);
         const {sortedProjectEnvs} = buildProjectEnvsVars(vars);
-        const t = new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'develop')
             .addPredefinedTarget('generate', 'yarn-genjs')

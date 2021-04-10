@@ -6,7 +6,8 @@
     "composite": true
   },
   "references": [
-    { "path": "../genjs"}
+    { "path": "../genjs"},
+    { "path": "../bundle-terraform"}
   ],
   "include": [
     "./src"

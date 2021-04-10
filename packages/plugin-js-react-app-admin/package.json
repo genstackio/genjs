@@ -24,6 +24,9 @@
   "peerDependencies": {
     "@genjs/genjs": "^0"
   },
+  "dependencies": {
+    "@genjs/genjs-bundle-javascript": "^0"
+  },
   "devDependencies": {
     "@genjs/genjs": "^0.3.17"
   }

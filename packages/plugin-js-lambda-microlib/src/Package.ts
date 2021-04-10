@@ -191,7 +191,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const t = new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .setDefaultTarget('install')
             .addPredefinedTarget('install', 'yarn-install')

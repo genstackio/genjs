@@ -13,7 +13,7 @@ build-c:
 	@true
 
 install-dummy:
-	@yarn --silent lerna bootstrap --scope @dummy
+	@true
 
 .PHONY: all \
 		build build-a build-b build-c \

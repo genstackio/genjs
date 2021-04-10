@@ -6,7 +6,9 @@
     "composite": true
   },
   "references": [
-    { "path": "../genjs"}
+    { "path": "../genjs"},
+    { "path": "../bundle-docker-image"},
+    { "path": "../bundle-javascript"}
   ],
   "include": [
     "./src"

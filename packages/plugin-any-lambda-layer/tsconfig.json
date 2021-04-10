@@ -6,7 +6,8 @@
     "composite": true
   },
   "references": [
-    { "path": "../genjs"}
+    { "path": "../genjs"},
+    { "path": "../bundle-aws-lambda-layer"}
   ],
   "include": [
     "./src"

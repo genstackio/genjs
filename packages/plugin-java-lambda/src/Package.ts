@@ -1,58 +1,14 @@
-import {
-    AbstractPackage,
-    GitIgnoreTemplate,
-    LicenseTemplate,
-    ReadmeTemplate,
-    PackageExcludesTemplate,
-    TerraformToVarsTemplate,
-} from '@genjs/genjs';
+import {AwsLambdaPackage} from '@genjs/genjs-bundle-aws-lambda';
 
-export default class Package extends AbstractPackage {
-    protected getDefaultExtraOptions(): any {
-        return {
-            phase: 'pre',
-        };
-    }
-    protected getTemplateRoot(): string {
-        return `${__dirname}/../templates`;
+export default class Package extends AwsLambdaPackage {
+    constructor(config: any) {
+        super(config, __dirname);
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildDefaultVars(vars: any): any {
+    protected buildDefaultVars(vars: any) {
         return {
+            ...super.buildDefaultVars(vars),
             description: 'Java AWS Lambda',
-            url: 'https://github.com',
         };
-    }
-    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildFilesFromTemplates(vars: any, cfg: any): any {
-        return {
-        };
-    }
-    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildDynamicFiles(vars: any, cfg: any): any {
-        return {
-            ['LICENSE']: this.buildLicense(vars),
-            ['README.md']: this.buildReadme(vars),
-            ['package-excludes.lst']: this.buildPackageExcludes(vars),
-            ['.gitignore']: this.buildGitIgnore(vars),
-            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
-        };
-    }
-    protected buildLicense(vars: any): LicenseTemplate {
-        return new LicenseTemplate(vars);
-    }
-    protected buildReadme(vars: any): ReadmeTemplate {
-        return new ReadmeTemplate(vars);
-    }
-    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
-        return new TerraformToVarsTemplate(vars);
-    }
-    protected buildPackageExcludes(vars: any): PackageExcludesTemplate {
-        return PackageExcludesTemplate.create(vars);
-    }
-    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return GitIgnoreTemplate.create(vars)
-            .addIgnore('/.idea/')
-        ;
     }
 }

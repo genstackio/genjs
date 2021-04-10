@@ -1,64 +1,16 @@
-import {
-    AbstractPackage,
-    GitIgnoreTemplate,
-    MakefileTemplate,
-    ReadmeTemplate,
-    LicenseTemplate,
-    TerraformToVarsTemplate,
-    BuildableBehaviour,
-    CleanableBehaviour,
-    InstallableBehaviour,
-} from '@genjs/genjs';
+import {AwsLambdaLayerPackage} from '@genjs/genjs-bundle-aws-lambda-layer';
 
-export default class Package extends AbstractPackage {
-    protected getBehaviours() {
-        return [
-            new BuildableBehaviour(),
-            new CleanableBehaviour(),
-            new InstallableBehaviour(),
-        ]
+export default class Package extends AwsLambdaLayerPackage {
+    constructor(config: any) {
+        super(config, __dirname);
     }
-    protected getTemplateRoot(): string {
-        return `${__dirname}/../templates`;
-    }
-    protected getDefaultExtraOptions(): any {
-        return {
-            phase: 'pre',
-        };
-    }
-    protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
-        return {
-            ['LICENSE']: this.buildLicense(vars),
-            ['README.md']: this.buildReadme(vars),
-            ['.gitignore']: this.buildGitIgnore(vars),
-            ['Makefile']: this.buildMakefile(vars),
-            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
-        }
-    }
-    protected buildLicense(vars: any): LicenseTemplate {
-        return new LicenseTemplate(vars);
-    }
-    protected buildReadme(vars: any): ReadmeTemplate {
-        return new ReadmeTemplate(vars);
-    }
-    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return GitIgnoreTemplate.create(vars)
-            .addIgnore('/.idea/')
-        ;
-    }
-    protected buildMakefile(vars: any): MakefileTemplate {
-        const t = new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
-            .addGlobalVar('env', 'dev')
+    protected buildMakefile(vars: any) {
+        const t = super.buildMakefile(vars)
             .addShellTarget('build', './bin/build', ['clean'])
             .addShellTarget('clean', './bin/clean')
             .addShellTarget('install', './bin/install')
-            .setDefaultTarget('install')
-            .addExportedVar('CI')
         ;
         vars.deployable && t.addTarget('deploy');
         return t;
-    }
-    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
-        return new TerraformToVarsTemplate(vars);
     }
 }

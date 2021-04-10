@@ -1,6 +1,8 @@
 import Package from './Package';
 import {IGenerator, IPlugin, IPackage, PackageGroup} from '@genjs/genjs';
 import {buildProjectsVars} from "./utils";
+import registerTerraformBundle from '@genjs/genjs-bundle-terraform';
+import registerJavascriptBundle from '@genjs/genjs-bundle-javascript';
 
 export default class Plugin implements IPlugin {
     onPackageCreated(p: IPackage, eventType: string, ctx: {data: any, globalContext: any, group: PackageGroup}): void {
@@ -42,6 +44,8 @@ export default class Plugin implements IPlugin {
         }) ;
     }
     register(generator: IGenerator): void {
+        registerTerraformBundle(generator);
+        registerJavascriptBundle(generator);
         generator.registerPackageEventHook('*', 'created', this.onPackageCreated);
         generator.registerPackageEventHook('*', 'before_hydrate', this.onProjectHydrate);
         generator.registerPackageEventHook('monorepo-platform', 'before_hydrate', this.onMonorepoPlatformHydrate);

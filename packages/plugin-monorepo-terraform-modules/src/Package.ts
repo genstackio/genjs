@@ -69,7 +69,7 @@ export default class Package extends AbstractPackage {
         const withLayers = true === vars.manage_layers;
         const withModules = true === vars.manage_modules;
         const withTerraformDocs = true === vars.terraform_docs;
-        const t = new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addPredefinedTarget('generate', 'yarn-genjs')
             .addPredefinedTarget('install-root', 'yarn-install')
             .addMetaTarget('install', ['install-root', withLayers && 'install-layers', withModules && 'install-modules'].filter(x => !!x) as string[])

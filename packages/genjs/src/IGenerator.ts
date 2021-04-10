@@ -8,7 +8,9 @@ export interface IGenerator {
     registerRegistryFactory(type: string|string[], registry: (config: any) => IRegistry);
     registerRegistry(type: string|string[], config: any);
     registerPluginFromConfig(plugin: PluginConfig);
+    registerPredefinedTargets(predefinedTargets: any);
     registerPackager(type: string, packager: (config: any) => IPackage);
+    registerPredefinedTargets(targets: {[key: string]: any});
     registerGroupEventHook(eventType: string, hook: Function): void;
     registerGlobalEventHook(eventType: string, hook: Function): void;
     registerPackageEventHook(packageType: string, eventType: string, hook: Function): void;

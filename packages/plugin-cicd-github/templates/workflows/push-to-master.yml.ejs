@@ -17,8 +17,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: <%- typeof node_version_constraint === 'undefined' ? '14.x' : node_version_constraint %>
-
 <% if ('undefined' !== typeof php_version) { -%>
+
       - name: Set PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -28,8 +28,7 @@ jobs:
 <% } -%>
 <% if ('undefined' !== typeof php_extensions) { -%>
           extensions: <%- php_extensions %>
-<% } -%>
-<% } -%>
+<% } -%><% } -%>
 
       - name: Set NPM Registry identity
         uses: ohoareau/actions/npmrc-scope-authtoken-add@master

@@ -4,7 +4,7 @@ var2 = 13
 all: target1
 
 build-custom:
-	@yarn --silent build
+	@custom-build
 
 target1: target1-sub-a target1-sub-b
 target1-sub-a:

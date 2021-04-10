@@ -24,6 +24,10 @@
   "peerDependencies": {
     "@genjs/genjs": "^0"
   },
+  "dependencies": {
+    "@genjs/genjs-bundle-aws-lambda": "^0",
+    "@genjs/genjs-bundle-go": "^0"
+  },
   "devDependencies": {
     "@genjs/genjs": "^0.3.17"
   }

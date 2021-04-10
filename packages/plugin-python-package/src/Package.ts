@@ -1,72 +1,18 @@
-import {
-    AbstractPackage,
-    GitIgnoreTemplate,
-    LicenseTemplate,
-    MakefileTemplate,
-    ReadmeTemplate,
-    TerraformToVarsTemplate,
-    BuildableBehaviour,
-    DeployableBehaviour,
-    InstallableBehaviour,
-    PreInstallableBehaviour,
-    TestableBehaviour,
-    CleanableBehaviour,
-} from '@genjs/genjs';
+import {PythonPackage} from '@genjs/genjs-bundle-python';
 
-export default class Package extends AbstractPackage {
-    protected getBehaviours() {
-        return [
-            new BuildableBehaviour(),
-            new CleanableBehaviour(),
-            new DeployableBehaviour(),
-            new InstallableBehaviour(),
-            new PreInstallableBehaviour(),
-            new TestableBehaviour(),
-        ]
+export default class Package extends PythonPackage {
+    constructor(config: any) {
+        super(config, __dirname);
     }
-    protected getTemplateRoot(): string {
-        return `${__dirname}/../templates`;
-    }
-    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildDefaultVars(vars: any): any {
-        return {
-            url: 'https://github.com',
-            pypi_repo: 'pypi',
-        };
-    }
-    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildFilesFromTemplates(vars: any, cfg: any): any {
-        return {
-            ['requirements.txt']: true,
-            ['setup.py']: true,
-            ['tests/__init__.py']: true,
-        };
-    }
-    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildDynamicFiles(vars: any, cfg: any): any {
-        return {
-            ['LICENSE']: this.buildLicense(vars),
-            ['README.md']: this.buildReadme(vars),
-            ['.gitignore']: this.buildGitIgnore(vars),
-            ['Makefile']: this.buildMakefile(vars),
-            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
-        };
-    }
-    protected buildLicense(vars: any): LicenseTemplate {
-        return new LicenseTemplate(vars);
-    }
-    protected buildReadme(vars: any): ReadmeTemplate {
-        return new ReadmeTemplate(vars);
-    }
-    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return GitIgnoreTemplate.create(vars)
+    protected buildGitIgnore(vars: any) {
+        return super.buildGitIgnore(vars)
             .addIgnore('/venv/')
             .addIgnore('/.idea/')
             .addIgnore('__pycache__/')
         ;
     }
-    protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+    protected buildMakefile(vars: any) {
+        return super.buildMakefile(vars)
             .addGlobalVar('env', 'dev')
             .addGlobalVar('pypi_repo', undefined, vars.pypi_repo)
             .addMetaTarget('pre-install', ['create-venv'])
@@ -83,11 +29,6 @@ export default class Package extends AbstractPackage {
             .addTarget('test', ['source venv/bin/activate && python -m unittest tests/*.py -v'])
             .addTarget('test-ci', ['source venv/bin/activate && python -m unittest tests/*.py -v'])
             .addTarget('test-cov', ['source venv/bin/activate && python -m unittest tests/*.py -v'])
-            .setDefaultTarget('install')
-            .addExportedVar('CI')
         ;
-    }
-    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
-        return new TerraformToVarsTemplate(vars);
     }
 }
