@@ -10,6 +10,7 @@ import Template from './Template';
 import IRegistry from "./IRegistry";
 import {BaseRegistryConfig} from "./AbstractRegistry";
 import PackageConfigEnhancer from "./configEnhancers/PackageConfigEnhancer";
+import * as commonPredefinedTargets from "./targets";
 
 const fs = require('fs');
 const path = require('path');
@@ -32,6 +33,8 @@ export type GeneratorConfig = {
 export type GenjsConfig = GeneratorConfig & {}
 
 export class Genjs implements IGenerator {
+    public readonly predefinedTargets: {[key: string]: any} = {};
+    public readonly targets: {[key: string]: any} = {};
     public readonly registries: IRegistry[] = [];
     public readonly registryFactories: {[key: string]: (config: any) => IRegistry} = {};
     public readonly plugins: IPlugin[] = [];
@@ -45,6 +48,7 @@ export class Genjs implements IGenerator {
     protected readonly globalEventHooks = {};
     private readonly globalContext = {};
     constructor({rootDir, plugins = [], groups = {}, locked = [], vars = {}, ...extra}: GenjsConfig) {
+        this.registerPredefinedTargets(commonPredefinedTargets);
         this.rootDir = rootDir;
         this.locked = {...locked.reduce((acc, k) => Object.assign(acc, {[k]: true}), {}), ...(vars.locked || {})};
         this.vars = {
@@ -192,6 +196,10 @@ export class Genjs implements IGenerator {
         const ctx = {data, globalContext: this.globalContext};
         hooks.forEach(h => h(this, eventType, ctx));
     }
+    registerPredefinedTargets(targets: {[key: string]: any}) {
+        Object.assign(this.predefinedTargets, targets);
+        return this;
+    }
     registerPlugin(plugin: IPlugin) {
         plugin.register(this);
         this.plugins.push(plugin);
@@ -236,7 +244,7 @@ export class Genjs implements IGenerator {
                     }
                     if (!this.packagers[type]) throw new Error(`Unsupported package type '${type}'`);
                     const targetDir = g.getDir() === '.' ? name : `${g.getDir()}/${name}`;
-                    const localConfig = configEnhancer.enrich({...c, getAsset: this.getAsset.bind(this), packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}});
+                    const localConfig = configEnhancer.enrich({...c, predefinedTargets: this.predefinedTargets, getAsset: this.getAsset.bind(this), packageType: type, targetDir, name, vars: {...this.vars, ...(c.vars || {})}});
                     const p = this.packagers[type](localConfig);
                     this.applyPackageEventHooks(p, 'created', localConfig, g);
                     return p;

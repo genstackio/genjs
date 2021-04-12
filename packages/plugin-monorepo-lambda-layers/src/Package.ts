@@ -54,7 +54,7 @@ export default class Package extends AbstractPackage {
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         const scm = vars.scm || 'git';
-        const t = new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .setDefaultTarget('install')
             .addExportedVar('CI')
             .addGlobalVar('l', 'noname')

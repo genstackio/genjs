@@ -1,60 +1,23 @@
-import {
-    AbstractPackage,
-    GitIgnoreTemplate,
-    LicenseTemplate,
-    MakefileTemplate,
-    ReadmeTemplate,
-    TerraformToVarsTemplate,
-    BuildableBehaviour,
-    CleanableBehaviour,
-    InstallableBehaviour,
-    DeployableBehaviour,
-    GenerateEnvLocalableBehaviour,
-    StartableBehaviour,
-    ServableBehaviour,
-    TestableBehaviour,
-} from '@genjs/genjs';
+import {JavascriptPackage} from '@genjs/genjs-bundle-javascript';
+import {ServableBehaviour} from '@genjs/genjs';
 
-export default class Package extends AbstractPackage {
+export default class Package extends JavascriptPackage {
+    constructor(config: any) {
+        super(config, __dirname);
+    }
     protected getBehaviours() {
         return [
-            new BuildableBehaviour(),
-            new CleanableBehaviour(),
-            new InstallableBehaviour(),
-            new DeployableBehaviour(),
-            new GenerateEnvLocalableBehaviour(),
-            new StartableBehaviour(),
+            ...super.getBehaviours(),
             new ServableBehaviour(),
-            new TestableBehaviour(),
         ]
     }
-    protected getTemplateRoot(): string {
-        return `${__dirname}/../templates`;
-    }
-    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildDefaultVars(vars: any): any {
-        return {
-        };
-    }
-    protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
-        return {
-            ['LICENSE.md']: this.buildLicense(vars),
-            ['README.md']: this.buildReadme(vars),
-            ['.gitignore']: this.buildGitIgnore(vars),
-            ['Makefile']: this.buildMakefile(vars),
-            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
-        };
-    }
-    protected buildLicense(vars: any): LicenseTemplate {
-        return new LicenseTemplate(vars);
-    }
-    protected buildReadme(vars: any): ReadmeTemplate {
-        return new ReadmeTemplate(vars)
+    protected buildReadme(vars: any) {
+        return super.buildReadme(vars)
             .addFragmentFromTemplate(`${__dirname}/../templates/readme/original.md.ejs`)
         ;
     }
-    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return GitIgnoreTemplate.create(vars)
+    protected buildGitIgnore(vars: any) {
+        return super.buildGitIgnore(vars)
             .addGroup('Logs', [
                 'logs', '*.log', 'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*',
             ])
@@ -81,10 +44,9 @@ export default class Package extends AbstractPackage {
             ])
         ;
     }
-    protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+    protected buildMakefile(vars: any) {
+        return super.buildMakefile(vars)
             .addGlobalVar('env', 'dev')
-            .setDefaultTarget('install')
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build', 'yarn-build')
             .addPredefinedTarget('deploy', 'yarn-deploy')
@@ -95,33 +57,6 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true, coverage: false})
-            .addExportedVar('CI')
         ;
-    }
-    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
-        return new TerraformToVarsTemplate(vars);
-    }
-    protected getPreRequisites(): any {
-        return {
-        };
-    }
-    protected getInstallProcedures(): any {
-        return {
-        };
-    }
-    protected getTechnologies(): any {
-        return [
-            'make',
-            'node',
-            'es6',
-            'yarn',
-            'nvm',
-            'npm',
-            'markdown',
-            'git',
-            'jest',
-            'prettier',
-            'json',
-        ];
     }
 }

@@ -24,6 +24,9 @@
   "peerDependencies": {
     "@genjs/genjs": "^0"
   },
+  "dependencies": {
+    "@genjs/genjs-bundle-cicd": "^0"
+  },
   "devDependencies": {
     "@genjs/genjs": "^0.3.17",
     "aws-sdk": "^2.797.0"

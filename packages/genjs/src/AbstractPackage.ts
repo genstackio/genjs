@@ -16,11 +16,13 @@ export type BasePackageConfig = {
     enabled_features?: string[],
     disabled_features?: string[],
     getAsset?: (type: string, name: string) => any,
+    predefinedTargets?: {[key: string]: any}
 }
 
 const fs = require('fs');
 
 export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageConfig> implements IPackage {
+    public readonly predefinedTargets: {[key: string]: any};
     public readonly packageType: string;
     public readonly name: string;
     public readonly description: string;
@@ -32,9 +34,12 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     public readonly assetFetcher: (type: string, name: string) => any;
     public readonly relativeToRoot: string;
     public readonly absoluteTargetDir: string;
+    public dir: string|undefined;
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-    constructor(config: C) {
-        const {getAsset, name, description, packageType, sources = [], files = {}, vars =  {}, enabled_features = [], disabled_features = [], targetDir, ...extra} = config;
+    constructor(config: C, dir: string|undefined = undefined) {
+        const {predefinedTargets = {}, getAsset, name, description, packageType, sources = [], files = {}, vars =  {}, enabled_features = [], disabled_features = [], targetDir, ...extra} = config;
+        this.predefinedTargets = predefinedTargets;
+        this.dir = dir;
         this.assetFetcher = getAsset || ((type: string, name: string) => {
             throw new Error(`Unknown asset '${name}' of type '${type}'`);
         });
@@ -119,7 +124,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         return this.name;
     }
     protected getTemplateRoot(): string {
-        return '_no-template-root_';
+        return this.dir ? `${this.dir}/../templates` : '_no-template-root_';
     }
     protected async buildFiles(vars: any, cfg: any): Promise<any> {
         const files = Object.entries(await this.buildFilesFromTemplates(vars, cfg)).reduce((acc, [k, v]) => {

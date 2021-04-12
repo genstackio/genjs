@@ -1,60 +1,31 @@
-import {
-    AbstractPackage,
-    GitIgnoreTemplate,
-    LicenseTemplate,
-    MakefileTemplate,
-    ReadmeTemplate,
-    TerraformToVarsTemplate,
-    BuildableBehaviour,
-    InstallableBehaviour,
-    DeployableBehaviour,
-    GenerateEnvLocalableBehaviour,
-    StartableBehaviour,
-    ServableBehaviour,
-    TestableBehaviour,
-} from '@genjs/genjs';
+import {JavascriptPackage} from '@genjs/genjs-bundle-javascript';
+import {ServableBehaviour} from '@genjs/genjs';
 
-export default class Package extends AbstractPackage {
+export default class Package extends JavascriptPackage {
+    constructor(config: any) {
+        super(config, __dirname);
+    }
     protected getBehaviours() {
         return [
-            new BuildableBehaviour(),
-            new InstallableBehaviour(),
-            new DeployableBehaviour(),
-            new GenerateEnvLocalableBehaviour(),
-            new StartableBehaviour(),
+            ...super.getBehaviours(),
             new ServableBehaviour(),
-            new TestableBehaviour(),
         ]
     }
-    protected getTemplateRoot(): string {
-        return `${__dirname}/../templates`;
-    }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-    protected buildDefaultVars(vars: any): any {
+    protected buildDefaultVars(vars: any) {
         return {
+            ...super.buildDefaultVars(vars),
             project_prefix: 'mycompany',
             project_name: 'myproject',
         };
     }
-    protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
-        return {
-            ['LICENSE.md']: this.buildLicense(vars),
-            ['README.md']: this.buildReadme(vars),
-            ['.gitignore']: this.buildGitIgnore(vars),
-            ['Makefile']: this.buildMakefile(vars),
-            ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
-        };
-    }
-    protected buildLicense(vars: any): LicenseTemplate {
-        return new LicenseTemplate(vars);
-    }
-    protected buildReadme(vars: any): ReadmeTemplate {
-        return new ReadmeTemplate(vars)
+    protected buildReadme(vars: any) {
+        return super.buildReadme(vars)
             .addFragmentFromTemplate(`${__dirname}/../templates/readme/original.md.ejs`)
         ;
     }
-    protected buildGitIgnore(vars: any): GitIgnoreTemplate {
-        return GitIgnoreTemplate.create(vars)
+    protected buildGitIgnore(vars: any) {
+        return super.buildGitIgnore(vars)
             .addGroup('Logs', [
                 'logs', '*.log', 'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*',
             ])
@@ -117,15 +88,14 @@ export default class Package extends AbstractPackage {
             ])
         ;
     }
-    protected buildMakefile(vars: any): MakefileTemplate {
-        const t = new MakefileTemplate({relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+    protected buildMakefile(vars: any) {
+        const t = super.buildMakefile(vars)
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
             .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
             .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-${vars.name}`)
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()})`)
-            .setDefaultTarget('install')
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build', 'yarn-build', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'public/'})
@@ -138,7 +108,6 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
             .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true, coverage: false})
-            .addExportedVar('CI')
         ;
         if (vars.publish_image) {
             t
@@ -152,34 +121,14 @@ export default class Package extends AbstractPackage {
         }
         return t;
     }
-    protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
-        return new TerraformToVarsTemplate(vars);
-    }
-    protected getPreRequisites(): any {
-        return {
-        };
-    }
-    protected getInstallProcedures(): any {
-        return {
-        };
-    }
-    protected getTechnologies(): any {
+    protected getTechnologies() {
         return [
+            ...super.getTechnologies(),
             'react_gatsby',
-            'make',
             'aws_cli',
             'aws_cloudfront',
             'aws_s3',
             'aws_route53',
-            'node',
-            'es6',
-            'yarn',
-            'nvm',
-            'npm',
-            'markdown',
-            'git',
-            'jest',
-            'prettier',
             'json',
             this.vars.publish_image && 'docker',
         ];
