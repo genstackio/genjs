@@ -86,6 +86,8 @@ jobs:
         env:
           FORCE_COLOR: 3
           CI: true
+          AWS_DEPLOY_ACCOUNT_ACCESS_KEY_ID: ${{secrets.AWS_DEPLOY_ACCOUNT_ACCESS_KEY_ID}}
+          AWS_DEPLOY_ACCOUNT_SECRET_ACCESS_KEY: ${{secrets.AWS_DEPLOY_ACCOUNT_SECRET_ACCESS_KEY}}
 
       - name: Provision
         shell: 'script -q -e -c "bash {0}"'
