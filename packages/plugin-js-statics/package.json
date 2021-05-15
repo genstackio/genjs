@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-statics",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws": "^0.1.0",
-    "@genjs/genjs-bundle-javascript": "^0.1.0"
+    "@genjs/genjs-bundle-aws": "^0.1.1",
+    "@genjs/genjs-bundle-javascript": "^0.1.1"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.0"
+    "@genjs/genjs": "^0.4.1"
   }
 }
