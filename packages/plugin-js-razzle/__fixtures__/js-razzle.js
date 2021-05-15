@@ -1,6 +1,6 @@
 module.exports = {
     plugins: [
-        '@js-next',
+        '@js-razzle',
     ],
     vars: {
         author: {
@@ -10,7 +10,7 @@ module.exports = {
     },
     packages: {
         app: {
-            type: 'js-next',
+            type: 'js-razzle',
             vars: {
                 project_prefix: 'myothercompany',
                 project_name: 'someproject',
