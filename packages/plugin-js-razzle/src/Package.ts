@@ -97,6 +97,9 @@ export default class Package extends JavascriptPackage {
             .addGroup('Yarn Integrity file', [
                 '.yarn-integrity',
             ])
+            .addGroup('Razzle', [
+                '/cache/'
+            ])
             .addGroup('local env files', [
                 '.env.local', '.env.development.local', '.env.test.local', '.env.production.local', '*.pem',
             ])
