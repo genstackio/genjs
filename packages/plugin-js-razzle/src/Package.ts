@@ -118,7 +118,7 @@ export default class Package extends JavascriptPackage {
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addMetaTarget('build', ['build-code', 'build-package'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'RAZZLE'})
-            .addPredefinedTarget('start', 'yarn-start', {options: {port: this.getParameter('startPort')}, sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
+            .addPredefinedTarget('start', 'yarn-start', {options: {port: this.getParameter('startPort'), noninteractive: true}, sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
