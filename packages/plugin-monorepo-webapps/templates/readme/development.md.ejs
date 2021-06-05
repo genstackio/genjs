@@ -1,0 +1,73 @@
+## Development (local)
+
+### Install dependencies
+
+#### All dependencies
+
+    make
+
+#### Project specific dependencies
+
+    make install-root
+<% installableProjects.forEach(p => { %>    make install-<%- p.name %>
+<% }) %>
+
+### Execute tests
+
+#### All tests
+
+    make test
+
+#### Project specific tests
+
+<% testableProjects.forEach(p => { %>    make test-<%- p.name %>
+<% }) %>
+
+### Start local server (hot-reloaded)
+
+#### Start all local services in one command
+
+    make start
+
+#### Project specific local service
+
+<% startableProjects.forEach(p => { %>    make start-<%- p.name %>
+<% }) %>
+
+### Build production-ready directory
+
+#### All builds
+
+By default if no ` env=<env>` is provided on the command line, the default value is considered to be `env=dev`:
+
+    make build
+
+...or to specify a target env explicitly:
+
+<% sortedProjectEnvs.forEach(e => { %>    make build env=<%- e.name %>
+<% }) %>
+
+#### Project specific build
+
+<% buildableProjects.forEach(p => { %>    make build-<%- p.name -%> env=<env>
+<% }) %>
+
+### Deploy to an environment
+
+As a pre-requisite, you need to have build the production-ready version of the website targeted for the specified `env` (`<%- sortedProjectEnvs.map(e => e.name).join('|') -%>`)
+
+    make
+    make test
+    make build env=<env>
+
+where `<env>` must be one of the values: <%- sortedProjectEnvs.map(e => `\`${e.name}\``).join(', ') -%>.
+
+After having built the production-ready static files, you can then execute:
+
+    make deploy env=<env>
+
+The `deploy` command will send and synchronize remote s3 bucket (containing static files served by the CloudFront CDN) with your local `./<deployable-project>/public/` or `./<deployable-project>/build/` directory, and then trigger a cache invalidation on the CloudFront distribution.
+You can deploy a single project by executing one of these commands:
+
+<% deployableProjects.forEach(p => { %>    make deploy-<%- p.name -%> env=<env>
+<% }) %>

@@ -1,0 +1,7 @@
+### Required CLI Tools & Settings
+
+<% if (sortedPreRequisites.length) { %><% sortedPreRequisites.forEach(f => { %>#### <%- f.name %>
+
+<%- f.type === 'template' ? include(f.template) : (f.type === 'inline' ? f.content : '') %>
+
+<% }) %><% } %>
