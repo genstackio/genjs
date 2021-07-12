@@ -150,7 +150,7 @@ export default class Package extends MonorepoPackage {
         } else {
             t.addNoopTarget('migrate');
         }
-        Object.keys(vars.project_envs || {}).forEach(env => {
+        [...Object.keys(vars.project_envs || {}), ...(!!vars.env_local ? ['local'] : [])].forEach(env => {
             t.addTarget(`switch-${env}`, generateEnvLocalableProjects.map(p => `make -C . generate-env-local-${p.name} env=${env}`))
         });
         preInstallableProjects.forEach(p => {
