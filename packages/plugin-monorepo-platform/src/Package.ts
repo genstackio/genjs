@@ -7,7 +7,9 @@ import {
     TerraformToVarsTemplate,
 } from '@genjs/genjs';
 import RootReadmeTemplate from "./RootReadmeTemplate";
+import DocTemplate from "./DocTemplate";
 import {buildProjectEnvsVars, buildProjectsVars} from "./utils";
+import ITemplate from "@genjs/genjs/lib/ITemplate";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -30,6 +32,7 @@ export default class Package extends AbstractPackage {
             ['Makefile']: this.buildMakefile(vars),
             ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
             ['README.md']: this.buildReadme(vars),
+            ...this.buildDocs(vars),
         };
     }
     protected buildLicense(vars: any): LicenseTemplate {
@@ -37,6 +40,13 @@ export default class Package extends AbstractPackage {
     }
     protected buildReadme(vars: any): ReadmeTemplate {
         return new RootReadmeTemplate(vars);
+    }
+    protected buildDocs(vars: any): {[key: string]: ITemplate} {
+        return vars['generate_docs'] ? {
+            ['docs/environments.md']: new DocTemplate('environments', vars),
+            ['docs/architecture.md']: new DocTemplate('architecture', vars),
+            ['docs/README.md']: new DocTemplate('readme', vars),
+        } : {};
     }
     protected buildGitIgnore(vars: any): GitIgnoreTemplate {
         return GitIgnoreTemplate.create(vars)
