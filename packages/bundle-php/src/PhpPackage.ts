@@ -28,7 +28,7 @@ export class PhpPackage extends BasePackage {
             .addNoopTarget('install')
             .addNoopTarget('build')
             .addNoopTarget('deploy')
-            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'PHP'})
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'PHP', mode: vars.env_mode || 'terraform'})
             .addNoopTarget('start')
             .addNoopTarget('test')
             ;

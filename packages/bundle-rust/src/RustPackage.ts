@@ -28,7 +28,7 @@ export class RustPackage extends BasePackage {
             .addNoopTarget('install')
             .addNoopTarget('build')
             .addNoopTarget('deploy')
-            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'RUBY'})
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'RUST', mode: vars.env_mode || 'terraform'})
             .addNoopTarget('start')
             .addNoopTarget('test')
             ;

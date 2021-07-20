@@ -124,7 +124,7 @@ export default class Package extends JavascriptPackage {
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addMetaTarget('build', ['build-code', 'build-package'])
-            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'NEXT'})
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'NEXT', mode: vars.env_mode || 'terraform'})
             .addPredefinedTarget('start', 'yarn-dev', {options: {port: this.getParameter('startPort')}, sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('serve', 'yarn-start', {options: {port: this.getParameter('servePort')}, sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})

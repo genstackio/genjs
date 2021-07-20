@@ -28,7 +28,7 @@ export class TypescriptPackage extends BasePackage {
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build', 'yarn-build')
             .addPredefinedTarget('deploy', 'yarn-deploy')
-            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'APP'})
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'APP', mode: vars.env_mode || 'terraform'})
             .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort')})
             .addPredefinedTarget('serve', 'yarn-serve', {port: this.getParameter('servePort')})
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})

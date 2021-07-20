@@ -50,7 +50,7 @@ export default class Package extends JavascriptPackage {
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build', 'yarn-build')
             .addPredefinedTarget('deploy', 'yarn-deploy')
-            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'DOCUSAURUS'})
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'DOCUSAURUS', mode: vars.env_mode || 'terraform'})
             .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort')})
             .addPredefinedTarget('serve', 'yarn-serve', {port: this.getParameter('servePort')})
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})

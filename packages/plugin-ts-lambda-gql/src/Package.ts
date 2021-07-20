@@ -75,7 +75,7 @@ export default class Package extends AwsLambdaPackage {
             .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'build/'})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
-            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS'})
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS', mode: vars.env_mode || 'terraform'})
             .addPredefinedTarget('start', 'yarn-start')
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})

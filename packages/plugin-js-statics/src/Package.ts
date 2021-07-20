@@ -88,7 +88,7 @@ export default class Package extends AbstractPackage {
             .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: `${vars.target_dir}/`})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
-            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS'})
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS', mode: vars.env_mode || 'terraform'})
             .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort')})
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})

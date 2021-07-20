@@ -27,7 +27,7 @@ describe('render', () => {
                 .addPredefinedTarget('deploy-code', 'aws-s3-sync')
                 .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
                 .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
-                .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'REACT_APP'})
+                .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'REACT_APP', mode: 'terraform'})
                 .addPredefinedTarget('start', 'yarn-start')
                 .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})
                 .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})

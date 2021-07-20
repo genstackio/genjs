@@ -36,7 +36,7 @@ export default class Package extends AwsLambdaPackage {
         return super.buildMakefile(vars)
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build', 'yarn-build')
-            .addPredefinedTarget('generate-env-local', 'generate-env-local', {})
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
             .addPredefinedTarget('start', 'yarn-start')
             .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
             .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})

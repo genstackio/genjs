@@ -48,7 +48,7 @@ export default class Package extends AwsLambdaPackage {
         return super.buildMakefile(vars)
             .addPredefinedTarget('install', 'pip-install', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
             .addNoopTarget('build')
-            .addPredefinedTarget('generate-env-local', 'generate-env-local')
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
             .addMetaTarget('clean', ['clean-build'])
             .addPredefinedTarget('clean-build', 'clean-build')
             .addNoopTarget('test')

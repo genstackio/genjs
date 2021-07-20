@@ -70,7 +70,7 @@ export default class Package extends AwsLambdaPackage {
             .addGlobalVar('env', 'dev')
             .addPredefinedTarget('install', 'yarn-install')
             .addPredefinedTarget('build', 'yarn-build')
-            .addPredefinedTarget('generate-env-local', 'generate-env-local')
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
             .addMetaTarget('clean', ['clean-modules', 'clean-coverage'])
             .addPredefinedTarget('clean-modules', 'clean-node-modules')
             .addPredefinedTarget('clean-coverage', 'clean-coverage')

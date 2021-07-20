@@ -94,7 +94,7 @@ export default class Package extends AwsLambdaPackage {
             .addPredefinedTarget('install-js', 'yarn-install')
             .addPredefinedTarget('build-package', 'yarn-build')
             .addTarget('build-assets', ['rm -rf build/assets', 'mkdir -p build/assets', 'cp -LR web/* build/assets/', 'rm -f build/assets/*.php'])
-            .addPredefinedTarget('generate-env-local', 'generate-env-local')
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
             .addMetaTarget('clean', ['clean-modules', 'clean-coverage', 'clean-vendor', 'clean-build', 'clean-web-bundles'])
             .addPredefinedTarget('clean-modules', 'clean-node-modules')
             .addPredefinedTarget('clean-coverage', 'clean-coverage')
