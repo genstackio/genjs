@@ -13,6 +13,8 @@ export class GenerateEnvLocalTarget extends GenericTarget {
                     `${binDir}/env ${prefix}_ > ./.env.local`,
                     `cat ${envDir}/${env}.env >> ./.env.local`,
                 ];
+            case 'none':
+                return [];
             default:
             case 'terraform':
                 const outputsDir = this.buildRelativeToRootPath(`outputs/${env}`);
