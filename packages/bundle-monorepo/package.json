@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-bundle-monorepo",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -22,9 +22,9 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-package": "^0.1.2"
+    "@genjs/genjs-bundle-package": "^0.1.3"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.2"
+    "@genjs/genjs": "^0.4.3"
   }
 }
