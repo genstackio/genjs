@@ -1,0 +1,7 @@
+### Optional Installation Procedures
+
+<% if (sortedInstallProcedures.length) { %><% sortedInstallProcedures.forEach(f => { %>#### Install <%- f.name %>
+
+<%- f.type === 'template' ? include(f.template) : (f.type === 'inline' ? f.content : '') %>
+
+<% }) %><% } %>
