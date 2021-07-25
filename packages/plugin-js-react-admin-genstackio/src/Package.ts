@@ -71,7 +71,7 @@ export default class Package extends JavascriptPackage {
             'public/manifest.json?': true,
             'public/robots.txt?': true,
             ...Object.entries(vars.project_envs || {}).reduce((acc, [k, v]) => {
-                acc[`env/${k}.env`] = ['env/env.env.ejs', {project_env: v}];
+                acc[`env/${k}.env?`] = ['env/env.env.ejs', {project_env: v}];
                 return acc;
             }, {}),
             'src/App.test.tsx?': true,
