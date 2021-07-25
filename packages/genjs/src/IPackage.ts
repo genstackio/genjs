@@ -10,6 +10,8 @@ export interface IPackage {
     hasFeature(name: string, defaultValue? : boolean): boolean;
     describe(): Promise<any>;
     hydrate(data): Promise<void>;
+    initialize(dir: string, vars?: any): Promise<void>;
+    finish(dir: string, vars?: any): Promise<void>;
     generate(vars: any): Promise<{[key: string]: Function}>;
 }
 

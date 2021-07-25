@@ -8,5 +8,6 @@ export function register(generator: IGenerator): void {
 }
 
 export * from './JavascriptPackage'
+export * from './initializers'
 
 export default register

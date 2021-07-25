@@ -282,6 +282,15 @@ export class Genjs implements IGenerator {
             vars.verbose = vars.verbose || process.env.GENJS_VERBOSE || 0;
             const {write = false, targetDir} = vars;
             this.applyGroupEventHooks(g, 'before');
+            const initialized: {[key: string]: IPackage} = {};
+            await packages.reduce(async (acc, p) => {
+                await acc;
+                if (write && !this.isPackageAlreadyInitialized(p, g, vars)) {
+                    const pd = this.computePackageDir(p, g, vars);
+                    p.initialize && (await p.initialize(pd, vars));
+                    initialized[pd] = p;
+                }
+            }, Promise.resolve());
             await packages.reduce(async (acc, p) => {
                 await acc;
                 description.projectData = {};
@@ -291,16 +300,17 @@ export class Genjs implements IGenerator {
                 delete description.projectData;
             }, Promise.resolve());
             const rr = (await Promise.all(packages.map(async p => {
+                const pd = this.computePackageDir(p, g, vars);
                 const n = (<any>p).getName ? (<any>p).getName() : p['name'];
                 this.applyPackageEventHooks(p, 'before_generate', {}, g);
                 const generateResult = p.generate ? await p.generate(vars) : {};
                 this.applyPackageEventHooks(p, 'after_generate', generateResult, g);
-                return [n, generateResult];
+                return [n, generateResult, !!initialized[pd]];
             })))
                 .reduce(
-                    (acc2, [p, f]) =>
+                    (acc2, [p, f, kk]) =>
                         Object.entries(f).reduce((acc3, [k, v]) => {
-                            acc3[`${p}/${k}`] = [p, v];
+                            acc3[`${p}/${k}`] = [p, v, kk];
                             return acc3;
                         }, acc2)
                     ,
@@ -311,11 +321,11 @@ export class Genjs implements IGenerator {
             const entries = Object.entries(rr);
             entries.sort(([k1], [k2]) => k1 < k2 ? -1 : (k1 === k2 ? 0 : 1));
             entries.forEach(([k, x]) => {
-                const [p, v] = <any>x;
+                const [p, v, kk] = <any>x;
                 const isBootstrappedFile = '?' === k.slice(-1);
                 isBootstrappedFile && (k = k.slice(0, -1));
                 const filePath = `${this.computeTargetDir(targetDir, g.getDir())}/${k}`;
-                if (!this.isFileLocked(filePath, targetDir, isBootstrappedFile)) {
+                if (!this.isFileLocked(filePath, targetDir, !kk && isBootstrappedFile)) {
                     if (vars.verbose >= 1) console.log(g.getName(), k);
                     const t: ITemplate = isTemplate(v) ? v : new Template(v);
                     const fileCopy = (source, target) => copy(
@@ -330,6 +340,10 @@ export class Genjs implements IGenerator {
                 }
             });
             Object.assign(result, rr);
+            await Object.entries(initialized).reduce(async (acc, [dir, p]) => {
+                await acc;
+                p.finish && (await p.finish(dir, vars));
+            }, Promise.resolve());
             return result;
         }, Promise.resolve({})));
         this.applyGlobalEventHooks('generated', r);
@@ -344,6 +358,13 @@ export class Genjs implements IGenerator {
                 packages: {},
             })})
         );
+    }
+    private computePackageDir(p: IPackage, g: PackageGroup, vars: any): string {
+        const n = (<any>p).getName ? (<any>p).getName() : p['name'];
+        return `${this.computeTargetDir(vars['targetDir'], g.getDir())}/${n}`
+    }
+    private isPackageAlreadyInitialized(p: IPackage, g: PackageGroup, vars: any): boolean {
+        return fs.existsSync(this.computePackageDir(p, g, vars));
     }
     private isFileLocked(targetPath, targetDir, bootstrapOnly = false): boolean {
         const a = path.resolve(targetPath);

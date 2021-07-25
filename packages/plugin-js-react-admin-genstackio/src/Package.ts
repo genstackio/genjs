@@ -1,4 +1,6 @@
-import {JavascriptPackage} from '@genjs/genjs-bundle-javascript';
+import {JavascriptPackage, NpxInitializer} from '@genjs/genjs-bundle-javascript';
+import {IInitializer, IFinisher, MakeFinisher} from "@genjs/genjs";
+import path from 'path';
 
 export default class Package extends JavascriptPackage {
     constructor(config: any) {
@@ -29,6 +31,19 @@ export default class Package extends JavascriptPackage {
         };
         return vars;
     }
+    protected buildInitializers(dir: string, vars?: any): IInitializer[] {
+        return [
+            ...super.buildInitializers(dir, vars),
+            new NpxInitializer('create-react-app', [path.basename(dir), '--template', 'typescript'], {parentDir: true}),
+        ];
+    }
+    protected buildFinishers(dir: string, vars?: any): IFinisher[] {
+        return [
+            ...super.buildFinishers(dir, vars),
+            new MakeFinisher('install'),
+        ];
+    }
+
     protected buildReadme(vars: any) {
         return super.buildReadme(vars)
             .addFragmentFromTemplate(`${__dirname}/../templates/readme/original.md.ejs`)

@@ -4,6 +4,8 @@ import {populateData} from "./utils";
 import {requireTechnologies} from '@ohoareau/technologies';
 import detectTechnologies from '@ohoareau/technologies-detector';
 import IBehaviour from "./IBehaviour";
+import IInitializer from "./IInitializer";
+import IFinisher from "./IFinisher";
 
 export type BasePackageConfig = {
     name: string,
@@ -209,6 +211,12 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
             ...requireTechnologies(this.detectTechnologies().concat(this.getTechnologies().filter(x => !!x))),
         };
     }
+    protected buildInitializers(dir: string, vars: any = {}): IInitializer[] {
+        return [];
+    }
+    protected buildFinishers(dir: string, vars: any = {}): IFinisher[] {
+        return [];
+    }
     detectTechnologies(): string[] {
         return detectTechnologies(this.vars.targetDir);
     }
@@ -219,6 +227,18 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
             if ('undefined' !== typeof this.vars[k]) return;
             this.vars[k] = v;
         });
+    }
+    async initialize(dir: string, vars: any = {}): Promise<void> {
+        await this.buildInitializers(dir, vars).reduce(async (acc, initializer) => {
+            await acc;
+            return initializer.execute(dir, vars);
+        }, Promise.resolve());
+    }
+    async finish(dir: string, vars: any = {}): Promise<void> {
+        await this.buildFinishers(dir, vars).reduce(async (acc, finisher) => {
+            await acc;
+            return finisher.execute(dir, vars);
+        }, Promise.resolve());
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
         const pluginCfg = {templatePath: this.getTemplateRoot()};
