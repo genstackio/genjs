@@ -1,0 +1,23 @@
+import {AppLayout as BaseAppLayout, AppLayoutProps as BaseAppLayoutProps} from "@genstackio/react-admin-core/lib/layouts/AppLayout";
+import {useHistory} from 'react-router-dom';
+import {useTranslation} from "react-i18next";
+import {logoFull} from '../configs/logos';
+
+export function AppLayout({children, ...props}: AppLayoutProps) {
+    const { t } = useTranslation();
+    const history = useHistory();
+    const menu: any[] = [
+//        {type: 'item', target: () => history.push('/users'), label: t('menu_users_label'), icon: 'fa-users'},
+//        {type: 'item', target: () => history.push('/organizations'), label: t('menu_organizations_label'), icon: 'fa-building'},
+    ];
+
+    return (
+        <BaseAppLayout logo={logoFull} menu={menu} {...props}>
+            {children}
+        </BaseAppLayout>
+    );
+}
+
+export interface AppLayoutProps extends BaseAppLayoutProps {}
+
+export default AppLayout;

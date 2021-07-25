@@ -11,4 +11,4 @@ github_aws_profile: genjs-${{env.env}}
 npm_scope: genjs
 scm: github
 license: ISC
-node_version: 14.3.0
+node_version: 16.5.0

@@ -128,10 +128,20 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     }
     protected async buildFiles(vars: any, cfg: any): Promise<any> {
         const files = Object.entries(await this.buildFilesFromTemplates(vars, cfg)).reduce((acc, [k, v]) => {
-            acc[k] = ({renderFile}) => renderFile(cfg)(true === v ? `${k}.ejs` : v, vars);
+            const realK = '?' === k.slice(-1) ? k.slice(0, -1) : k;
+            const extraVars = {};
+            if (Array.isArray(v)) {
+                Object.assign(extraVars, v[1] || {});
+                v = v[0] || true;
+            }
+            acc[k] = ({renderFile}) => renderFile(cfg)(true === v ? `${realK}.ejs` : v, {...vars, ...extraVars});
             return acc;
         }, {});
-        Object.assign(files, await this.buildStaticFiles(vars, cfg));
+        Object.assign(files, Object.entries(await this.buildStaticFiles(vars, cfg)).reduce((acc, [k, v]) => {
+            const realK = '?' === k.slice(-1) ? k.slice(0, -1) : k;
+            acc[k] = (true === v) ? ({copy}) => copy(`${this.getTemplateRoot()}/${realK}`, realK) : v;
+            return acc;
+        }, {}));
         return Object.assign(files, await this.buildDynamicFiles(vars, cfg));
     }
     // noinspection JSUnusedLocalSymbols
@@ -149,9 +159,11 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
     protected getTechnologies(): any {
         return [];
     }
+    // noinspection JSUnusedGlobalSymbols
     protected getPreRequisites(): any {
         return {};
     }
+    // noinspection JSUnusedGlobalSymbols
     protected getInstallProcedures(): any {
         return {};
     }
@@ -234,6 +246,7 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         const k = `feature_${feature}`;
         return (!!vars && ('undefined' !== typeof vars[k])) ? vars[k] : defaultValue;
     }
+    // noinspection JSUnusedGlobalSymbols
     hasVarsCategoryFeature(vars: any, category: string, feature: string, defaultValue: boolean = false): boolean {
         return this.hasVarsFeature(vars, `${category}_${feature}`, defaultValue);
     }

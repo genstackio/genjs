@@ -312,8 +312,10 @@ export class Genjs implements IGenerator {
             entries.sort(([k1], [k2]) => k1 < k2 ? -1 : (k1 === k2 ? 0 : 1));
             entries.forEach(([k, x]) => {
                 const [p, v] = <any>x;
+                const isBootstrappedFile = '?' === k.slice(-1);
+                isBootstrappedFile && (k = k.slice(0, -1));
                 const filePath = `${this.computeTargetDir(targetDir, g.getDir())}/${k}`;
-                if (!this.isFileLocked(filePath, targetDir)) {
+                if (!this.isFileLocked(filePath, targetDir, isBootstrappedFile)) {
                     if (vars.verbose >= 1) console.log(g.getName(), k);
                     const t: ITemplate = isTemplate(v) ? v : new Template(v);
                     const fileCopy = (source, target) => copy(
@@ -343,9 +345,10 @@ export class Genjs implements IGenerator {
             })})
         );
     }
-    private isFileLocked(targetPath, targetDir): boolean {
+    private isFileLocked(targetPath, targetDir, bootstrapOnly = false): boolean {
         const a = path.resolve(targetPath);
         const b = path.resolve(targetDir);
+        if (bootstrapOnly && fs.existsSync(a)) return true;
         if (a.slice(0, b.length) === b) {
             const c = a.slice(b.length);
             if (!!this.locked[c]) return true;

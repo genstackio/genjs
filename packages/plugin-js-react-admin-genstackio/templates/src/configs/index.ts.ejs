@@ -1,0 +1,22 @@
+import {ComponentType, lazy, LazyExoticComponent} from "react";
+
+export {default as app} from './app';
+
+export {default as routes} from './routes';
+
+export {default as icons} from './icons';
+
+export * as queries from './queries';
+
+export {default as translations} from './translations';
+
+export const importer = (key: string, name: string): LazyExoticComponent<ComponentType<any>>|undefined => {
+    switch (key) {
+        case 'screen':
+            return lazy(() => import(`../screens/${name}Screen`));
+        default:
+            return undefined;
+    }
+};
+
+export * as theme from './theme';

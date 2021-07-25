@@ -1,0 +1,56 @@
+import AppLayout from "../layouts/AppLayout";
+import Table from '@genstackio/react-admin-ui/lib/molecules/Table';
+import Alert from '@genstackio/react-admin-ui/lib/atoms/Alert';
+import ScreenHeader from '@genstackio/react-admin-ui/lib/organisms/ScreenHeader';
+import { useQueryApi } from "@genstackio/react-contexts";
+import {useCallback, useState} from "react";
+import {useTranslation} from "react-i18next";
+import Button from "@genstackio/react-admin-ui/lib/atoms/Button";
+
+function ListScreenTemplate({ name, columns = [], defaultRowsPerPage = 10, breadcrumbs = [], onNewClick }: ListScreenTemplateProps) {
+    const { t } = useTranslation();
+    const [rowsPerPage] = useState(defaultRowsPerPage);
+    const {data, loading, error, refetch} = useQueryApi(`FIND_${name.toUpperCase()}`, {
+        fetchPolicy: 'cache-and-network',
+        variables: {
+            limit: rowsPerPage,
+        }
+    }) as any;
+    const key = `find${name[0].toUpperCase() + name.slice(1)}`;
+    const items = ((data || {})[key] || {})['items'] || [];
+    const cursor = ((data || {})[key] || {})['cursor'];
+    const handlePageChange = useCallback(e => {
+        refetch({
+            offset: cursor,
+            limit: rowsPerPage,
+        })
+    }, [refetch, cursor, rowsPerPage]);
+
+    return (
+        <AppLayout>
+            {!!breadcrumbs.length && <ScreenHeader items={breadcrumbs} className={'mt-3 mb-5'} />}
+            {!!onNewClick && <Button className={'mb-4'} onClick={onNewClick}>{t('button_add_label')}</Button>}
+            {!!error && <Alert color={'danger'} className={'mb-2'}>{error.message}</Alert>}
+            {!items.length && <Alert color={'warning'}>{t([`screen_${name}_list_table_empty`, 'screen_generic_list_table_empty'])}</Alert>}
+            {!!items.length && <Table items={items} columns={columns} loading={loading} defaultRowsPerPage={rowsPerPage} onPageChange={handlePageChange} total={(items.length === defaultRowsPerPage) ? 10000 : items.length} />}
+        </AppLayout>
+    );
+}
+
+export interface ListScreenTemplateProps {
+    name: string;
+    columns?: {
+        id: string;
+        format?: any;
+        label?: string;
+        width?: number;
+        render?: Function;
+    }[];
+    breadcrumbs?: {
+        label: string;
+    }[];
+    defaultRowsPerPage?: number;
+    onNewClick?: Function;
+}
+
+export default ListScreenTemplate

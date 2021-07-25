@@ -1,0 +1,10 @@
+import {BaseApp} from '@genstackio/react-admin-core';
+import * as config from './configs';
+import useApp from "@genstackio/react-admin-core/lib/hooks/useApp";
+import '@genstackio/react-admin-core/assets/css/styles.css';
+
+function App() {
+    return <BaseApp {...useApp(config)} />;
+}
+
+export default App

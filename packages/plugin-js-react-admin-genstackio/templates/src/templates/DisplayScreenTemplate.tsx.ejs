@@ -1,0 +1,43 @@
+import AppLayout from "../layouts/AppLayout";
+import Alert from '@genstackio/react-admin-ui/lib/atoms/Alert';
+import ScreenHeader from '@genstackio/react-admin-ui/lib/organisms/ScreenHeader';
+import Infos from '@genstackio/react-admin-ui/lib/molecules/Infos';
+import { useQueryApi } from "@genstackio/react-contexts";
+import {useTranslation} from "react-i18next";
+
+function DisplayScreenTemplate({ id, name, breadcrumbs = [], properties = [] }: DisplayScreenTemplateProps) {
+    const { t } = useTranslation();
+    const {data, error} = useQueryApi(`GET_${name.toUpperCase()}`, {
+        fetchPolicy: 'cache-and-network',
+        variables: {
+            id,
+        }
+    }) as any;
+    const key = `get${name[0].toUpperCase() + name.slice(1)}`;
+    const doc = ((data || {})[key] || {});
+
+    const fetchedProperties: {label: any, value: any}[] = properties.map(key => {
+        return {value: doc[key], label: key};
+    });
+    return (
+        <AppLayout>
+            {!!breadcrumbs.length && <ScreenHeader items={breadcrumbs} className={'mt-3 mb-5'} />}
+            {!!error && <Alert color={'danger'} className={'mb-2'}>{error.message}</Alert>}
+            {!doc && <Alert color={'warning'}>{t([`screen_${name}_display_doc_empty`, 'screen_generic_display_doc_empty'])}</Alert>}
+            {!!doc && (
+                <Infos items={fetchedProperties} className={'w-1/3 md:w-1/2 xs:w-full'} />
+            )}
+        </AppLayout>
+    );
+}
+
+export interface DisplayScreenTemplateProps {
+    id: string;
+    name: string;
+    breadcrumbs?: {
+        label: string;
+    }[];
+    properties?: string[];
+}
+
+export default DisplayScreenTemplate

@@ -1,0 +1,99 @@
+// noinspection JSUnusedGlobalSymbols
+export const LOGIN = (gql: any) => gql`
+    mutation login($data: CreateAuthTokenInput!) {
+        createAuthToken(data: $data) {
+            token
+            refreshToken
+        }
+    }
+`;
+// noinspection JSUnusedGlobalSymbols
+export const CREATE_USER = (gql: any) => gql`
+    mutation createUser($data: CreateUserInput!) {
+        createUser(data: $data) {
+            id
+        }
+    }
+`;
+// noinspection JSUnusedGlobalSymbols
+export const CREATE_ORGANIZATION = (gql: any) => gql`
+    mutation createOrganization($data: CreateOrganizationInput!) {
+        createOrganization(data: $data) {
+            id
+        }
+    }
+`;
+// noinspection JSUnusedGlobalSymbols
+export const GET_CURRENT_USER = (gql: any) => gql`
+    query getCurrentUser {
+        getCurrentUser {
+            id
+            email
+            firstName
+            lastName
+            createdAt
+            updatedAt
+            status
+            role
+        }
+    }
+`;
+// noinspection JSUnusedGlobalSymbols
+export const GET_USER = (gql: any) => gql`
+    query getUser($id: ID!) {
+        getUser(id: $id) {
+            id
+            email
+            firstName
+            lastName
+            createdAt
+            updatedAt
+            status
+            tags
+            role
+        }
+    }
+`;
+// noinspection JSUnusedGlobalSymbols
+export const GET_ORGANIZATION = (gql: any) => gql`
+    query getOrganization($id: ID!) {
+        getOrganization(id: $id) {
+            id
+            name
+            createdAt
+            updatedAt
+            status
+            tags
+        }
+    }
+`;
+// noinspection JSUnusedGlobalSymbols
+export const FIND_USERS = (gql: any) => gql`
+    query findUsers {
+        findUsers {
+            items {
+                id
+                lastName
+                firstName
+                email
+                createdAt
+                updatedAt
+                status
+            }
+        }
+    }
+`;
+// noinspection JSUnusedGlobalSymbols
+export const FIND_ORGANIZATIONS = (gql: any) => gql`
+    query findOrganizations {
+        findOrganizations {
+            items {
+                id
+                name
+                createdAt
+                updatedAt
+                status
+            }
+        }
+    }
+`;

@@ -1,0 +1,10 @@
+import BaseLoginScreen, {LoginScreenProps as BaseLoginScreenProps} from '@genstackio/react-admin-core/lib/screens/LoginScreen';
+import {logoFull} from '../configs/logos';
+
+export function LoginScreen(props: LoginScreenProps) {
+    return <BaseLoginScreen logo={logoFull} {...props} />;
+}
+
+export type LoginScreenProps = BaseLoginScreenProps;
+
+export default LoginScreen;
