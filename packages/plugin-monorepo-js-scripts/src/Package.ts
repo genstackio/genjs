@@ -34,7 +34,7 @@ export default class Package extends AbstractPackage {
             ['LICENSE.md']: new LicenseTemplate(vars),
             ['README.md']: this.buildReadme(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
-            ['.nvmrc']: new NvmRcTemplate(vars),
+            ...(vars.node_version ? {['.nvmrc']: new NvmRcTemplate(vars)} : {}),
             ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         };
     }

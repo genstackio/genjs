@@ -2,7 +2,7 @@ import {
     AbstractPackage,
     GitIgnoreTemplate,
     LicenseTemplate,
-    MakefileTemplate,
+    MakefileTemplate, NvmRcTemplate,
     ReadmeTemplate,
 } from '@genjs/genjs';
 
@@ -35,6 +35,7 @@ export default class Package extends AbstractPackage {
             ['README.md']: this.buildReadme(vars),
             ['Makefile']: this.buildMakefile(vars),
             ['.gitignore']: this.buildGitIgnore(vars),
+            ...(vars.node_version ? {['.nvmrc']: new NvmRcTemplate(vars)} : {}),
         };
     }
     protected buildReadme(vars: any): ReadmeTemplate {

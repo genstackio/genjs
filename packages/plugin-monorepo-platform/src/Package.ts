@@ -2,7 +2,7 @@ import {
     AbstractPackage,
     GitIgnoreTemplate,
     LicenseTemplate,
-    MakefileTemplate,
+    MakefileTemplate, NvmRcTemplate,
     ReadmeTemplate,
     TerraformToVarsTemplate,
 } from '@genjs/genjs';
@@ -32,6 +32,7 @@ export default class Package extends AbstractPackage {
             ['Makefile']: this.buildMakefile(vars),
             ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
             ['README.md']: this.buildReadme(vars),
+            ...(vars.node_version ? {['.nvmrc']: new NvmRcTemplate(vars)} : {}),
             ...this.buildDocs(vars),
         };
     }

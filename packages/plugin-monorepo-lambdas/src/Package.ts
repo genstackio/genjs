@@ -1,7 +1,7 @@
 import {
     GitIgnoreTemplate,
     LicenseTemplate,
-    MakefileTemplate,
+    MakefileTemplate, NvmRcTemplate,
     ReadmeTemplate,
 } from '@genjs/genjs';
 import {MonorepoPackage} from '@genjs/genjs-bundle-monorepo';
@@ -28,6 +28,7 @@ export default class Package extends MonorepoPackage {
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
             ['README.md']: this.buildReadme(vars),
+            ...(vars.node_version ? {['.nvmrc']: new NvmRcTemplate(vars)} : {}),
         };
     }
     protected buildLicense(vars: any): LicenseTemplate {

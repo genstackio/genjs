@@ -59,7 +59,7 @@ export default class Package extends AbstractPackage {
             ['Makefile']: this.buildMakefile(vars),
             ['CODE_OF_CONDUCT.md']: new CodeOfConductTemplate(vars),
             ['CONTRIBUTING.md']: new ContributingTemplate(vars),
-            ['.nvmrc']: new NvmRcTemplate(vars),
+            ...(vars.node_version ? {['.nvmrc']: new NvmRcTemplate(vars)} : {}),
             ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
         };
     }
