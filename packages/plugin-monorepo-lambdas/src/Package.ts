@@ -99,6 +99,9 @@ export default class Package extends MonorepoPackage {
             .addGroup('IDE files', [
                 '.idea/'
             ])
+            .addGroup('Lambda Packages', [
+                'build/package.zip',
+            ])
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {

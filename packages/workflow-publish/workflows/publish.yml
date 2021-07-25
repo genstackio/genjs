@@ -1,0 +1,26 @@
+vars:
+  CI:
+    exported: true
+  FORCE_COLOR:
+    exported: true
+
+steps:
+  default: install
+  pre-install-root:
+    - install-root
+  install:
+    - install-root
+    - install-packages
+    - build
+  build: buildable-projects()
+  test:
+    - build
+    - test-only
+  clean:
+    - clean-lib
+    - clean-modules
+    - clean-coverage
+    - clean-buildinfo
+  changed: ~
+  publish: ~
+  deploy: ~
