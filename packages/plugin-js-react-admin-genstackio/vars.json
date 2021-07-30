@@ -37,8 +37,6 @@
     "@genstackio/react-contexts": "^0.2.14",
     "@genstackio/craco-plugin-genstackio": "^0.3.1",
 
-    "@gotombola/logos": "^0.1.1",
-
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-regular-svg-icons": "^5.15.3",

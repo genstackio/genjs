@@ -46,7 +46,7 @@ data "terraform_remote_state" "<%- remoteState.name -%>" {
 module "main" {
   source      = "genstackio/layer-admin/aws"
   version     = "0.1.0"
-  bucket_name = "{{env}}-gotombola-platform-admin"
+  bucket_name = "{{layer_name_prefix}}-platform-admin"
   dns         = "admin.{{dns}}"
   dns_zone    = data.terraform_remote_state.dns.outputs.zone
   providers   = {
