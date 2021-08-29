@@ -82,6 +82,7 @@ export default class Package extends JavascriptPackage {
             'craco.config.js?': true,
             'tsconfig.json?': true,
             'tailwind.config.js?': true,
+            'postcss.config.js?': true,
             'public/index.html?': true,
             'public/manifest.json?': true,
             'public/robots.txt?': true,
@@ -90,6 +91,7 @@ export default class Package extends JavascriptPackage {
                 return acc;
             }, {}),
             'src/App.test.tsx?': true,
+            'src/index.css?': true,
             'src/App.tsx': true,
             'src/index.tsx': true,
             'src/react-app-env.d.ts': true,
@@ -126,7 +128,7 @@ export default class Package extends JavascriptPackage {
             .addGroup('misc', [
                 '.DS_Store',
                 '.env.local', '.env.development.local', '.env.test.local', '.env.production.local',
-                'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*',
+                'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*', '/src/index.generated.css'
             ])
             ;
     }

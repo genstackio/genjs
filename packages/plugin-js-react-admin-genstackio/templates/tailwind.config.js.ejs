@@ -2,17 +2,11 @@ module.exports = {
   mode: 'jit',
   purge: {
       content: [
-          './src/**/*.tsx',
-          './src/**/*.ts',
+          './src/**/*.{js,jsx,ts,tsx}',
           './node_modules/@genstackio/react-admin-ui/lib/**/*.js',
           './node_modules/@genstackio/react-admin-core/lib/**/*.js',
           './node_modules/@genstackio/react-admin-contexts/lib/**/*.js',
       ],
-    options: {
-      safelist: {
-        standard: [/^theme-/],
-      }
-    }
   },
   darkMode: false, // or 'media' or 'class'
   presets: [
