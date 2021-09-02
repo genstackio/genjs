@@ -7,6 +7,7 @@ import {
 import {MonorepoPackage} from '@genjs/genjs-bundle-monorepo';
 import RootReadmeTemplate from "./RootReadmeTemplate";
 import {buildProjectsVars} from "./utils";
+import {applyScmMakefileHelper} from "@genjs/genjs-bundle-scm";
 
 export default class Package extends MonorepoPackage {
     protected getTemplateRoot(): string {
@@ -105,7 +106,6 @@ export default class Package extends MonorepoPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const scm = vars.scm || 'git';
         const {
             deployableProjects,
             migratableProjects,
@@ -119,11 +119,11 @@ export default class Package extends MonorepoPackage {
             startableProjects,
             testableProjects,
         } = buildProjectsVars(vars);
-        const t = new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({options: {npmClient: vars.npm_client}, predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'develop')
-            .addPredefinedTarget('generate', 'yarn-genjs')
-            .addPredefinedTarget('install-root', 'yarn-install')
+            .addPredefinedTarget('generate', 'js-genjs')
+            .addPredefinedTarget('install-root', 'js-install')
             .addMetaTarget('pre-install-root', ['install-root'])
             .addMetaTarget('deploy', deployableProjects.map(p => `deploy-${p.name}`))
             .addMetaTarget('build', [...buildablePreProjects.map(p => `build-${p.name}`), ...buildablePostProjects.map(p => `build-${p.name}`)])
@@ -184,7 +184,9 @@ export default class Package extends MonorepoPackage {
         startableProjects.forEach(p => {
             !!p.startable && t.addSubTarget(`start-${p.name}`, p.fullDir, 'start', {env: '$(env)'});
         });
-        ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
+
+        applyScmMakefileHelper(t, vars, this);
+
         return t;
     }
     protected getTechnologies(): any {

@@ -25,6 +25,7 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
+    "@genjs/genjs-bundle-scm": "^0",
     "@genjs/genjs-bundle-monorepo": "^0.1.5"
   },
   "devDependencies": {

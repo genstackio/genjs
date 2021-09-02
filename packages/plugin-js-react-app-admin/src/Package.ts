@@ -190,7 +190,7 @@ export default class Package extends AbstractPackage {
             ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        return new MakefileTemplate({options: {npmClient: vars.npm_client}, predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
@@ -198,17 +198,17 @@ export default class Package extends AbstractPackage {
             .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-${vars.name}`)
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()})`)
             .setDefaultTarget('install')
-            .addPredefinedTarget('install', 'yarn-install')
-            .addPredefinedTarget('build', 'yarn-build', {ci: (!!vars.hide_ci) ? 'hidden' : undefined})
+            .addPredefinedTarget('install', 'js-install')
+            .addPredefinedTarget('build', 'js-build', {ci: (!!vars.hide_ci) ? 'hidden' : undefined})
             .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'build/'})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'REACT_APP', mode: vars.env_mode || 'terraform'})
-            .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort')})
-            .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})
-            .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
-            .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
-            .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true, coverage: false})
+            .addPredefinedTarget('start', 'js-start', {port: this.getParameter('startPort')})
+            .addPredefinedTarget('test', 'js-test', {ci: true, coverage: false})
+            .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
+            .addPredefinedTarget('test-cov', 'js-test', {local: true})
+            .addPredefinedTarget('test-ci', 'js-test', {ci: true, coverage: false})
             .addExportedVar('CI')
         ;
     }

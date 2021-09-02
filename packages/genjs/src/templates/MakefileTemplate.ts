@@ -51,6 +51,7 @@ export type MakefileTemplateConfig = {
     defines?: {[name: string]: Omit<DefineConfig, 'name'>},
     relativeToRoot?: string,
     defaultTarget?: string,
+    options?: {[key: string]: any},
 };
 
 export class MakefileTemplate extends AbstractFileTemplate {
@@ -62,12 +63,14 @@ export class MakefileTemplate extends AbstractFileTemplate {
     private customConfig: MakefileTemplateConfig;
     private customConsumed: boolean;
     private readonly relativeToRoot: string;
-    constructor(config: MakefileTemplateConfig = {predefinedTargets: {}, targets: {}, globals: {}, exports: {}, defines: {}, relativeToRoot: '..'}) {
+    private readonly options: any;
+    constructor(config: MakefileTemplateConfig = {predefinedTargets: {}, targets: {}, globals: {}, exports: {}, defines: {}, relativeToRoot: '..', options: {}}) {
         super();
         this.predefinedTargets = config.predefinedTargets || {};
         this.customConsumed = false;
         this.customConfig = config;
         this.relativeToRoot = config.relativeToRoot || '..';
+        this.options = config.options;
         config.defaultTarget && this.setDefaultTarget(config.defaultTarget);
     }
     getTemplatePath() {
@@ -183,7 +186,7 @@ export class MakefileTemplate extends AbstractFileTemplate {
     addPredefinedTarget(name: string, type?: string, options: any = {}, extraSteps: string[] = [], extraDependencies: string[] = []): this {
         const tName = `${(type || name).split(/-/g).map(t => `${t.slice(0, 1).toUpperCase()}${t.slice(1)}`).join('')}Target`;
         if (!this.predefinedTargets[tName]) throw new Error(`Unknown predefined target with name ${type || name}`);
-        this.targets.push(new this.predefinedTargets[tName]({name, steps: extraSteps, dependencies: extraDependencies, options: {relativeToRoot: this.relativeToRoot, ...options}}));
+        this.targets.push(new this.predefinedTargets[tName]({name, steps: extraSteps, dependencies: extraDependencies, options: {relativeToRoot: this.relativeToRoot, ...this.options, ...options}}));
         return this;
     }
     addDefine(name: string, code: string): this {

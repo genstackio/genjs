@@ -2,6 +2,7 @@ import Package from './Package';
 import {IGenerator, IPlugin, IPackage, PackageGroup} from '@genjs/genjs';
 import {buildProjectsVars} from "./utils";
 import registerMonorepoBundle from '@genjs/genjs-bundle-monorepo';
+import registerScmBundle from '@genjs/genjs-bundle-scm';
 
 export default class Plugin implements IPlugin {
     onPackageCreated(p: IPackage, eventType: string, ctx: {data: any, globalContext: any, group: PackageGroup}): void {
@@ -44,6 +45,7 @@ export default class Plugin implements IPlugin {
     }
     register(generator: IGenerator): void {
         registerMonorepoBundle(generator);
+        registerScmBundle(generator);
         generator.registerPackageEventHook('*', 'created', this.onPackageCreated);
         generator.registerPackageEventHook('*', 'before_hydrate', this.onProjectHydrate);
         generator.registerPackageEventHook('monorepo-lambdas', 'before_hydrate', this.onMonorepoLambdasHydrate);

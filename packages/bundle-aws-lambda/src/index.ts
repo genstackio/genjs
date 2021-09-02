@@ -10,5 +10,6 @@ export function register(generator: IGenerator): void {
 }
 
 export * from './AwsLambdaPackage'
+export * from './helpers';
 
 export default register

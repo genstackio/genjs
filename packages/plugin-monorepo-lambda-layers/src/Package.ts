@@ -5,6 +5,7 @@ import {
     MakefileTemplate, NvmRcTemplate,
     ReadmeTemplate,
 } from '@genjs/genjs';
+import {applyScmMakefileHelper} from "@genjs/genjs-bundle-scm";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -54,8 +55,7 @@ export default class Package extends AbstractPackage {
             ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const scm = vars.scm || 'git';
-        const t = new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({options: {npmClient: vars.npm_client}, predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .setDefaultTarget('install')
             .addExportedVar('CI')
             .addGlobalVar('l', 'noname')
@@ -70,14 +70,15 @@ export default class Package extends AbstractPackage {
             .addTarget('clean', ['$(foreach l,$(layers),make -C layers/$(l) clean;)'])
             .addTarget('prepare-build', ['$(foreach l,$(layers),make -C layers/$(l) prepare-build;)'])
             .addTarget('layer-publish', ['make -C layers/$(l) publish'])
-            .addPredefinedTarget('generate', 'yarn-genjs')
-            .addPredefinedTarget('install-root', 'yarn-install')
+            .addPredefinedTarget('generate', 'js-genjs')
+            .addPredefinedTarget('install-root', 'js-install')
             .addTarget('list-layers', ['echo $(layers)'])
             .addTarget('new', ['/bin/echo -n "Layer name: " && read layer_name && cp -R templates layers/$$layer_name'])
             .addExportedVar('CI')
         ;
 
-        ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
+        applyScmMakefileHelper(t, vars, this);
+
         return t;
     }
     protected getTechnologies(): any {

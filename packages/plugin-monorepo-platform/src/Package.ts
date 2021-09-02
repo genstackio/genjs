@@ -10,6 +10,7 @@ import RootReadmeTemplate from "./RootReadmeTemplate";
 import DocTemplate from "./DocTemplate";
 import {buildProjectEnvsVars, buildProjectsVars} from "./utils";
 import ITemplate from "@genjs/genjs/lib/ITemplate";
+import {applyScmMakefileHelper} from "@genjs/genjs-bundle-scm";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -117,7 +118,6 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const scm = vars.scm || 'git';
         const {
             deployableProjects,
             migratableProjects,
@@ -132,11 +132,11 @@ export default class Package extends AbstractPackage {
             testableProjects,
         } = buildProjectsVars(vars);
         const {sortedProjectEnvs} = buildProjectEnvsVars(vars);
-        const t = new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({options: {npmClient: vars.npm_client}, predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'develop')
-            .addPredefinedTarget('generate', 'yarn-genjs')
-            .addPredefinedTarget('install-root', 'yarn-install')
+            .addPredefinedTarget('generate', 'js-genjs')
+            .addPredefinedTarget('install-root', 'js-install')
             .addPredefinedTarget('install-terraform', 'tfenv-install')
             .addMetaTarget('pre-install-root', ['install-root'])
             .addMetaTarget('deploy', deployableProjects.map(p => `deploy-${p.name}`))
@@ -238,7 +238,9 @@ export default class Package extends AbstractPackage {
         startableProjects.forEach(p => {
             !!p.startable && t.addSubTarget(`start-${p.name}`, p.fullDir, 'start', {env: '$(env)'});
         });
-        ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
+
+        applyScmMakefileHelper(t, vars, this);
+
         return t;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {

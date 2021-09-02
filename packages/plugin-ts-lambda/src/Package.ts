@@ -34,14 +34,14 @@ export default class Package extends AwsLambdaPackage {
     }
     protected buildMakefile(vars: any) {
         return super.buildMakefile(vars)
-            .addPredefinedTarget('install', 'yarn-install')
-            .addPredefinedTarget('build', 'yarn-build')
+            .addPredefinedTarget('install', 'js-install')
+            .addPredefinedTarget('build', 'js-build')
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
-            .addPredefinedTarget('start', 'yarn-start')
-            .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
-            .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
-            .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
-            .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
+            .addPredefinedTarget('start', 'js-start')
+            .addPredefinedTarget('test', 'js-test', {ci: true, coverage: true})
+            .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
+            .addPredefinedTarget('test-cov', 'js-test', {local: true})
+            .addPredefinedTarget('test-ci', 'js-test', {ci: true})
         ;
     }
 }

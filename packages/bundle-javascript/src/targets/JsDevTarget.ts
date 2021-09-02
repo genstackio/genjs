@@ -1,6 +1,6 @@
-import AbstractYarnTarget from './AbstractYarnTarget';
+import AbstractJsTarget from './AbstractJsTarget';
 
-export class YarnDevTarget extends AbstractYarnTarget {
+export class JsDevTarget extends AbstractJsTarget {
     getCommandName() {
         return 'dev';
     }
@@ -11,4 +11,4 @@ export class YarnDevTarget extends AbstractYarnTarget {
     }
 }
 
-export default YarnDevTarget
+export default JsDevTarget

@@ -1,4 +1,5 @@
 import {AwsLambdaLayerPackage} from '@genjs/genjs-bundle-aws-lambda-layer';
+import {applyDeployMakefileHelper} from "@genjs/genjs-bundle-aws-lambda";
 
 export default class Package extends AwsLambdaLayerPackage {
     constructor(config: any) {
@@ -10,7 +11,9 @@ export default class Package extends AwsLambdaLayerPackage {
             .addShellTarget('clean', './bin/clean')
             .addShellTarget('install', './bin/install')
         ;
-        vars.deployable && t.addTarget('deploy');
+
+        applyDeployMakefileHelper(t, vars, this);
+
         return t;
     }
 }

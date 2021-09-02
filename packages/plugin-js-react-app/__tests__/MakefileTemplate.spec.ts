@@ -13,7 +13,7 @@ const predefinedTargets = {...commonTargets, ...javascriptBundleTargets, ...awsB
 describe('render', () => {
     it('sample app', () => {
         expectRenderSameAsFile(
-            new MakefileTemplate({predefinedTargets})
+            new MakefileTemplate({options: {npmClient: 'yarn'}, predefinedTargets})
                 .addGlobalVar('prefix', 'myprefix')
                 .addGlobalVar('bucket_prefix', '$(prefix)-myproject')
                 .addGlobalVar('env', 'dev')
@@ -22,15 +22,15 @@ describe('render', () => {
                 .addGlobalVar('cloudfront', '$(AWS_CLOUDFRONT_DISTRIBUTION_ID_APP)')
                 .setDefaultTarget('install')
                 .addTarget('pre-install')
-                .addPredefinedTarget('install', 'yarn-install')
-                .addPredefinedTarget('build', 'yarn-build')
+                .addPredefinedTarget('install', 'js-install')
+                .addPredefinedTarget('build', 'js-build')
                 .addPredefinedTarget('deploy-code', 'aws-s3-sync')
                 .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
                 .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
                 .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'REACT_APP', mode: 'terraform'})
-                .addPredefinedTarget('start', 'yarn-start')
-                .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})
-                .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
+                .addPredefinedTarget('start', 'js-start')
+                .addPredefinedTarget('test', 'js-test', {ci: true, coverage: false})
+                .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
             ,
             'sample-app.mk'
         );
