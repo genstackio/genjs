@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-react-admin-genstackio",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@genjs/genjs-bundle-aws": "^0.1.7",
-    "@genjs/genjs-bundle-javascript": "^0.1.8"
+    "@genjs/genjs-bundle-javascript": "^0.1.9"
   },
   "devDependencies": {
     "@genjs/genjs": "^0.4.7"

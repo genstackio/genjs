@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-monorepo-lambdas",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,7 +25,7 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-monorepo": "^0.1.6",
+    "@genjs/genjs-bundle-monorepo": "^0.1.7",
     "@genjs/genjs-bundle-scm": "^0.1.0",
     "@genjs/genjs-workflow-publish": "^0.1.1"
   },
