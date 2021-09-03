@@ -49,7 +49,7 @@ export class BasePackage extends AbstractPackage {
         return GitIgnoreTemplate.create(vars);
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        return new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        return new MakefileTemplate({options: {npmClient: vars.npm_client || vars.npmClient}, predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .setDefaultTarget('install')
             .addExportedVar('CI')
         ;
