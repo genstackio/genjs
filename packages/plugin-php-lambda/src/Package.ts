@@ -70,8 +70,8 @@ export default class Package extends AwsLambdaPackage {
     protected buildMakefile(vars: any) {
         const t = super.buildMakefile(vars)
             .addMetaTarget('install', ['install-js', 'install-php'])
-            .addPredefinedTarget('install-js', 'yarn-install')
-            .addPredefinedTarget('build-package', 'yarn-build')
+            .addPredefinedTarget('install-js', 'js-install')
+            .addPredefinedTarget('build-package', 'js-build')
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
             .addMetaTarget('clean', ['clean-modules', 'clean-coverage', 'clean-vendor', 'clean-build'])
             .addPredefinedTarget('clean-modules', 'clean-node-modules')

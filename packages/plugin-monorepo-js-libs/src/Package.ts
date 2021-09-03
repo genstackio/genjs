@@ -9,6 +9,7 @@ import {
     NvmRcTemplate,
     TerraformToVarsTemplate,
 } from '@genjs/genjs';
+import {applyScmMakefileHelper} from "@genjs/genjs-bundle-scm";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -109,19 +110,19 @@ export default class Package extends AbstractPackage {
     }
     protected buildMakefile(vars: any): MakefileTemplate {
         const scm = vars.scm || 'git';
-        const m = {predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})};
+        const m = {options: {npmClient: vars.npm_client}, predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})};
         const t = new MakefileTemplate(m)
-            .addPredefinedTarget('install-root', 'yarn-install')
-            .addPredefinedTarget('install-packages', 'yarn-lerna-bootstrap')
-            .addPredefinedTarget('build', 'yarn-lerna-run-build')
-            .addPredefinedTarget('package-build', 'yarn-build', {dir: 'packages/$(p)'})
-            .addPredefinedTarget('package-test', 'yarn-test-jest', {dir: 'packages/$(p)', local: true, coverage: true}, [], ['package-build'])
-            .addPredefinedTarget('test-only', 'yarn-test-jest', {local: true, parallel: false, coverage: true})
-            .addPredefinedTarget('test-local', 'yarn-test-jest', {local: true, coverage: true})
-            .addPredefinedTarget('package-clear-test', 'yarn-jest-clear-cache', {dir: 'packages/$(p)'})
-            .addPredefinedTarget('package-install', 'yarn-lerna-bootstrap', {scope: `@${vars.npm_scope}/$(p)`})
-            .addPredefinedTarget('changed', 'yarn-lerna-changed')
-            .addPredefinedTarget('publish', 'yarn-lerna-publish')
+            .addPredefinedTarget('install-root', 'js-install')
+            .addPredefinedTarget('install-packages', 'js-lerna-bootstrap')
+            .addPredefinedTarget('build', 'js-lerna-run-build')
+            .addPredefinedTarget('package-build', 'js-build', {dir: 'packages/$(p)'})
+            .addPredefinedTarget('package-test', 'js-test', {dir: 'packages/$(p)', local: true, coverage: true}, [], ['package-build'])
+            .addPredefinedTarget('test-only', 'js-test', {local: true, parallel: false, coverage: true})
+            .addPredefinedTarget('test-local', 'js-test', {local: true, coverage: true})
+            .addPredefinedTarget('package-clear-test', 'js-test-clear-cache', {dir: 'packages/$(p)'})
+            .addPredefinedTarget('package-install', 'js-lerna-bootstrap', {scope: `@${vars.npm_scope}/$(p)`})
+            .addPredefinedTarget('changed', 'js-lerna-changed')
+            .addPredefinedTarget('publish', 'js-lerna-publish')
             .addPredefinedTarget('clean-buildinfo', 'clean-ts-build-info', {on: 'packages'})
             .addPredefinedTarget('clean-coverage', 'clean-coverage', {on: 'packages'})
             .addPredefinedTarget('clean-lib', 'clean-lib', {on: 'packages'})
@@ -135,23 +136,23 @@ export default class Package extends AbstractPackage {
         ;
         if (vars.storybooks) {
             t
-                .addPredefinedTarget('package-build-storybook', 'yarn-build-storybook', {dir: 'packages/$(p)'})
-                .addPredefinedTarget('package-storybook', 'yarn-story', {dir: 'packages/$(p)'})
+                .addPredefinedTarget('package-build-storybook', 'js-build-storybook', {dir: 'packages/$(p)'})
+                .addPredefinedTarget('package-storybook', 'js-story', {dir: 'packages/$(p)'})
             ;
         }
         if (vars.svg_components) {
             t
-                .addPredefinedTarget('package-generate-svg-components', 'yarn-generate-svg-components', {dir: 'packages/$(p)'})
+                .addPredefinedTarget('package-generate-svg-components', 'js-generate-svg-components', {dir: 'packages/$(p)'})
             ;
         }
         if (vars.generator_package) {
             t
-                .addTarget('new', ['yarn --silent yo ./packages/generator-package 2>/dev/null'])
+                .addPredefinedTarget('new', 'js-script', {script: 'yo ./packages/generator-package 2>/dev/null'})
             ;
         }
         if (m.deployable_storybooks) {
             t
-                .addPredefinedTarget('deploy-storybooks', 'yarn-deploy-storybooks')
+                .addPredefinedTarget('deploy-storybooks', 'js-deploy-storybooks')
                 .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
 
                 .addGlobalVar('prefix', vars.project_prefix)
@@ -165,12 +166,14 @@ export default class Package extends AbstractPackage {
         }
         if (m.generate_target) {
             t
-                .addPredefinedTarget('generate', 'yarn-genjs')
+                .addPredefinedTarget('generate', 'js-genjs')
             ;
         }
+
+        applyScmMakefileHelper(t, vars, this);
+
         if ('github' === scm) {
             t
-                .addTarget('pr', ['hub pull-request -b $(b)'])
                 .addGlobalVar('b', vars.default_branch ? vars.default_branch : 'master')
             ;
         }

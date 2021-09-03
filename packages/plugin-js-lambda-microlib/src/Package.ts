@@ -19,6 +19,11 @@ import {
     TestableBehaviour,
 } from '@genjs/genjs';
 import MicroserviceConfigEnhancer from "./configEnhancers/MicroserviceConfigEnhancer";
+import {
+    applyDeployMakefileHelper,
+    applyMigrateMakefileHelper,
+    applyStarterMakefileHelper
+} from "@genjs/genjs-bundle-aws-lambda";
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
@@ -191,57 +196,26 @@ export default class Package extends AbstractPackage<PackageConfig> {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const t = new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+        const t = new MakefileTemplate({options: {npmClient: vars.npm_client}, predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
             .setDefaultTarget('install')
-            .addPredefinedTarget('install', 'yarn-install')
-            .addPredefinedTarget('build', 'yarn-build')
+            .addPredefinedTarget('install', 'js-install')
+            .addPredefinedTarget('build', 'js-build')
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
             .addMetaTarget('clean', ['clean-modules', 'clean-coverage'])
             .addPredefinedTarget('clean-modules', 'clean-node-modules')
             .addPredefinedTarget('clean-coverage', 'clean-coverage')
-            .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
-            .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
-            .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
-            .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
+            .addPredefinedTarget('test', 'js-test', {ci: true, coverage: true})
+            .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
+            .addPredefinedTarget('test-cov', 'js-test', {local: true})
+            .addPredefinedTarget('test-ci', 'js-test', {ci: true})
             .addExportedVar('CI')
         ;
-        if (this.hasFeature('migratable')) {
-            t
-                .addPredefinedTarget('migrate', 'yarn-migrate')
-            ;
-        }
-        let index = 0;
-        if (this.hasStarters()) {
-            t
-                .addGlobalVar('AWS_REGION', vars.aws_default_region || 'eu-west-3')
-                .addGlobalVar('prefix', vars.project_prefix)
-                .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
-            ;
+        applyStarterMakefileHelper(t, vars, this);
+        applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
+        applyMigrateMakefileHelper(t, vars, this);
 
-            if (1 < Object.entries(this.starters).length) {
-                const startTargetNames: string[] = [];
-                const startNames: string[] = [];
-                Object.entries(this.starters).forEach(([n, v]) => {
-                    const scriptName = `${v.directory ? v.directory : ''}${v.directory ? '/' : ''}${v.name}.js`;
-                    t.addPredefinedTarget(`start-${n}`, 'nodemon', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal, envs: v.envs, script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
-                    startTargetNames.push(`start-${n}`);
-                    startNames.push(n);
-                    index++;
-                });
-                t.addTarget('start', [`npx concurrently -n ${startNames.join(',')} ${startTargetNames.map(n => `"make ${n}"`).join(' ')}`])
-            } else {
-                const [, v] = Object.entries(this.starters)[0];
-                const scriptName = `${v.directory ? v.directory : ''}${v.directory ? '/' : ''}${v.name}.js`;
-                t.addPredefinedTarget('start', 'nodemon', {envs: v.envs, script: scriptName, port: this.computePort(this.getParameter('startPort', 4000), index)});
-                index++;
-            }
-        }
-        vars.deployable && t.addPredefinedTarget('deploy', 'yarn-deploy');
         return t;
-    }
-    protected computePort(a, b) {
-        return a + b;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {
         return new TerraformToVarsTemplate(vars);

@@ -15,19 +15,19 @@ const predefinedTargets: {[key: string]: any} = {
 describe('render', () => {
     it('sample api', () => {
         expectRenderSameAsFile(
-            new MakefileTemplate({predefinedTargets,})
+            new MakefileTemplate({options: {npmClient: 'yarn'}, predefinedTargets,})
                 .addGlobalVar('env', 'dev')
                 .setDefaultTarget('install')
                 .addTarget('pre-install')
                 .addPredefinedTarget('generate-env-local', 'generate-env-local')
-                .addPredefinedTarget('build', 'yarn-build')
-                .addPredefinedTarget('deploy', 'yarn-deploy')
-                .addPredefinedTarget('install', 'yarn-install')
+                .addPredefinedTarget('build', 'js-build')
+                .addPredefinedTarget('deploy', 'js-deploy')
+                .addPredefinedTarget('install', 'js-install')
                 .addPredefinedTarget('clean-modules', 'clean-node-modules')
                 .addPredefinedTarget('clean-coverage')
-                .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
-                .addPredefinedTarget('test', 'yarn-test-jest', {local: true, coverage: false})
-                .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
+                .addPredefinedTarget('test-ci', 'js-test', {ci: true})
+                .addPredefinedTarget('test', 'js-test', {local: true, coverage: false})
+                .addPredefinedTarget('test-cov', 'js-test', {local: true})
                 .addMetaTarget('clean', ['clean-modules', 'clean-coverage'])
             ,
             'sample-api.mk'

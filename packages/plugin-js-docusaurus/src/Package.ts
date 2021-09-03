@@ -47,16 +47,16 @@ export default class Package extends JavascriptPackage {
     protected buildMakefile(vars: any) {
         return super.buildMakefile(vars)
             .addGlobalVar('env', 'dev')
-            .addPredefinedTarget('install', 'yarn-install')
-            .addPredefinedTarget('build', 'yarn-build')
-            .addPredefinedTarget('deploy', 'yarn-deploy')
+            .addPredefinedTarget('install', 'js-install')
+            .addPredefinedTarget('build', 'js-build')
+            .addPredefinedTarget('deploy', 'js-deploy')
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'DOCUSAURUS', mode: vars.env_mode || 'terraform'})
-            .addPredefinedTarget('start', 'yarn-start', {port: this.getParameter('startPort')})
-            .addPredefinedTarget('serve', 'yarn-serve', {port: this.getParameter('servePort')})
-            .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: false})
-            .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
-            .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
-            .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true, coverage: false})
+            .addPredefinedTarget('start', 'js-start', {port: this.getParameter('startPort')})
+            .addPredefinedTarget('serve', 'js-serve', {port: this.getParameter('servePort')})
+            .addPredefinedTarget('test', 'js-test', {ci: true, coverage: false})
+            .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
+            .addPredefinedTarget('test-cov', 'js-test', {local: true})
+            .addPredefinedTarget('test-ci', 'js-test', {ci: true, coverage: false})
         ;
     }
 }

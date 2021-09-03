@@ -6,6 +6,7 @@ import {
     ReadmeTemplate,
     TerraformToVarsTemplate,
 } from '@genjs/genjs';
+import {applyScmMakefileHelper} from "@genjs/genjs-bundle-scm";
 
 export default class Package extends AbstractPackage {
     protected getTemplateRoot(): string {
@@ -65,13 +66,12 @@ export default class Package extends AbstractPackage {
         ;
     }
     protected buildMakefile(vars: any): MakefileTemplate {
-        const scm = vars.scm || 'git';
         const withLayers = true === vars.manage_layers;
         const withModules = true === vars.manage_modules;
         const withTerraformDocs = true === vars.terraform_docs;
-        const t = new MakefileTemplate({predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
-            .addPredefinedTarget('generate', 'yarn-genjs')
-            .addPredefinedTarget('install-root', 'yarn-install')
+        const t = new MakefileTemplate({options: {npmClient: vars.npm_client}, predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
+            .addPredefinedTarget('generate', 'js-genjs')
+            .addPredefinedTarget('install-root', 'js-install')
             .addMetaTarget('install', ['install-root', withLayers && 'install-layers', withModules && 'install-modules'].filter(x => !!x) as string[])
             .setDefaultTarget('install')
             .addExportedVar('CI')
@@ -116,7 +116,9 @@ export default class Package extends AbstractPackage {
                 ;
             }
         }
-        ('github' === scm) && t.addTarget('pr', ['hub pull-request -b $(b)']);
+
+        applyScmMakefileHelper(t, vars, this);
+
         return t;
     }
     protected buildTerraformToVars(vars: any): TerraformToVarsTemplate {

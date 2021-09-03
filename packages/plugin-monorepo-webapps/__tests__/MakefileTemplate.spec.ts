@@ -13,11 +13,11 @@ const predefinedTargets = {...commonTargets, ...javascriptBundleTargets, ...terr
 describe('render', () => {
     it('sample platform', () => {
         expectRenderSameAsFile(
-            new MakefileTemplate({predefinedTargets})
+            new MakefileTemplate({options: {npmClient: 'yarn'}, predefinedTargets})
                 .addGlobalVar('env', 'dev')
                 .addGlobalVar('b', 'develop')
-                .addPredefinedTarget('generate', 'yarn-genjs')
-                .addPredefinedTarget('install-root', 'yarn-install')
+                .addPredefinedTarget('generate', 'js-genjs')
+                .addPredefinedTarget('install-root', 'js-install')
                 .addMetaTarget('pre-install-root', ['install-root'])
                 .addTarget('pre-install-git')
                 .addTarget('install-git')

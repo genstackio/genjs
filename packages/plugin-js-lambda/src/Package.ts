@@ -1,4 +1,9 @@
-import {AwsLambdaPackage} from '@genjs/genjs-bundle-aws-lambda';
+import {
+    applyDeployMakefileHelper,
+    applyMigrateMakefileHelper,
+    applyStarterMakefileHelper,
+    AwsLambdaPackage
+} from '@genjs/genjs-bundle-aws-lambda';
 import {
     BuildableBehaviour,
     CleanableBehaviour,
@@ -66,19 +71,25 @@ export default class Package extends AwsLambdaPackage {
         ;
     }
     protected buildMakefile(vars: any) {
-        return super.buildMakefile(vars)
+        const t = super.buildMakefile(vars)
             .addGlobalVar('env', 'dev')
-            .addPredefinedTarget('install', 'yarn-install')
-            .addPredefinedTarget('build', 'yarn-build')
+            .addPredefinedTarget('install', 'js-install')
+            .addPredefinedTarget('build', 'js-build')
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
             .addMetaTarget('clean', ['clean-modules', 'clean-coverage'])
             .addPredefinedTarget('clean-modules', 'clean-node-modules')
             .addPredefinedTarget('clean-coverage', 'clean-coverage')
-            .addPredefinedTarget('test', 'yarn-test-jest', {ci: true, coverage: true})
-            .addPredefinedTarget('test-dev', 'yarn-test-jest', {local: true, all: true, coverage: false, color: true})
-            .addPredefinedTarget('test-cov', 'yarn-test-jest', {local: true})
-            .addPredefinedTarget('test-ci', 'yarn-test-jest', {ci: true})
+            .addPredefinedTarget('test', 'js-test', {ci: true, coverage: true})
+            .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
+            .addPredefinedTarget('test-cov', 'js-test', {local: true})
+            .addPredefinedTarget('test-ci', 'js-test', {ci: true})
         ;
+
+        applyStarterMakefileHelper(t, vars, this);
+        applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
+        applyMigrateMakefileHelper(t, vars, this);
+
+        return t;
     }
     protected getTechnologies() {
         return [
