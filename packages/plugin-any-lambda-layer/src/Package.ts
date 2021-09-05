@@ -1,5 +1,6 @@
 import {AwsLambdaLayerPackage} from '@genjs/genjs-bundle-aws-lambda-layer';
 import {applyDeployMakefileHelper} from "@genjs/genjs-bundle-aws-lambda";
+import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package";
 
 export default class Package extends AwsLambdaLayerPackage {
     constructor(config: any) {
@@ -13,6 +14,7 @@ export default class Package extends AwsLambdaLayerPackage {
         ;
 
         applyDeployMakefileHelper(t, vars, this);
+        applyRefreshMakefileHelper(t, vars, this);
 
         return t;
     }

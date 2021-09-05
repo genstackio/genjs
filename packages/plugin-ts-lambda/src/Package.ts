@@ -1,4 +1,5 @@
 import {AwsLambdaPackage} from '@genjs/genjs-bundle-aws-lambda';
+import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package";
 
 export default class Package extends AwsLambdaPackage {
     constructor(config: any) {
@@ -33,7 +34,7 @@ export default class Package extends AwsLambdaPackage {
         ;
     }
     protected buildMakefile(vars: any) {
-        return super.buildMakefile(vars)
+        const t = super.buildMakefile(vars)
             .addPredefinedTarget('install', 'js-install')
             .addPredefinedTarget('build', 'js-build')
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
@@ -43,5 +44,9 @@ export default class Package extends AwsLambdaPackage {
             .addPredefinedTarget('test-cov', 'js-test', {local: true})
             .addPredefinedTarget('test-ci', 'js-test', {ci: true})
         ;
+
+        applyRefreshMakefileHelper(t, vars, this);
+
+        return t;
     }
 }

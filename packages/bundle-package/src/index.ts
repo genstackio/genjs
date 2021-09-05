@@ -6,5 +6,6 @@ export function register(generator: IGenerator): void {
 }
 
 export * from './BasePackage';
+export * from './helpers';
 
 export default register

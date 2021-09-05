@@ -1,4 +1,5 @@
 import {AwsLambdaPackage} from '@genjs/genjs-bundle-aws-lambda';
+import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package";
 
 export default class Package extends AwsLambdaPackage {
     constructor(config: any) {
@@ -62,7 +63,7 @@ export default class Package extends AwsLambdaPackage {
         ;
     }
     protected buildMakefile(vars: any) {
-        return super.buildMakefile(vars)
+        const t = super.buildMakefile(vars)
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('env', 'dev')
             .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
@@ -82,5 +83,9 @@ export default class Package extends AwsLambdaPackage {
             .addPredefinedTarget('test-cov', 'js-test', {local: true})
             .addPredefinedTarget('test-ci', 'js-test', {ci: true})
         ;
+
+        applyRefreshMakefileHelper(t, vars, this);
+
+        return t;
     }
 }

@@ -5,6 +5,7 @@ import {
     InstallableBehaviour,
     GenerateEnvLocalableBehaviour, TestableBehaviour,
 } from '@genjs/genjs';
+import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package";
 
 export default class Package extends AwsLambdaPackage {
     constructor(config: any) {
@@ -45,7 +46,7 @@ export default class Package extends AwsLambdaPackage {
         ;
     }
     protected buildMakefile(vars: any) {
-        return super.buildMakefile(vars)
+        const t = super.buildMakefile(vars)
             .addPredefinedTarget('install', 'pip-install', {sourceLocalEnvLocal: !!vars.env_local_required}, [], ['generate-env-local'])
             .addNoopTarget('build')
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
@@ -56,5 +57,9 @@ export default class Package extends AwsLambdaPackage {
             .addNoopTarget('test-cov')
             .addNoopTarget('test-ci')
         ;
+
+        applyRefreshMakefileHelper(t, vars, this);
+
+        return t;
     }
 }

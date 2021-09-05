@@ -24,6 +24,7 @@ import {
     applyMigrateMakefileHelper,
     applyStarterMakefileHelper
 } from "@genjs/genjs-bundle-aws-lambda";
+import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package";
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
@@ -213,6 +214,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
         applyStarterMakefileHelper(t, vars, this);
         applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
         applyMigrateMakefileHelper(t, vars, this);
+        applyRefreshMakefileHelper(t, vars, this);
 
         return t;
     }

@@ -8,6 +8,7 @@ import {
     GenerateEnvLocalableBehaviour,
     TestableBehaviour,
 } from '@genjs/genjs';
+import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package";
 
 export default class Package extends AwsLambdaPackage {
     constructor(config: any) {
@@ -148,6 +149,7 @@ export default class Package extends AwsLambdaPackage {
         t
             .addMetaTarget('build', ['install-php-prod', ...(vars.build_cache_before_deploy ? ['build-cache'] : []), ...buildSteps, 'install-php'])
         ;
+        applyRefreshMakefileHelper(t, vars, this);
         return t;
     }
     protected getTechnologies() {
