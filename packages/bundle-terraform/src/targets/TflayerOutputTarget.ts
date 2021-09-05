@@ -7,6 +7,9 @@ export class TflayerOutputTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Display all the outputs of the specified terraform layer';
+    }
 }
 
 export default TflayerOutputTarget

@@ -6,6 +6,9 @@ export class PipInstallTarget extends GenericTarget {
             `python3 -m pip install -r requirements.txt`,
         ];
     }
+    buildDescription() {
+        return 'Install the Python dependencies';
+    }
 }
 
 export default PipInstallTarget

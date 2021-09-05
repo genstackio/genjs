@@ -7,6 +7,9 @@ export class TflayerPlanTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Execute terraform-plan on all the specified layers of the specified env';
+    }
 }
 
 export default TflayerPlanTarget

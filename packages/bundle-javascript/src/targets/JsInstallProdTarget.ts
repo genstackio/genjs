@@ -10,6 +10,9 @@ export class JsInstallProdTarget extends AbstractJsTarget {
     getCommandOptions(options: any): any {
         return {prod: true};
     }
+    buildDescription() {
+        return 'Install production Javascript dependencies';
+    }
 }
 
 export default JsInstallProdTarget

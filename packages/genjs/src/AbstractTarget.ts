@@ -5,13 +5,18 @@ export abstract class AbstractTarget implements ITarget {
     public steps: string[];
     public dependencies: string[];
     public relativeToRoot: string;
-    constructor({name, steps = [], dependencies = [], options = {}}: {name: string, steps?: string[], dependencies?: string[], options?: any}) {
+    public description: string;
+    constructor({name, steps = [], dependencies = [], description = undefined, options = {}}: {name: string, steps?: string[], dependencies?: string[], description?: string, options?: any}) {
         this.name = name;
         options = this.buildOptions(options);
         this.relativeToRoot = options.relativeToRoot || '..';
         const localSteps = [...this.buildSteps(options), ...steps].filter(x => !!x) as string[];
         this.dependencies = [...this.buildDependencies(options), ...dependencies].filter(x => !!x) as string[];
         this.steps = this.convertSteps(this.dependencies.length ? localSteps : (localSteps.length ? localSteps : ['true']), options);
+        this.description = this.buildDescription(options, description);
+    }
+    buildDescription(options: any, originalDescription: string|undefined): string {
+        return originalDescription || '';
     }
     buildRelativeToRootPath(path: string): string {
         return `${this.relativeToRoot}/${path}`;

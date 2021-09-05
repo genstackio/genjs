@@ -1,7 +1,5 @@
 env ?= dev
 
-all: install
-
 build: clean
 	@sh ./bin/build
 
@@ -26,8 +24,8 @@ test-ci:
 test-cov:
 	@true
 
-.PHONY: all \
-		build \
+.DEFAULT_GOAL := install
+.PHONY: build \
 		clean \
 		deploy \
 		install install-test \

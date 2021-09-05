@@ -7,6 +7,9 @@ export class TflayerRefreshTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Execute terraform init/plan/apply on all the specified layers of the specified env';
+    }
 }
 
 export default TflayerRefreshTarget

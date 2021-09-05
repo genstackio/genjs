@@ -13,6 +13,9 @@ export class AwsCloudfrontCreateInvalidationTarget extends AbstractAwsCliTarget 
             paths: `'${path}'`,
         }
     }
+    buildDescription() {
+        return 'Invalidate the CloudFront CDN cache';
+    }
 }
 
 export default AwsCloudfrontCreateInvalidationTarget

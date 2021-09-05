@@ -6,6 +6,9 @@ export class VirtualenvDeactivateTarget extends GenericTarget {
             `deactivate`,
         ];
     }
+    buildDescription() {
+        return 'Disable the virtualenv';
+    }
 }
 
 export default VirtualenvDeactivateTarget

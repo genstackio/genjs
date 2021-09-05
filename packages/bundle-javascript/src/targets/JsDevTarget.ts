@@ -9,6 +9,9 @@ export class JsDevTarget extends AbstractJsTarget {
             PORT: options.port,
         };
     }
+    buildDescription() {
+        return 'Execute dev server';
+    }
 }
 
 export default JsDevTarget

@@ -10,6 +10,9 @@ export class DockerTagTarget extends AbstractDockerTarget {
             options.remoteTag,
         ];
     }
+    buildDescription() {
+        return 'Tag the Docker image';
+    }
 }
 
 export default DockerTagTarget

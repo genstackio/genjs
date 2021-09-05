@@ -7,6 +7,9 @@ export class PipInstallBuildUtilsTarget extends GenericTarget {
             `python3 -m pip install --upgrade setuptools wheel twine`,
         ];
     }
+    buildDescription() {
+        return 'Install Python build-utils';
+    }
 }
 
 export default PipInstallBuildUtilsTarget

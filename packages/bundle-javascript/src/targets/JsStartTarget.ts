@@ -9,6 +9,9 @@ export class JsStartTarget extends AbstractJsTarget {
             PORT: options.port,
         }
     }
+    buildDescription() {
+        return 'Start (local)';
+    }
 }
 
 export default JsStartTarget

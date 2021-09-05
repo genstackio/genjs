@@ -7,6 +7,9 @@ export class TflayerOutputJsonTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Export all the outputs of the specified terraform layer in JSON';
+    }
 }
 
 export default TflayerOutputJsonTarget

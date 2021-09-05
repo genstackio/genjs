@@ -7,6 +7,9 @@ export class TflayerGetTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Execute terraform-get on all the specified layers of the specified env';
+    }
 }
 
 export default TflayerGetTarget

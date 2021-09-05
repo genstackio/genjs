@@ -6,6 +6,9 @@ export class CleanVendorTarget extends GenericTarget {
             `rm -rf ${vendorDir}/`,
         ];
     }
+    buildDescription() {
+        return 'Remove the PHP dependencies directory';
+    }
 }
 
 export default CleanVendorTarget

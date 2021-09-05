@@ -7,40 +7,40 @@ AWS_PROFILE ?= $(prefix)-$(env)
 all:
 	@true
 
-apply:
+apply: ## Execute terraform-apply on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) apply $(layer)
 
-destroy:
+destroy: ## Execute terraform-destroy on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) destroy $(layer)
 
-generate:
+generate: ## Generate the Terraform source code using tfgen
 	@../node_modules/.bin/tfgen ./config.json layers environments
 
-get:
+get: ## Execute terraform-get on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) get $(layer)
 
-init:
+init: ## Execute terraform-init on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) init $(layer)
-init-full:
+init-full: ## Execute terraform-init on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) init-full $(layer)
-init-full-upgrade:
+init-full-upgrade: ## Execute terraform-init on all the specified layers of the specified env (with upgrade)
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) init-full-upgrade $(layer)
-init-upgrade:
+init-upgrade: ## Execute terraform-init on all the specified layers of the specified env (with upgrade)
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) init-upgrade $(layer)
 
-list-layers:
+list-layers: ## List all terraform layers
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) list-layers
 
-output:
+output: ## Display all the outputs of the specified terraform layer
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) output $(layer)
-output-json:
+output-json: ## Export all the outputs of the specified terraform layer in JSON
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) output-json $(layer)
 
-outputs:
+outputs: ## Generate the outputs directory from all the Terraform outputs
 	@mkdir -p ../outputs/$(env)
 	@$(foreach l,$(layers),echo "[$(env)] Saving outputs of layer '$(l)'..." && AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) output-json $l > ../outputs/$(env)/$(l).json;)
 
-plan:
+plan: ## Execute terraform-plan on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) plan $(layer)
 
 pre-install:
@@ -49,15 +49,15 @@ pre-install:
 provision: init sync
 provision-full: init-full sync-full
 
-refresh:
+refresh: ## Execute terraform init/plan/apply on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) refresh $(layer)
 
-sync:
+sync: ## Execute init/plan/apply(if need) on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) sync $(layer)
-sync-full:
+sync-full: ## Execute init/plan/apply(if need) on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) sync-full $(layer)
 
-update:
+update: ## Execute terraform-update on all the specified layers of the specified env
 	@AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=$(AWS_PROFILE) ../node_modules/.bin/tflayer $(env) update $(layer)
 
 .PHONY: all \

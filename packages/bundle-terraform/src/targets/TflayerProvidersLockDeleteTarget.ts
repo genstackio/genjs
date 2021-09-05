@@ -7,6 +7,9 @@ export class TflayerProvidersLockDeleteTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Delete the terraform lock-file on all the specified layers of the specified env';
+    }
 }
 
 export default TflayerProvidersLockDeleteTarget

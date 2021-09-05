@@ -27,6 +27,9 @@ export class GenerateEnvLocalTarget extends GenericTarget {
                 ];
         }
     }
+    buildDescription() {
+        return 'Generate the .env.local file based on dynamic configuration';
+    }
 }
 
 export default GenerateEnvLocalTarget

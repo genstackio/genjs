@@ -7,6 +7,9 @@ export class TflayerInitFullTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Execute terraform-init on all the specified layers of the specified env';
+    }
 }
 
 export default TflayerInitFullTarget

@@ -1,8 +1,6 @@
 var1 ?= 12
 var2 = 13
 
-all: target1
-
 build-custom:
 	@custom-build
 
@@ -13,6 +11,6 @@ target1-sub-b:
 	@echo "Hello from"
 	@echo "Target1SubB!"
 
-.PHONY: all \
-		build-custom \
+.DEFAULT_GOAL := target1
+.PHONY: build-custom \
 		target1 target1-sub-a target1-sub-b

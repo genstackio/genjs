@@ -1,17 +1,15 @@
 env ?= dev
 pypi_repo = mypypirepo
 
-all: install
-
 build: clean
 	@source venv/bin/activate && python3 setup.py sdist bdist_wheel
 
 clean:
 	@rm -rf dist
-clean-venv:
+clean-venv: ## Create the virtualenv
 	@virtualenv venv
 
-create-venv:
+create-venv: ## Create the virtualenv
 	@virtualenv venv
 
 deploy:
@@ -24,7 +22,7 @@ install-test:
 
 pre-install: create-venv
 
-system-install:
+system-install: ## Install Python build-utils
 	@python3 -m pip install --upgrade pip
 	@python3 -m pip install --upgrade setuptools wheel twine
 
@@ -35,13 +33,13 @@ test-ci:
 test-cov:
 	@source venv/bin/activate && python -m unittest tests/*.py -v
 
-venv-activate:
+venv-activate: ## Enable the virtualenv
 	@. venv/bin/activate
-venv-deactivate:
+venv-deactivate: ## Disable the virtualenv
 	@deactivate
 
-.PHONY: all \
-		build \
+.DEFAULT_GOAL := install
+.PHONY: build \
 		clean clean-venv \
 		create-venv \
 		deploy \

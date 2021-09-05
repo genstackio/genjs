@@ -6,6 +6,9 @@ export class CleanWebBundlesTarget extends GenericTarget {
             `rm -rf ${webBundlesDir}/`,
         ];
     }
+    buildDescription() {
+        return 'Remove the Symfony web bundles generated directory';
+    }
 }
 
 export default CleanWebBundlesTarget

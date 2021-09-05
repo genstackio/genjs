@@ -7,6 +7,9 @@ export class CleanLibTarget extends GenericTarget {
             ...(dirs.map(d => `find ${d}/ -name ${libDir} -type d -exec rm -rf {} +`)),
         ];
     }
+    buildDescription() {
+        return 'Remove the Typescript generated directory containing transpiled files';
+    }
 }
 
 export default CleanLibTarget

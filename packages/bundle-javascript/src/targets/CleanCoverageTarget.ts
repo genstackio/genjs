@@ -8,6 +8,9 @@ export class CleanCoverageTarget extends GenericTarget {
             ...(dirs.map(d => `find ${d}/ -name ${coverageDir} -type d -exec rm -rf {} +`)),
         ];
     }
+    buildDescription() {
+        return 'Remove test coverage directory';
+    }
 }
 
 export default CleanCoverageTarget

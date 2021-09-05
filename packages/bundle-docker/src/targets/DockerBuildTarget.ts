@@ -19,6 +19,9 @@ export class DockerBuildTarget extends AbstractDockerTarget {
             options.path || '.'
         ];
     }
+    buildDescription() {
+        return 'Build the Docker image';
+    }
 }
 
 export default DockerBuildTarget

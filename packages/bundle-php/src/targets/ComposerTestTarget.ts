@@ -7,6 +7,9 @@ export class ComposerTestTarget extends AbstractComposerTarget {
     getCommandArgs(options: any): any[] {
         return ['test'];
     }
+    buildDescription() {
+        return 'Execute the tests';
+    }
 }
 
 export default ComposerTestTarget

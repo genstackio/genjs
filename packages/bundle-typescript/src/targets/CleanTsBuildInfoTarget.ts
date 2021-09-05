@@ -7,6 +7,9 @@ export class CleanTsBuildInfoTarget extends GenericTarget {
             ...(dirs.map(d => `find ${d}/ -name ${tsBuildInfoFile} -exec rm -rf {} +`)),
         ];
     }
+    buildDescription() {
+        return 'Remove the Typescript cache file for compilation';
+    }
 }
 
 export default CleanTsBuildInfoTarget

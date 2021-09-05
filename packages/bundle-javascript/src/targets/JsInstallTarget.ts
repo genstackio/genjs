@@ -7,6 +7,9 @@ export class JsInstallTarget extends AbstractJsTarget {
     getCommandName() {
         return 'install';
     }
+    buildDescription() {
+        return 'Install the Javascript dependencies';
+    }
 }
 
 export default JsInstallTarget

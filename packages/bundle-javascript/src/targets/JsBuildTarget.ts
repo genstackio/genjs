@@ -4,9 +4,11 @@ export class JsBuildTarget extends AbstractJsTarget {
     isScriptCommand(): boolean {
         return false;
     }
-
     getCommandName() {
         return 'build';
+    }
+    buildDescription() {
+        return 'Build';
     }
 }
 

@@ -9,6 +9,9 @@ export class JsServeTarget extends AbstractJsTarget {
             PORT: options.port,
         }
     }
+    buildDescription() {
+        return 'Serve';
+    }
 }
 
 export default JsServeTarget

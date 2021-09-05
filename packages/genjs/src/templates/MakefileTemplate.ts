@@ -4,6 +4,7 @@ export interface TargetConfigBase {
     name: string,
     steps?: string[],
     deps?: string[],
+    description?: string,
     options?: any,
 }
 
@@ -56,7 +57,7 @@ export type MakefileTemplateConfig = {
 
 export class MakefileTemplate extends AbstractFileTemplate {
     private targets: any[] = [];
-    private predefinedTargets: {[key: string]: any};
+    private readonly predefinedTargets: {[key: string]: any};
     private globalVars: any[] = [];
     private defines: any[] = [];
     private exportedVars: any[] = [];
@@ -64,6 +65,7 @@ export class MakefileTemplate extends AbstractFileTemplate {
     private customConsumed: boolean;
     private readonly relativeToRoot: string;
     private readonly options: any;
+    private defaultTarget: string|undefined;
     constructor(config: MakefileTemplateConfig = {predefinedTargets: {}, targets: {}, globals: {}, exports: {}, defines: {}, relativeToRoot: '..', options: {}}) {
         super();
         this.predefinedTargets = config.predefinedTargets || {};
@@ -86,18 +88,18 @@ export class MakefileTemplate extends AbstractFileTemplate {
         switch (true) {
             case (config as ShellTargetConfig).script !== undefined:
                 const c0: ShellTargetConfig = <ShellTargetConfig>config;
-                return this.addShellTarget(c0.name, c0.script, c0.deps, c0.options);
+                return this.addShellTarget(c0.name, c0.script, c0.deps, c0.options, c0.description);
             case (config as SubTargetConfig).sub !== undefined:
                 const c1: SubTargetConfig = <SubTargetConfig>config;
-                return this.addSubTarget(c1.name, c1.dir, c1.sub, c1.vars, c1.deps, c1.options);
+                return this.addSubTarget(c1.name, c1.dir, c1.sub, c1.vars, c1.deps, c1.options, c1.description);
             case (config as PredefinedTargetConfig).type !== undefined:
                 const c2: PredefinedTargetConfig = <PredefinedTargetConfig>config;
-                return this.addPredefinedTarget(c2.name, c2.type, c2.options, c2.steps, c2.deps);
+                return this.addPredefinedTarget(c2.name, c2.type, c2.options, c2.steps, c2.deps, c2.description);
             case (config as MetaTargetConfig).deps !== undefined:
                 const c3: MetaTargetConfig = <MetaTargetConfig>config;
-                return this.addMetaTarget(c3.name, c3.deps, c3.options);
+                return this.addMetaTarget(c3.name, c3.deps, c3.options, c3.description);
             default:
-                return this.addTarget(config.name, config.steps, config.deps, config.options);
+                return this.addTarget(config.name, config.steps, config.deps, config.options, config.description);
         }
     }
     addGlobalVarFromConfig(config: GlobalVarConfig): this {
@@ -114,6 +116,7 @@ export class MakefileTemplate extends AbstractFileTemplate {
         });
         return this;
     }
+    // noinspection JSUnusedGlobalSymbols
     addDefineFromConfig(config: DefineConfig): this {
         return this.addDefine(config.name, config.code);
     }
@@ -158,22 +161,23 @@ export class MakefileTemplate extends AbstractFileTemplate {
             targetGroups,
             exportedVars,
             defines,
+            defaultTarget: this.defaultTarget,
         }
     }
-    addTarget(name, steps: string[] = [], dependencies: string[] = [], options: any = {}): this {
-        return this.addPredefinedTarget(name, 'generic', options, steps, dependencies);
+    addTarget(name, steps: string[] = [], dependencies: string[] = [], options: any = {}, description: string|undefined = undefined): this {
+        return this.addPredefinedTarget(name, 'generic', options, steps, dependencies, description);
     }
-    addNoopTarget(name, dependencies: string[] = [], options: any = {}): this {
-        return this.addPredefinedTarget(name, 'generic', options, ['true'], dependencies);
+    addNoopTarget(name, dependencies: string[] = [], options: any = {}, description: string|undefined = undefined): this {
+        return this.addPredefinedTarget(name, 'generic', options, ['true'], dependencies, description);
     }
-    addShellTarget(name, script, dependencies: string[] = [], options: any = {}): this {
-        return this.addTarget(name, [`sh ${script}`], dependencies, options);
+    addShellTarget(name, script, dependencies: string[] = [], options: any = {}, description: string|undefined = undefined): this {
+        return this.addTarget(name, [`sh ${script}`], dependencies, options, description);
     }
-    addMetaTarget(name, dependencies: string[] = [], options: any = {}): this {
-        return this.addTarget(name, [], dependencies, options);
+    addMetaTarget(name, dependencies: string[] = [], options: any = {}, description: string|undefined = undefined): this {
+        return this.addTarget(name, [], dependencies, options, description);
     }
-    addSubTarget(name, dir: string, subName: string, extraVars: any = {}, dependencies: string[] = [], options: any = {}): this {
-        return this.addTarget(name, [`${options.sourceEnvLocal ? `set -a && . ${dir}/.env.local && set +a && ` : ''}make -C ${dir}/ ${subName}${this.buildMakeVars(extraVars)}`], dependencies, options);
+    addSubTarget(name, dir: string, subName: string, extraVars: any = {}, dependencies: string[] = [], options: any = {}, description: string|undefined = undefined): this {
+        return this.addTarget(name, [`${options.sourceEnvLocal ? `set -a && . ${dir}/.env.local && set +a && ` : ''}make -C ${dir}/ ${subName}${this.buildMakeVars(extraVars)}`], dependencies, options, description);
     }
     addGlobalVar(name: string, defaultValue: any = undefined, value: any = undefined): this {
         this.globalVars.push({name, defaultValue, value});
@@ -183,10 +187,10 @@ export class MakefileTemplate extends AbstractFileTemplate {
         this.exportedVars.push({name, value});
         return this;
     }
-    addPredefinedTarget(name: string, type?: string, options: any = {}, extraSteps: string[] = [], extraDependencies: string[] = []): this {
+    addPredefinedTarget(name: string, type?: string, options: any = {}, extraSteps: string[] = [], extraDependencies: string[] = [], description: string|undefined = undefined): this {
         const tName = `${(type || name).split(/-/g).map(t => `${t.slice(0, 1).toUpperCase()}${t.slice(1)}`).join('')}Target`;
         if (!this.predefinedTargets[tName]) throw new Error(`Unknown predefined target with name ${type || name}`);
-        this.targets.push(new this.predefinedTargets[tName]({name, steps: extraSteps, dependencies: extraDependencies, options: {relativeToRoot: this.relativeToRoot, ...this.options, ...options}}));
+        this.targets.push(new this.predefinedTargets[tName]({name, steps: extraSteps, dependencies: extraDependencies, options: {relativeToRoot: this.relativeToRoot, ...this.options, ...options}}, description));
         return this;
     }
     addDefine(name: string, code: string): this {
@@ -194,7 +198,7 @@ export class MakefileTemplate extends AbstractFileTemplate {
         return this;
     }
     setDefaultTarget(name) {
-        this.addTarget('all', [], [name]);
+        this.defaultTarget = name;
         return this;
     }
     buildTargetGroupName(target): string {

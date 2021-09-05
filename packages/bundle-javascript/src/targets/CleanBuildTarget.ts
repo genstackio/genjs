@@ -6,6 +6,9 @@ export class CleanBuildTarget extends GenericTarget {
             `rm -rf ${buildDir}/`,
         ];
     }
+    buildDescription() {
+        return 'Removes build directory';
+    }
 }
 
 export default CleanBuildTarget

@@ -8,6 +8,9 @@ export class CleanNodeModulesTarget extends GenericTarget {
             ...(dirs.map(d => `find ${d}/ -name ${nodeModulesDir} -type d -exec rm -rf {} +`)),
         ];
     }
+    buildDescription() {
+        return 'Remove Javascript dependencies directory';
+    }
 }
 
 export default CleanNodeModulesTarget

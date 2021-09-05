@@ -7,6 +7,9 @@ export class JsTestClearCacheTarget extends AbstractJsTarget {
     getCommandOptions() {
         return {clearCache: true};
     }
+    buildDescription() {
+        return 'Clear test cache';
+    }
 }
 
 export default JsTestClearCacheTarget

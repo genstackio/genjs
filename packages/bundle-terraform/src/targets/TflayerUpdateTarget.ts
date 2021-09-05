@@ -7,6 +7,9 @@ export class TflayerUpdateTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Execute terraform-update on all the specified layers of the specified env';
+    }
 }
 
 export default TflayerUpdateTarget

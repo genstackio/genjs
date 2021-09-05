@@ -7,6 +7,9 @@ export class TflayerCleanDirsTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Remove all generated directory for terraform';
+    }
 }
 
 export default TflayerCleanDirsTarget

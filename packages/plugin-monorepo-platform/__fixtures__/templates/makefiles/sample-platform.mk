@@ -1,8 +1,6 @@
 env ?= dev
 b ?= develop
 
-all: install
-
 build: build-pre-provision build-post-provision
 build-api: generate-env-local-api
 	@make -C api/ build env=$(env)
@@ -20,7 +18,7 @@ deploy-app: generate-env-local-app
 deploy-front: generate-env-local-front
 	@set -a && . front/.env.local && set +a && make -C front/ deploy env=$(env)
 
-generate:
+generate: ## Generate and synchronize the source code using GenJS
 	@yarn --silent genjs
 generate-env-local: generate-env-local-front generate-env-local-app generate-env-local-api
 generate-env-local-api:
@@ -58,9 +56,9 @@ install-front:
 	@make -C front/ install
 install-git:
 	@true
-install-root:
+install-root: ## Install the Javascript dependencies
 	@yarn --silent install
-install-terraform:
+install-terraform: ## Install Terraform required version using tfenv
 	@tfenv install
 
 list-layers: generate-terraform
@@ -109,8 +107,8 @@ test-front:
 test-git:
 	@true
 
-.PHONY: all \
-		build build-api build-app build-front build-post-provision build-pre-plan build-pre-provision \
+.DEFAULT_GOAL := install
+.PHONY: build build-api build-app build-front build-post-provision build-pre-plan build-pre-provision \
 		deploy deploy-app deploy-front \
 		generate generate-env-local generate-env-local-api generate-env-local-app generate-env-local-front generate-terraform \
 		infra-destroy infra-init infra-init-full infra-init-full-upgrade infra-init-upgrade infra-plan infra-refresh infra-update \

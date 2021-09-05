@@ -6,6 +6,9 @@ export class VirtualenvActivateTarget extends GenericTarget {
             `. venv/bin/activate`,
         ];
     }
+    buildDescription() {
+        return 'Enable the virtualenv';
+    }
 }
 
 export default VirtualenvActivateTarget

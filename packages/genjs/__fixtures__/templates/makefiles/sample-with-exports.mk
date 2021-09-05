@@ -3,10 +3,8 @@ prefix ?= myprefix
 export B_C
 export a
 
-all: install
-
 install:
 	@echo "Hello world!"
 
-.PHONY: all \
-		install
+.DEFAULT_GOAL := install
+.PHONY: install

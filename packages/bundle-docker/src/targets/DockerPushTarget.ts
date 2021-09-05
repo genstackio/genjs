@@ -9,6 +9,9 @@ export class DockerPushTarget extends AbstractDockerTarget {
             options.tag,
         ];
     }
+    buildDescription() {
+        return 'Push the Docker image';
+    }
 }
 
 export default DockerPushTarget

@@ -7,6 +7,9 @@ export class JsLernaRunBuildTarget extends AbstractJsTarget {
     getCommandOptions() {
         return {stream: true};
     }
+    buildDescription() {
+        return 'Execute the build on all the packages';
+    }
 }
 
 export default JsLernaRunBuildTarget

@@ -13,6 +13,9 @@ export class AwsS3SyncTarget extends AbstractAwsCliTarget {
     getOperationOptions() {
         return {delete: true};
     }
+    buildDescription() {
+        return 'Synchronize remote S3 bucket with local directory';
+    }
 }
 
 export default AwsS3SyncTarget

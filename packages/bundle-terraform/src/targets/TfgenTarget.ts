@@ -12,6 +12,9 @@ export class TfgenTarget extends GenericTarget {
             )
         ];
     }
+    buildDescription() {
+        return 'Generate the Terraform source code using tfgen';
+    }
 }
 
 export default TfgenTarget

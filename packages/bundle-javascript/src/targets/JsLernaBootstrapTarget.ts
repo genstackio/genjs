@@ -7,6 +7,9 @@ export class JsLernaBootstrapTarget extends AbstractJsTarget {
     getCommandOptions({scope}) {
         return {scope};
     }
+    buildDescription() {
+        return 'Install the dependencies of all packages using Lerna';
+    }
 }
 
 export default JsLernaBootstrapTarget

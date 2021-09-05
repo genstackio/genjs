@@ -23,6 +23,9 @@ export class NodemonTarget extends GenericTarget {
             )
         ];
     }
+    buildDescription(options: any) {
+        return `Launch the local daemon ${options.script || 'server.js'}`;
+    }
     protected flattenEnvs(envs) {
         return Object.entries(envs).reduce((acc, [k, v]) => {
             acc = `${acc || ''}${acc ? ' ' : ''}${k}=${v}`;

@@ -7,6 +7,9 @@ export class TflayerDestroyTarget extends AbstractTflayerTarget {
     getCommandArgs() {
         return ['$(layer)'];
     }
+    buildDescription() {
+        return 'Execute terraform-destroy on all the specified layers of the specified env';
+    }
 }
 
 export default TflayerDestroyTarget

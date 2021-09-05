@@ -7,6 +7,9 @@ export class ComposerInstallProdTarget extends AbstractComposerTarget {
     getCommandOptions(options: any): any {
         return {'no-dev': true};
     }
+    buildDescription() {
+        return 'Install production PHP dependencies';
+    }
 }
 
 export default ComposerInstallProdTarget

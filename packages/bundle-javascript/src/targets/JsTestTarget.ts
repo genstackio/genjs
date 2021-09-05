@@ -22,6 +22,9 @@ export class JsTestTarget extends AbstractJsTarget {
                 }
         }
     }
+    buildDescription() {
+        return 'Execute the tests';
+    }
 }
 
 export default JsTestTarget

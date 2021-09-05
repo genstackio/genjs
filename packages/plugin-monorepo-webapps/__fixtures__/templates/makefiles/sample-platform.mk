@@ -1,8 +1,6 @@
 env ?= dev
 b ?= develop
 
-all: install
-
 build: build-front build-app
 build-app: generate-env-local-app
 	@make -C app/ build env=$(env)
@@ -15,7 +13,7 @@ deploy-app: generate-env-local-app
 deploy-front: generate-env-local-front
 	@set -a && . front/.env.local && set +a && make -C front/ deploy env=$(env)
 
-generate:
+generate: ## Generate and synchronize the source code using GenJS
 	@yarn --silent genjs
 
 install: install-root install-git install-front install-app
@@ -25,7 +23,7 @@ install-front:
 	@make -C front/ install
 install-git:
 	@true
-install-root:
+install-root: ## Install the Javascript dependencies
 	@yarn --silent install
 
 pre-install: pre-install-root pre-install-git pre-install-front pre-install-app
@@ -51,8 +49,8 @@ test-front:
 test-git:
 	@true
 
-.PHONY: all \
-		build build-app build-front \
+.DEFAULT_GOAL := install
+.PHONY: build build-app build-front \
 		deploy deploy-app deploy-front \
 		generate \
 		install install-app install-front install-git install-root \

@@ -6,6 +6,9 @@ export class VirtualenvCreateTarget extends GenericTarget {
             `virtualenv venv`,
         ];
     }
+    buildDescription() {
+        return 'Create the virtualenv';
+    }
 }
 
 export default VirtualenvCreateTarget
