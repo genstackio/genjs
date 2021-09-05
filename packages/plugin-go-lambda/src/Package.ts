@@ -4,10 +4,20 @@ import {
     AwsLambdaPackage
 } from '@genjs/genjs-bundle-aws-lambda';
 import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package/lib/helpers/applyRefreshMakefileHelper";
+import {BuildableBehaviour, CleanableBehaviour, InstallableBehaviour, TestableBehaviour} from "@genjs/genjs";
 
 export default class Package extends AwsLambdaPackage {
     constructor(config: any) {
         super(config, __dirname);
+    }
+    protected getBehaviours() {
+        return [
+            ...super.getBehaviours(),
+            new BuildableBehaviour(),
+            new CleanableBehaviour(),
+            new InstallableBehaviour(),
+            new TestableBehaviour(),
+        ];
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildDefaultVars(vars: any) {
