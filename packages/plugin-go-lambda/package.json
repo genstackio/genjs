@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-go-lambda",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
