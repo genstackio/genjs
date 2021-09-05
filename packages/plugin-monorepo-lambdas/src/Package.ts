@@ -170,16 +170,20 @@ export default class Package extends MonorepoPackage {
             t.addSubTarget(`generate-env-local-${p.name}`, p.fullDir, 'generate-env-local', {env: '$(env)'});
         });
         buildableProjects.forEach(p => {
-            t.addSubTarget(`build-${p.name}`, p.fullDir, 'build', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : []);
+            const sourceEnvLocal = generateEnvLocalableProjects.find(x => p.name === x.name);
+            t.addSubTarget(`build-${p.name}`, p.fullDir, 'build', {env: '$(env)'}, sourceEnvLocal ? [`generate-env-local-${p.name}`] : []);
         });
         deployableProjects.forEach(p => {
-            !!p.deployable && t.addSubTarget(`deploy-${p.name}`, p.fullDir, 'deploy', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
+            const sourceEnvLocal = generateEnvLocalableProjects.find(x => p.name === x.name);
+            !!p.deployable && t.addSubTarget(`deploy-${p.name}`, p.fullDir, 'deploy', {env: '$(env)'}, sourceEnvLocal ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal});
         });
         migratableProjects.forEach(p => {
-            !!p.migratable && t.addSubTarget(`migrate-${p.name}`, p.fullDir, 'migrate', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
+            const sourceEnvLocal = generateEnvLocalableProjects.find(x => p.name === x.name);
+            !!p.migratable && t.addSubTarget(`migrate-${p.name}`, p.fullDir, 'migrate', {env: '$(env)'}, sourceEnvLocal ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal});
         });
         refreshableProjects.forEach(p => {
-            !!p.refreshable && t.addSubTarget(`refresh-${p.name}`, p.fullDir, 'refresh', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
+            const sourceEnvLocal = generateEnvLocalableProjects.find(x => p.name === x.name);
+            !!p.refreshable && t.addSubTarget(`refresh-${p.name}`, p.fullDir, 'refresh', {env: '$(env)'}, sourceEnvLocal ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal});
         });
         startableProjects.forEach(p => {
             !!p.startable && t.addSubTarget(`start-${p.name}`, p.fullDir, 'start', {env: '$(env)'});
