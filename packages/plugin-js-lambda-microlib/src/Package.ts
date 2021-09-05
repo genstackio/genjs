@@ -126,7 +126,6 @@ export default class Package extends AbstractPackage<PackageConfig> {
         vars.scripts = {
             ...staticVars.scripts,
             ...(this.hasFeature('migratable') ? {migrate: 'echo "migrate script not yet implemented in package.json"'}: {}),
-            ...(vars.deployable ? {deploy: 'deploy-package'} : {}),
             ...(vars.scripts || {}),
         };
         vars.dependencies = {
