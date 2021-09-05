@@ -10,6 +10,7 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
         case 's3':
             t
                 .addGlobalVar('AWS_REGION', vars.aws_default_region || 'eu-west-3')
+                .addGlobalVar('prefix', vars.project_prefix)
                 .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
                 .addGlobalVar('target_s3_bucket', vars.s3_bucket || 'please-set-target-s3-bucket-here.zip')
                 .addGlobalVar('target_s3_key', vars.s3_key || 'please-set-target-s3-key-here')
