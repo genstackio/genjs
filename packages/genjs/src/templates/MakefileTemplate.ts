@@ -151,7 +151,7 @@ export class MakefileTemplate extends AbstractFileTemplate {
             g.targets = Object.values(g.targets);
             g.targets.sort(nameSorter);
         });
-        const globalVars = Object.values(this.globalVars.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name, type: g.defaultValue ? '?=' : '=', value: g.value || g.defaultValue}));
+        const globalVars = Object.values(this.globalVars.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name, type: (undefined !== g.defaultValue) ? '?=' : '=', value: g.value || g.defaultValue}));
         const ex = this.exportedVars;
         ex.sort((a, b) => (a && a.name) ? (a.name > b.name ? 1 : ((a.name < b.name) ? -1 : 0)) : 1)
         const exportedVars = Object.values(ex.reduce((acc, v) => Object.assign(acc, {[v.name]: v}), {})).map((g: any) => ({name: g.name, value: g.value}));
