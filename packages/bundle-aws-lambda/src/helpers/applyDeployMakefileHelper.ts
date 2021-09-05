@@ -21,7 +21,7 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
                     'AWS_PROFILE=$(AWS_PROFILE) aws s3 cp $(source_package_file) s3://$(target_s3_bucket)/$(target_s3_key)',
                 ])
                 .addTarget('update-lambda-code', [
-                    '$(foreach f,$(target_lambda_name), AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket) --s3-key $(target_s3_key))',
+                    '$(foreach f,$(target_lambda_name), AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket) --s3-key $(target_s3_key);)',
                 ])
                 .addTarget('update-lambda-code-of', [
                     'AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket) --s3-key $(target_s3_key)',
