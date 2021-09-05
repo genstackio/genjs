@@ -101,7 +101,7 @@ export default class Package extends MonorepoPackage {
                 '.idea/'
             ])
             .addGroup('Lambda Packages', [
-                'build/package.zip',
+                'package.zip',
             ])
         ;
     }
