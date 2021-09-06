@@ -1,0 +1,20 @@
+async: true
+
+require:
+  - find
+  - create
+
+inputs:
+  index:
+    main: true
+  field:
+    default: <%- index -%>
+
+args:
+  - {<%- field -%>, fields = [], data, ...query}
+
+
+code: |
+  const docs = await service.find({...query, index: <%- index -%>, hashKey: <%- field -%>, limit: 1, fields});
+  if (!docs || !docs.items || (1 > docs.items.length)) return service.create({...query, data};
+  return docs.items.shift();

@@ -1,0 +1,18 @@
+async: true
+
+require:
+  - find
+  - create
+
+inputs:
+  index:
+    main: true
+  field:
+    default: <%- index -%>
+
+args:
+  - {<%- field -%>, fields = [], data, ...query}
+
+
+code: |
+  return ((await service.find({...query, index: <%- index -%>, hashKey: <%- field -%>, limit: 1, fields}) || {}).items || []).shift();
