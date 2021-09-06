@@ -103,7 +103,7 @@ server.on('request', async (req, res) => {
             .on('data', d => { data.push(d) })
             .on('end', () => {
                 data = Buffer.concat(data).toString();
-                !!data && (req.params = {data: JSON.parse(data)});
+                !!data && (req.params = {data: (req.headers && ((req.headers['Content-Type'] || req.headers['content-type']) === 'application/x-www-form-urlencoded')) ? require('querystring').decode(data) : JSON.parse(data)});
                 fnm(req, res)
                     .then(response => { finalize(response); resolve(); })
                     .catch(e => { finalize({headers: {'Content-Type': 'application/json; charset=UTF-8'}, body: e}); resolve(); })
