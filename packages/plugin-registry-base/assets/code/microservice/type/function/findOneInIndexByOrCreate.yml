@@ -16,5 +16,5 @@ args:
 
 code: |
   const docs = await service.find({...query, index: '<%- index -%>', hashKey: query.<%- field -%>, limit: 1, fields});
-  if (!docs || !docs.items || (1 > docs.items.length)) return service.create({...query, data};
+  if (!docs || !docs.items || (1 > docs.items.length)) return service.create({...query, data});
   return docs.items.shift();
