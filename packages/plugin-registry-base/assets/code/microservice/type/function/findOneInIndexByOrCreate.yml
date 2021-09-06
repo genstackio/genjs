@@ -11,7 +11,7 @@ inputs:
     default: <%- index -%>
 
 args:
-  - {<%- field -%>, fields = [], data, ...query}
+  - '{<%- field -%>, fields = [], data, ...query}'
 
 
 code: |
