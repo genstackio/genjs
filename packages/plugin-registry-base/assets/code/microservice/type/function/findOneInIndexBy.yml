@@ -11,8 +11,8 @@ inputs:
     default: <%- index -%>
 
 args:
-  - '{<%- field -%>, fields = [], data, ...query}'
+  - '({fields = [], data, ...query})'
 
 
 code: |
-  return ((await service.find({...query, index: <%- index -%>, hashKey: <%- field -%>, limit: 1, fields}) || {}).items || []).shift();
+  return ((await service.find({...query, index: <%- index -%>, hashKey: query.<%- field -%>, limit: 1, fields}) || {}).items || []).shift();
