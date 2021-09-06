@@ -1,0 +1,10 @@
+require:
+  - create
+
+inputs:
+  field:
+    main: true
+
+wrap:
+  - create
+  - "{...query, data: {...query.data, <%- field -%>: (query.user || {}) .id}}"
