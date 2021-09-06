@@ -8,4 +8,4 @@ inputs:
 
 wrap:
   - create
-  - "{...query, data: {...query.data, <%- field -%>: '<%- value -%'}}"
+  - "{...query, data: {...query.data, <%- field -%>: '<%- value -%>'}}"
