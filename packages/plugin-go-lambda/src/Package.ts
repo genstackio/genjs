@@ -46,6 +46,7 @@ export default class Package extends AwsLambdaPackage {
             .addMetaTarget('build', ['build-binary', 'build-package'])
             .addTarget('build-binary', ['GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go build -o build/bin/$(GOOS)/$(GOARCH)/$(BIN) cmd/main/*.go'], ['prepare-build-dir'])
             .addTarget('test', ['go test cmd/main/*.go'])
+            .addTarget('format', ['gofmt cmd/main/*.go'])
             .addTarget('build-package', ['cd build/bin/$(GOOS)/$(GOARCH) && zip -r ../../../../build/package.zip $(BIN) >/dev/null'], ['prepare-build-dir'])
             .addMetaTarget('clean', ['clean-package', 'clean-binary', 'clean-build-dir'])
             .addTarget('clean-binary', ['rm -rf build/bin'])

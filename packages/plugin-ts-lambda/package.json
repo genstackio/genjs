@@ -10,7 +10,7 @@
   },
   "files": [
     "lib",
-    "templates"
+    "vars.json"
   ],
   "publishConfig": {
     "access": "public"
@@ -26,9 +26,10 @@
   },
   "dependencies": {
     "@genjs/genjs-bundle-aws-lambda": "^0.1.16",
-    "@genjs/genjs-bundle-typescript": "^0.1.12"
+    "@genjs/genjs-bundle-typescript": "^0"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.9"
+    "@genjs/genjs": "^0.4.9",
+    "aws-sdk": "^2.987.0"
   }
 }

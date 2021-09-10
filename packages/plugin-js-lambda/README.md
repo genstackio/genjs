@@ -1,1 +1,1 @@
-# genjs-plugin-js-lambda-basic
+# genjs-plugin-js-lambda
