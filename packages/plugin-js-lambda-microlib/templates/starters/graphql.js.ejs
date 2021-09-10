@@ -9,14 +9,13 @@ function extractRootSelectedFieldsFromInfo(info) {
 }
 
 const r = n => {
-    const h = require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/${n}`).handler;
     return async (parent, params = {}, {event, context}, info) => {
         const handlerEvent = {params};
         handlerEvent.params = handlerEvent.params || {};
         handlerEvent.params.fields = handlerEvent.params.fields || extractRootSelectedFieldsFromInfo(info);
         (!!event && !!event.user) && (handlerEvent.user = event.user);
         !!parent && (handlerEvent.params.parent = parent);
-        return h(handlerEvent, {...context, info});
+        return require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/${n}`).handler(handlerEvent, {...context, info});
     };
 };
 const jwtSecret = String(process.env.JWT_SECRET || 'the-very-secret-secret');

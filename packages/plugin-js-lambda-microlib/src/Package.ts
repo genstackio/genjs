@@ -202,7 +202,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             .addPredefinedTarget('install', 'js-install')
             .addPredefinedTarget('build', 'js-build')
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
-            .addMetaTarget('clean', ['clean-modules', 'clean-coverage'])
+            .addMetaTarget('clean', ['clean-modules', 'clean-coverage'], {}, 'Remove all generated directories')
             .addPredefinedTarget('clean-modules', 'clean-node-modules')
             .addPredefinedTarget('clean-coverage', 'clean-coverage')
             .addPredefinedTarget('test', 'js-test', {ci: true, coverage: true})
