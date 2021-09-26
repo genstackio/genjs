@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-python-package",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,9 +25,9 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-python": "^0.1.11"
+    "@genjs/genjs-bundle-python": "^0.1.12"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.9"
+    "@genjs/genjs": "^0.4.10"
   }
 }
