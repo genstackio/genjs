@@ -1,12 +1,12 @@
 import {IGenerator} from "@genjs/genjs";
 import * as targets from './targets';
-import packageBundleRegister from '@genjs/genjs-bundle-package';
+import javascriptBundleRegister from '@genjs/genjs-bundle-javascript';
 
 export function register(generator: IGenerator): void {
-    packageBundleRegister(generator);
+    javascriptBundleRegister(generator);
     generator.registerPredefinedTargets(targets);
 }
 
-export * from './TypescriptPackage';
+export * from './TypescriptPackage'
 
 export default register

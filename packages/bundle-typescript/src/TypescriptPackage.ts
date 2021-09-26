@@ -30,7 +30,6 @@ export class TypescriptPackage extends BasePackage {
             .addPredefinedTarget('deploy', 'js-deploy')
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'APP', mode: vars.env_mode || 'terraform'})
             .addPredefinedTarget('start', 'js-start', {port: this.getParameter('startPort')})
-            .addPredefinedTarget('serve', 'js-serve', {port: this.getParameter('servePort')})
             .addPredefinedTarget('test', 'js-test', {ci: true, coverage: false})
             .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
             .addPredefinedTarget('test-cov', 'js-test', {local: true})

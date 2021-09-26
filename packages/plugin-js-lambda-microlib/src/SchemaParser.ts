@@ -223,7 +223,7 @@ export default class SchemaParser {
         this.modifiers.forEach(modifier => {
             try {
                 modifier.parse(d, name, schema, ctx);
-            } catch (e) {
+            } catch (e: any) {
                 throw new Error(`Error when parsing with field modifier '${modifier.name}': ${e.message}`);
             }
         });
