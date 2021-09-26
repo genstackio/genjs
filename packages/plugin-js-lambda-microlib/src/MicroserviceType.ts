@@ -49,7 +49,7 @@ export default class MicroserviceType {
             let c;
             try {
                 c = operationConfigEnhancer.enrich({...((null === v || undefined === v || !v) ? {} : (('string' === typeof v) ? {type: v} : v as any))});
-            } catch (e) {
+            } catch (e: any) {
                 throw new Error(`Unable to prepare operation '${k}' for microservice type ${this.name}: ${e.message}`);
             }
             if (c.wrap) {
@@ -70,7 +70,7 @@ export default class MicroserviceType {
             try {
                 acc[k] = functionConfigEnhancer.enrich(v as any);
                 acc[k]['type'] && (acc[k] = functionConfigEnhancer.enhance(acc[k], acc[k]['type']));
-            } catch (e) {
+            } catch (e: any) {
                 throw new Error(`Unable to prepare function '${k}' for microservice type ${this.name}: ${e.message}`);
             }
             return acc;

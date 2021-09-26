@@ -59,7 +59,7 @@ export class Cli {
                     }
                     cachedConfig = cfg;
                     return cachedConfig;
-                } catch (e) {
+                } catch (e: any) {
                     console.error(e.message);
                     cachedConfig = {};
                     return cachedConfig;

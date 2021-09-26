@@ -43,16 +43,16 @@
   "dependencies": {
     "@ohoareau/aws-parse": "^0.2.0",
     "@ohoareau/dir2obj": "^0.3.1",
-    "@ohoareau/technologies-detector": "^0.2.1",
-    "ejs": "^3.1.5",
-    "fs-extra": "^9.0.1",
+    "@ohoareau/technologies-detector": "^0.3.0",
+    "ejs": "^3.1.6",
+    "fs-extra": "^10.0.0",
     "stringify-object": "^3.3.0",
-    "yaml": "^1.10.0",
+    "yaml": "^1.10.2",
     "yargonaut": "^1.1.4",
-    "yargs": "^16.1.1"
+    "yargs": "^17.2.1"
   },
   "devDependencies": {
-    "aws-sdk": "^2.797.0"
+    "aws-sdk": "^2.995.0"
   },
   "bin": {
     "genjs": "./bin/genjs"

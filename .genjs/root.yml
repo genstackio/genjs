@@ -1,6 +1,7 @@
 type: monorepo-js-libs
 
 vars:
+  npm_client: yarn
   makefile:
     generate_target: true,
     globals:
