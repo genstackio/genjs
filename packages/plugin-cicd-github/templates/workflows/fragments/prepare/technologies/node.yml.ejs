@@ -1,0 +1,13 @@
+<% if (('undefined' !== typeof node_support)) { -%>
+      - name: Prepare Node.js (<%- v.node %>)
+        uses: actions/setup-node@v1
+        with:
+            node-version: <%- v.node %>
+
+      - name: Prepare NPM Registry identity
+        uses: ohoareau/actions/npmrc-scope-authtoken-add@master
+        with:
+            scope: <%- npm_scope %>
+            token: ${{secrets.<%- 'undefined' === typeof package_registry_secret_var ? 'CUSTOM_NPM_TOKEN' : package_registry_secret_var -%>}}
+            registry: <%- 'undefined' === typeof package_registry ? 'registry.npmjs.org' : package_registry %>
+<% } -%>

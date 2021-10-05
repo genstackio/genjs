@@ -1,0 +1,6 @@
+      - name: Test
+        shell: 'script -q -e -c "bash {0}"'
+        run: make test
+        env:
+          FORCE_COLOR: 3
+          CI: true

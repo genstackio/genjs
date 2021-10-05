@@ -1,55 +1,27 @@
+<% const dv = {
+  go: '^1.16',
+  node: '14.x',
+  php: '7.1',
+  terraform: '0.13.5',
+  os: 'ubuntu-20.04'
+}; -%>
+<% const v = {
+  go: typeof go_version_constraint === 'undefined' ? dv.go : go_version_constraint,
+  node: typeof node_version_constraint === 'undefined' ? dv.node : node_version_constraint,
+  php: typeof php_version_constraint === 'undefined' ? ('undefined' !== typeof php_version ? php_version : dv.php) : php_version_constraint,
+  terraform: typeof terraform_version_constraint === 'undefined' ? ('undefined' !== typeof terraform_version ? terraform_version : dv.terraform) : terraform_version_constraint,
+  os: typeof github_workflow_job_os === 'undefined' ? dv.os : github_workflow_job_os
+}; -%>
 name: Push to Feature Branch
 
 on:
-  push:
-    branches-ignore:
-      - prod
-      - master
-      - release
-      - develop
+<%- include('fragments/on/push/to-feature-branch.yml.ejs', {dv, v}) %>
 
 jobs:
   build:
-
-    runs-on: <%- github_workflow_job_os %>
-
+    runs-on: <%- v.os %>
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: <%- typeof node_version_constraint === 'undefined' ? '14.x' : node_version_constraint %>
-<% if ('undefined' !== typeof php_version) { -%>
-
-      - name: Set PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '<%- php_version -%>'
-<% if ('undefined' !== typeof php_tools) { -%>
-          tools: <%- php_tools %>
-<% } -%>
-<% if ('undefined' !== typeof php_extensions) { -%>
-          extensions: <%- php_extensions %>
-<% } -%><% } -%>
-
-      - name: Set NPM Registry identity
-        uses: ohoareau/actions/npmrc-scope-authtoken-add@master
-        with:
-          scope: <%- npm_scope %>
-          token: ${{secrets.<%- package_registry_secret_var -%>}}
-          registry: <%- package_registry %>
-
-      - name: Install
-        shell: 'script -q -e -c "bash {0}"'
-        run: make install
-        env:
-          FORCE_COLOR: 3
-          CI: true
-
-      - name: Test
-        shell: 'script -q -e -c "bash {0}"'
-        run: make test
-        env:
-          FORCE_COLOR: 3
-          CI: true
+<%- include('fragments/checkout.yml.ejs', {dv, v}) %>
+<%- include('fragments/prepare/technologies.yml.ejs', {dv, v}) %>
+<%- include('fragments/build/install.yml.ejs', {dv, v}) %>
+<%- include('fragments/build/test.yml.ejs', {dv, v}) %>

@@ -1,0 +1,7 @@
+<% if ('undefined' !== typeof forced_env) { %>
+      - name: Prepare env vars from forced env
+        uses: ohoareau/actions/env-vars-from-env@master
+        with:
+            secrets: ${{toJson(secrets)}}
+            env: <%- forced_env %>
+<% } -%>

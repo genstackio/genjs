@@ -34,6 +34,7 @@ export default class Package extends AwsLambdaPackage {
             ;
     }
     protected buildMakefile(vars: any) {
+        const assets: string = vars.go_assets_dir || '';
         const t = super.buildMakefile(vars)
             .addGlobalVar('env', 'dev')
             .addGlobalVar('BIN', 'main')
@@ -46,8 +47,8 @@ export default class Package extends AwsLambdaPackage {
             .addMetaTarget('build', ['build-binary', 'build-package'], {}, 'Build Go binary and Lambda ZIP package')
             .addTarget('build-binary', ['GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go build -o build/bin/$(GOOS)/$(GOARCH)/$(BIN) cmd/main/*.go'], ['prepare-build-dir'], {}, 'Build Go binary')
             .addTarget('test', ['go test cmd/main/*.go'], [], {}, 'Execute the tests')
-            .addTarget('format', ['gofmt cmd/main/*.go'], [], {}, 'Format the Go source code')
-            .addTarget('build-package', ['cd build/bin/$(GOOS)/$(GOARCH) && zip -r ../../../../build/package.zip $(BIN) >/dev/null'], ['prepare-build-dir'], {}, 'Build the Lambda ZIP package')
+            .addTarget('format', ['gofmt -w cmd/main/*.go'], [], {}, 'Format the Go source code')
+            .addTarget('build-package', [assets ? `cp -R ${assets} build/bin/$(GOOS)/$(GOARCH)/` : undefined, `cd build/bin/$(GOOS)/$(GOARCH) && zip -r ../../../../build/package.zip $(BIN) ${assets ? `${assets} ` : ''}>/dev/null`].filter(x => !!x) as string[], ['prepare-build-dir'], {}, 'Build the Lambda ZIP package')
             .addMetaTarget('clean', ['clean-package', 'clean-binary', 'clean-build-dir'], {}, 'Remove the generated directories and files')
             .addTarget('clean-binary', ['rm -rf build/bin'], [], {}, 'Remove the built Go Binary')
             .addTarget('clean-build-dir', ['rm -rf build'], [], {}, 'Remove the build directory')

@@ -1,93 +1,31 @@
+<% const dv = {
+  go: '^1.16',
+  node: '14.x',
+  php: '7.1',
+  terraform: '0.13.5',
+  os: 'ubuntu-20.04'
+}; -%>
+<% const v = {
+  go: typeof go_version_constraint === 'undefined' ? dv.go : go_version_constraint,
+  node: typeof node_version_constraint === 'undefined' ? dv.node : node_version_constraint,
+  php: typeof php_version_constraint === 'undefined' ? ('undefined' !== typeof php_version ? php_version : dv.php) : php_version_constraint,
+  terraform: typeof terraform_version_constraint === 'undefined' ? ('undefined' !== typeof terraform_version ? terraform_version : dv.terraform) : terraform_version_constraint,
+  os: typeof github_workflow_job_os === 'undefined' ? dv.os : github_workflow_job_os
+}; -%>
 name: Deploy to Env
 
 on:
-  push:
-    branches:
-      - master
+<%- include('fragments/on/push/to-main-branch.yml.ejs', {dv, v}) %>
 
 jobs:
   build:
-
-    runs-on: <%- github_workflow_job_os %>
-
+    runs-on: <%- v.os %>
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: <%- typeof node_version_constraint === 'undefined' ? '14.x' : node_version_constraint %>
-<% if ('undefined' !== typeof php_version) { -%>
-
-      - name: Set PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '<%- php_version -%>'
-<% if ('undefined' !== typeof php_tools) { -%>
-          tools: <%- php_tools %>
-<% } -%>
-<% if ('undefined' !== typeof php_extensions) { -%>
-          extensions: <%- php_extensions %>
-<% } -%><% } -%>
-
-      - name: Set NPM Registry identity
-        uses: ohoareau/actions/npmrc-scope-authtoken-add@master
-        with:
-          scope: <%- npm_scope %>
-          token: ${{secrets.<%- package_registry_secret_var -%>}}
-          registry: <%- package_registry %>
-
-      - name: Set Env from current Branch
-        uses: ohoareau/actions/branch-to-env@master
-        with:
-          secrets: ${{toJson(secrets)}}
-          branch: ${{github.base_ref}}
-<% if ('undefined' !== typeof forced_env) { %>
-      - name: Set some env vars from forced env (dev)
-        uses: ohoareau/actions/env-vars-from-env@master
-        with:
-          secrets: ${{toJson(secrets)}}
-          env: <%- forced_env %>
-<% } %>
-      - name: Install
-        shell: 'script -q -e -c "bash {0}"'
-        run: make install
-        env:
-          FORCE_COLOR: 3
-          CI: true
-
-      - name: Test
-        shell: 'script -q -e -c "bash {0}"'
-        run: make test
-        env:
-          FORCE_COLOR: 3
-          CI: true
-
-      - name: Add AWS Account Profile (default)
-        uses: ohoareau/actions/aws-account-profile-add@master
-        with:
-          name: default
-          aki: ${{secrets.AWS_DEPLOY_ACCOUNT_ACCESS_KEY_ID}}
-          sak: ${{secrets.AWS_DEPLOY_ACCOUNT_SECRET_ACCESS_KEY}}
-
-      - name: Add AWS Role Profile
-        uses: ohoareau/actions/aws-role-profile-add@master
-        with:
-          name: <%- typeof github_aws_profile === 'undefined' ? `${project_prefix}-${project_name}-\${{env.env}}` : github_aws_profile %>
-          source: default
-          role: ${{env.AWS_DEPLOY_ACCOUNT_ROLE_ARN}}
-
-      - name: Deploy
-        shell: 'script -q -e -c "bash {0}"'
-        run: make deploy env=${{env.env}}
-        env:
-          FORCE_COLOR: 3
-          CI: true
-
-      - name: Migrate
-        shell: 'script -q -e -c "bash {0}"'
-        run: make migrate env=${{env.env}}
-        env:
-          FORCE_COLOR: 3
-          CI: true
-
+<%- include('fragments/checkout.yml.ejs', {dv, v}) %>
+<%- include('fragments/prepare/env-vars.yml.ejs', {dv, v}) %>
+<%- include('fragments/prepare/forced-env-vars.yml.ejs', {dv, v}) %>
+<%- include('fragments/prepare/technologies.yml.ejs', {dv, v}) %>
+<%- include('fragments/build/install.yml.ejs', {dv, v}) %>
+<%- include('fragments/build/test.yml.ejs', {dv, v}) %>
+<%- include('fragments/build/deploy.yml.ejs', {dv, v}) %>
+<%- include('fragments/build/migrate.yml.ejs', {dv, v}) %>

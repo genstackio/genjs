@@ -1,0 +1,6 @@
+      - name: Init (Infrastructure)
+        shell: 'script -q -e -c "bash {0}"'
+        run: make infra-init env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true

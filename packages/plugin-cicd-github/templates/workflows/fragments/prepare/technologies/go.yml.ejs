@@ -1,0 +1,6 @@
+<% if (('undefined' !== typeof go_support)) { -%>
+      - name: Prepare Go (<%- v.go %>)
+        uses: actions/setup-go@v2
+        with:
+            go-version: <%- v.go %>
+<% } -%>

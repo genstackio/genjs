@@ -1,0 +1,11 @@
+<% if (('undefined' !== typeof php_support)) { -%>
+      - name: Prepare PHP (<%- v.php %>)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '<%- v.php -%>'
+<% if ('undefined' !== typeof php_tools) { -%>
+          tools: <%- php_tools %>
+<% } -%>
+<% if ('undefined' !== typeof php_extensions) { -%>
+          extensions: <%- php_extensions %>
+<% } -%><% } -%>

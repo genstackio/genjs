@@ -1,0 +1,8 @@
+<% if (('undefined' !== typeof terraform_support)) { -%>
+      - name: Prepare Terraform (<%- v.terraform %>) + Terraform Cloud identity
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: <%- v.terraform %>
+          cli_config_credentials_token: ${{secrets.TERRAFORM_CLOUD_API_TOKEN}}
+          terraform_wrapper: false
+<% } -%>

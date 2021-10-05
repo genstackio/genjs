@@ -12,16 +12,17 @@
   terraform: typeof terraform_version_constraint === 'undefined' ? ('undefined' !== typeof terraform_version ? terraform_version : dv.terraform) : terraform_version_constraint,
   os: typeof github_workflow_job_os === 'undefined' ? dv.os : github_workflow_job_os
 }; -%>
-name: Pull-Request on Feature Branch
+name: Push to Main Branch
 
 on:
-<%- include('fragments/on/pull-request/to-feature-branch.yml.ejs', {dv, v}) %>
+<%- include('fragments/on/push/to-main-branch.yml.ejs', {dv, v}) %>
 
 jobs:
   build:
     runs-on: <%- v.os %>
     steps:
 <%- include('fragments/checkout.yml.ejs', {dv, v}) %>
+<%- include('fragments/prepare/env-vars.yml.ejs', {dv, v}) %>
 <%- include('fragments/prepare/technologies.yml.ejs', {dv, v}) %>
 <%- include('fragments/build/install.yml.ejs', {dv, v}) %>
 <%- include('fragments/build/test.yml.ejs', {dv, v}) %>

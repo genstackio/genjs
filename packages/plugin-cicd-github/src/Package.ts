@@ -4,15 +4,6 @@ export default class Package extends CicdPackage {
     constructor(config: any) {
         super(config, __dirname);
     }
-    // noinspection JSUnusedLocalSymbols
-    protected buildDefaultVars(vars: any) {
-        return {
-            ...super.buildDefaultVars(vars),
-            package_registry: 'registry.npmjs.org',
-            package_registry_secret_var: 'CUSTOM_NPM_TOKEN',
-            github_workflow_job_os: 'ubuntu-18.04'
-        };
-    }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected buildFilesFromTemplates(vars: any, cfg: any) {
         const c = {workflows: {}, ...(vars.github || {})};

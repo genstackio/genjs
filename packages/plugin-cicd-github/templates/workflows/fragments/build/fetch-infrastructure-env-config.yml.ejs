@@ -1,0 +1,6 @@
+      - name: Fetch Infrastructure Env Config
+        shell: 'script -q -e -c "bash {0}"'
+        run: make outputs env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true

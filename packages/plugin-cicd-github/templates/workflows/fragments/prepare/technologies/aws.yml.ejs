@@ -1,0 +1,15 @@
+<% if (('undefined' !== typeof aws_support)) { -%>
+      - name: Prepare AWS profile
+        uses: ohoareau/actions/aws-account-profile-add@master
+        with:
+          name: default
+          aki: ${{secrets.AWS_DEPLOY_ACCOUNT_ACCESS_KEY_ID}}
+          sak: ${{secrets.AWS_DEPLOY_ACCOUNT_SECRET_ACCESS_KEY}}
+
+      - name: Prepare AWS assume-role
+        uses: ohoareau/actions/aws-role-profile-add@master
+        with:
+          name: <%- typeof github_aws_profile === 'undefined' ? `${project_prefix}-${project_name}-\${{env.env}}` : github_aws_profile %>
+          source: default
+          role: ${{env.AWS_DEPLOY_ACCOUNT_ROLE_ARN}}
+<% } -%>

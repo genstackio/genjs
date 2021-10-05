@@ -1,0 +1,6 @@
+      - name: Plan (Infrastructure)
+        shell: 'script -q -e -c "bash {0}"'
+        run: make infra-plan env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true

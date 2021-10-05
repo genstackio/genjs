@@ -1,0 +1,6 @@
+      - name: Provision
+        shell: 'script -q -e -c "bash {0}"'
+        run: make provision env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true
