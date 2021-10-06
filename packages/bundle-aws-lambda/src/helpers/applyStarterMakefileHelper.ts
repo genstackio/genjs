@@ -35,7 +35,7 @@ function buildStartTarget(t: MakefileTemplate, p: IPackage, name: string, v: any
         case 'air':
             t.addTarget(name, [
                 'air'
-            ], {...targetOpts, envs: {AWS_PROFILE: '$(AWS_PROFILE)', AWS_REGION: '$(AWS_DEFAULT_REGION)', AWS_SDK_LOAD_CONFIG: '1', PORT: port, ...targetOpts.envs}});
+            ], [], {...targetOpts, envs: {AWS_PROFILE: '$(AWS_PROFILE)', AWS_REGION: '$(AWS_DEFAULT_REGION)', AWS_SDK_LOAD_CONFIG: '1', PORT: port, ...targetOpts.envs}});
             break;
         default:
         case 'nodemon':
