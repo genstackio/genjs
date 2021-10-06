@@ -33,9 +33,7 @@ function buildStartTarget(t: MakefileTemplate, p: IPackage, name: string, v: any
     const targetOpts = {...opts, envs: v.envs, port};
     switch (v.runner || v.type) {
         case 'air':
-            t.addTarget(name, [
-                'air'
-            ], [], {...targetOpts, envs: {AWS_PROFILE: '$(AWS_PROFILE)', AWS_REGION: '$(AWS_DEFAULT_REGION)', AWS_SDK_LOAD_CONFIG: '1', PORT: port, ...targetOpts.envs}});
+            t.addPredefinedTarget(name, 'air-cli', {...targetOpts, envs: {AWS_PROFILE: '$(AWS_PROFILE)', AWS_REGION: '$(AWS_DEFAULT_REGION)', AWS_SDK_LOAD_CONFIG: '1', PORT: port, ...targetOpts.envs}});
             break;
         default:
         case 'nodemon':
