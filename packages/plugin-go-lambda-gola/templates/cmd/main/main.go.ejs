@@ -1,0 +1,23 @@
+package main
+
+import "github.com/ohoareau/gola"
+
+func main() {
+	gola.Gola(configure, featurize)
+}
+
+func configure(r gola.Router) {
+//	r.Post("/demo", handlers.Demo)
+}
+
+func featurize() gola.Features {
+	return gola.Features{
+		"logger":    true,
+		"recoverer": true,
+		"cors":      true,
+		"ping":      true,
+		"root":      true,
+		"profiler":  true,
+		"notfound":  true,
+	}
+}
