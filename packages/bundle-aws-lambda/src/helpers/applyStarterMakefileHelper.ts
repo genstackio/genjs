@@ -22,14 +22,15 @@ export function applyStarterMakefileHelper(t: MakefileTemplate, vars: any, p: IP
         });
         t.addTarget('start', [`npx concurrently -n ${startNames.join(',')} ${startTargetNames.map(n => `"make ${n}"`).join(' ')}`])
     } else {
-        const [, v]: [any, any] = Object.entries(p.starters)[0];
+        let [starterName, v]: [string, any] = Object.entries(p.starters)[0];
+        v.type || (v = {...v, type: starterName})
         buildStartTarget(t, p, 'start', v, {sourceLocalEnvLocal: vars.sourceLocalEnvLocal});
         index++;
     }
 }
 
 function buildStartTarget(t: MakefileTemplate, p: IPackage, name: string, v: any, opts: any = {}, index: number = 0) {
-    const port = p.getParameter('startPort', 4000) + index;
+    const port = v.port || p.getParameter('startPort', 4000) + index;
     const targetOpts = {...opts, envs: v.envs, port};
     switch (v.runner || v.type) {
         case 'air':
