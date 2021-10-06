@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-python-lambda-layer",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws-lambda-layer": "^0.1.12",
-    "@genjs/genjs-bundle-python": "^0.1.12"
+    "@genjs/genjs-bundle-aws-lambda-layer": "^0.1.13",
+    "@genjs/genjs-bundle-python": "^0.1.13"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.10"
+    "@genjs/genjs": "^0.4.11"
   }
 }
