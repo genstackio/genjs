@@ -31,7 +31,7 @@ export function applyStarterMakefileHelper(t: MakefileTemplate, vars: any, p: IP
 function buildStartTarget(t: MakefileTemplate, p: IPackage, name: string, v: any, opts: any = {}, index: number = 0) {
     const port = p.getParameter('startPort', 4000) + index;
     const targetOpts = {...opts, envs: v.envs, port};
-    switch (v.runner) {
+    switch (v.runner || v.type) {
         case 'air':
             t.addTarget(name, [
                 'air'

@@ -6,8 +6,25 @@ import {
     TerraformToVarsTemplate,
     MakefileTemplate, IBehaviour,
 } from '@genjs/genjs';
+import {BasePackageConfig} from "@genjs/genjs/lib/AbstractPackage";
+import Starter from "./Starter";
 
-export class BasePackage extends AbstractPackage {
+export class BasePackage<C extends BasePackageConfig = BasePackageConfig> extends AbstractPackage {
+    public readonly starters: {[key: string]: Starter} = {};
+    constructor(config: C, dir: string|undefined = undefined) {
+        super(config, dir);
+        const {starters = {}} = config as any;
+        Object.entries(starters).forEach(
+            ([name, c]: [string, any]) =>
+                this.starters[name] = new Starter({name, ...c, vars: {...(c.vars || {})}})
+        );
+        if (!this.hasStarters()) {
+            this.features['startable'] = false;
+        }
+    }
+    hasStarters(): boolean {
+        return 0 < Object.keys(this.starters).length;
+    }
     protected getBehaviours(): IBehaviour[] {
         return [];
     }
