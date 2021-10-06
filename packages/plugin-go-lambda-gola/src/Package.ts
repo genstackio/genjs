@@ -11,6 +11,7 @@ import {
     InstallableBehaviour,
     TestableBehaviour,
     RefreshableBehaviour,
+    StartableBehaviour,
 } from "@genjs/genjs";
 
 export default class Package extends AwsLambdaPackage {
@@ -26,6 +27,7 @@ export default class Package extends AwsLambdaPackage {
             new TestableBehaviour(),
             new DeployableBehaviour(),
             new RefreshableBehaviour(),
+            new StartableBehaviour(),
         ];
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
