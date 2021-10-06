@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-java-lambda",
-  "version": "0.2.22",
+  "version": "0.2.23",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,7 +25,7 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws-lambda": "^0.1.21",
+    "@genjs/genjs-bundle-aws-lambda": "^0.1.22",
     "@genjs/genjs-bundle-java": "^0.1.15"
   },
   "devDependencies": {
