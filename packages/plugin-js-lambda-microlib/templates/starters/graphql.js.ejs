@@ -9,13 +9,13 @@ function extractRootSelectedFieldsFromInfo(info) {
 }
 
 const r = n => {
-    return async (parent, params = {}, {event, context}, info) => {
+    return async (parent, params = {}, {event, context, throwError = false}, info) => {
         const handlerEvent = {params};
         handlerEvent.params = handlerEvent.params || {};
         handlerEvent.params.fields = handlerEvent.params.fields || extractRootSelectedFieldsFromInfo(info);
         (!!event && !!event.user) && (handlerEvent.user = event.user);
         !!parent && (handlerEvent.params.parent = parent);
-        return require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/${n}`).handler(handlerEvent, {...context, info});
+        return require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/${n}`).handler(handlerEvent, {...context, info, throwError});
     };
 };
 const jwtSecret = String(process.env.JWT_SECRET || 'the-very-secret-secret');
@@ -47,7 +47,7 @@ const context = ({event, context, req}) => {
             event.user = require('jsonwebtoken').verify((authHeader || '').split(' ')[1], jwtSecret);
         }
     }
-    return {event, context};
+    return {event, context, throwError: true};
 };
 
 const server = new ApolloServer({typeDefs, resolvers, context});
