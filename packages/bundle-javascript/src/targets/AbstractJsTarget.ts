@@ -23,7 +23,7 @@ export abstract class AbstractJsTarget extends GenericTarget {
         }
     }
     getCommandEnvs(options: any): any {
-        return {};
+        return options?.envs || {};
     }
     buildSteps(options: any) {
         return [

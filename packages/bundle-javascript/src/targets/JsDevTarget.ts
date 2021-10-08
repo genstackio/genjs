@@ -6,8 +6,9 @@ export class JsDevTarget extends AbstractJsTarget {
     }
     getCommandEnvs(options: any) {
         return {
-            PORT: options.port,
-        };
+            ...super.getCommandEnvs(options),
+            ...(options.PORT ? {PORT: options.port} : {}),
+        }
     }
     buildDescription() {
         return 'Execute dev server';
