@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-ts-lambda-gql",
-  "version": "0.4.24",
+  "version": "0.4.25",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@genjs/genjs-bundle-aws-lambda": "^0.1.23",
-    "@genjs/genjs-bundle-typescript": "^0.1.15"
+    "@genjs/genjs-bundle-typescript": "^0.1.16"
   },
   "devDependencies": {
     "@genjs/genjs": "^0.4.11"

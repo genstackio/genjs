@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-lambda-microlib",
-  "version": "0.4.29",
+  "version": "0.4.30",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@genjs/genjs-bundle-aws-lambda": "^0.1.23",
-    "@genjs/genjs-bundle-javascript": "^0.1.15"
+    "@genjs/genjs-bundle-javascript": "^0.1.16"
   },
   "devDependencies": {
     "@genjs/genjs": "^0.4.11",
