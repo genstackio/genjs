@@ -427,7 +427,7 @@ export default class MicroserviceType {
         }
         if ('@dynamics' === type) {
             requirements['dynamics'] = true;
-            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await dynamics(result, query)`, 'result', returnValue)});` : `${this.buildHookStatement(`await dynamics(result, query)`, 'result', returnValue)};`}`;
+            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await dynamics(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)});` : `${this.buildHookStatement(`await dynamics(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)};`}`;
         }
         if ('@requires' === type) {
             requirements['requires'] = true;
