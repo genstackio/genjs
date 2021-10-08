@@ -36,6 +36,15 @@ function buildStartTarget(t: MakefileTemplate, p: IPackage, name: string, v: any
         case 'air':
             t.addPredefinedTarget(name, 'air-cli', {...targetOpts, envs: {AWS_PROFILE: '$(AWS_PROFILE)', AWS_REGION: '$(AWS_DEFAULT_REGION)', AWS_SDK_LOAD_CONFIG: '1', PORT: port, ...targetOpts.envs}});
             break;
+        case 'npm':
+            t.addPredefinedTarget(name, 'js-start', {...targetOpts, script: v['script'], npm_client: 'npm'});
+            break;
+        case 'yarn':
+            t.addPredefinedTarget(name, 'js-start', {...targetOpts, script: v['script'], npm_client: 'yarn'});
+            break;
+        case 'js-script':
+            t.addPredefinedTarget(name, 'js-start', {...targetOpts, script: v['script']});
+            break;
         default:
         case 'nodemon':
             const script = `${v.directory ? v.directory : ''}${v.directory ? '/' : ''}${v.name}.js`;
