@@ -8,15 +8,17 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
 
     switch (mode) {
         case 's3':
+            const assets = !!vars.deploy_assets_support
+            const cdn = !!vars.cdn_support
             t
                 .addGlobalVar('AWS_DEFAULT_REGION', vars.aws_default_region || 'eu-west-3')
                 .addGlobalVar('prefix', vars.project_prefix)
                 .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
-                .addGlobalVar('target_s3_bucket', vars.s3_bucket || 'please-set-target-s3-bucket-here.zip')
+                .addGlobalVar('target_s3_bucket', vars.s3_bucket || 'please-set-target-s3-bucket-here')
                 .addGlobalVar('target_s3_key', vars.s3_key || 'please-set-target-s3-key-here')
                 .addGlobalVar('target_lambda_name', vars.lambda_name || 'please-set-target-lambda-name-here')
                 .addGlobalVar('source_package_file', vars.package_file || 'build/package.zip')
-                .addMetaTarget('deploy', ['deploy-package', 'update-lambda-code'])
+                .addMetaTarget('deploy', ['deploy-package', assets && 'deploy-assets', 'update-lambda-code', cdn && 'invalidate-cache'].filter(x => !!x) as string[])
                 .addTarget('deploy-package', [
                     'AWS_EC2_METADATA_DISABLED=true AWS_PROFILE=$(AWS_PROFILE) aws s3 cp $(source_package_file) s3://$(target_s3_bucket)/$(target_s3_key)',
                 ])
@@ -26,7 +28,22 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
                 .addTarget('update-lambda-code-of', [
                     'AWS_EC2_METADATA_DISABLED=true AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket) --s3-key $(target_s3_key)',
                 ])
+
+
             ;
+            if (assets) {
+                t
+                    .addGlobalVar('source_assets_dir', vars.assets_source_dir || './build/public/')
+                    .addGlobalVar('target_assets_s3_bucket', vars.assets_s3_bucket || 'please-set-target-assets-s3-bucket-here')
+                    .addGlobalVar('target_assets_s3_key', vars.assets_s3_key || '')
+                    .addPredefinedTarget('deploy-assets', 'aws-s3-sync', {source: '$(source_assets_dir)', targetDir: '$(target_assets_s3_bucket)/${target_assets_s3_key)'})
+                ;
+            }
+            if (cdn) {
+                t
+                    .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
+                ;
+            }
             break;
         case 'custom':
             t.addTarget('deploy', vars.target_custom_command ? [vars.target_custom_command] : undefined);

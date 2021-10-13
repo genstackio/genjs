@@ -45,6 +45,7 @@ export default class Package extends AbstractPackage {
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
             ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
+            ...(vars.terraform_version ? {['.terraform-version']: () => vars.terraform_version} : {}),
         };
     }
     protected buildLicense(vars: any): LicenseTemplate {

@@ -60,6 +60,13 @@ export default class Package extends AwsLambdaPackage {
             ['package.json']: this.buildPackageJson(vars),
         };
     }
+    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+    protected buildFilesFromTemplates(vars: any, cfg: any): any {
+        return {
+            ...super.buildFilesFromTemplates(vars, cfg),
+            'tsconfig.json': true,
+        };
+    }
     protected buildReadme(vars: any) {
         return super.buildReadme(vars)
             .addFragmentFromTemplate(`${__dirname}/../templates/readme/original.md.ejs`)
@@ -91,6 +98,7 @@ export default class Package extends AwsLambdaPackage {
             .addIgnore('.DS_Store')
             .addIgnore('*.log')
             .addIgnore('npm-debug.log*')
+            .addIgnore('/public/static')
         ;
     }
     protected buildMakefile(vars: any) {
