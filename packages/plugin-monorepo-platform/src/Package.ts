@@ -32,6 +32,7 @@ export default class Package extends AbstractPackage {
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
             ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
+            ...(vars.terraform_version ? {['.terraform-version']: () => vars.terraform_version} : {}),
             ['README.md']: this.buildReadme(vars),
             ...(vars.node_version ? {['.nvmrc']: new NvmRcTemplate(vars)} : {}),
             ...this.buildDocs(vars),
