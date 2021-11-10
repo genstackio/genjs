@@ -62,6 +62,7 @@ export default class Package extends AwsLambdaPackage {
             description: vars.description,
             author: (vars.author && ('object' === typeof vars.author)) ? vars.author : {name: vars.author_name, email: vars.author_email},
             private: true,
+            ...(vars.packageJson || {}),
         }, null, 4);
     }
     protected buildGitIgnore(vars: any) {
