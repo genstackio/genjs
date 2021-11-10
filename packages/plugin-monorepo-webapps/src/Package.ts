@@ -176,8 +176,8 @@ export default class Package extends MonorepoPackage {
             !!p.migratable && t.addSubTarget(`migrate-${p.name}`, p.fullDir, 'migrate', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
         });
         refreshableProjects.forEach(p => {
-            !!p.refreshable && t.addSubTarget(`refresh-${p.name}`, 'infra', 'provision', {env: '$(env)', layer: p.name}, ['generate-terraform', `build-${p.name}`]);
-        });
+            !!p.refreshable && t.addSubTarget(`refresh-${p.name}`, p.fullDir, 'refresh', {env: '$(env)'}, generateEnvLocalableProjects.find(x => p.name === x.name) ? [`generate-env-local-${p.name}`] : [], {sourceEnvLocal: true});
+    });
         startableProjects.forEach(p => {
             !!p.startable && t.addSubTarget(`start-${p.name}`, p.fullDir, 'start', {env: '$(env)'});
         });
