@@ -70,7 +70,7 @@ export default class SchemaParser {
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
                 pretransform = undefined, convert = undefined, mutate = undefined,
                 dynamic = undefined, from = undefined, requires = undefined, stat = undefined,
-                props = undefined,
+                props = undefined, prefix = undefined, suffix = undefined, truncate = undefined,
             } = def;
             const detectedRequires = this.buildDetectedRequires(def);
             acc.fields[k] = {
@@ -87,6 +87,9 @@ export default class SchemaParser {
             acc.pretransformers[k] = pretransform ? (Array.isArray(pretransform) ? [...pretransform] : [pretransform]) : [];
             acc.converters[k] = convert ? (Array.isArray(convert) ? [...convert] : [convert]) : [];
             acc.transformers[k] = transform ? (Array.isArray(transform) ? [...transform] : [transform]) : [];
+            prefix && acc.transformers[k].push({type: '@prefix', config: {prefix}});
+            suffix && acc.transformers[k].push({type: '@suffix', config: {suffix}});
+            truncate && acc.transformers[k].push({type: '@truncate', config: {length: ('number' === typeof truncate) ? truncate : parseInt(truncate)}});
             required && (acc.requiredFields[k] = true);
             if (refAttribute) {
                 const refAttributes = Array.isArray(refAttribute) ? refAttribute : [refAttribute];
