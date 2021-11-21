@@ -7,4 +7,4 @@ functions:
       - query
 
     code: |
-      service.dynamoose.update(query);
+      return service.dynamoose.update(query);
