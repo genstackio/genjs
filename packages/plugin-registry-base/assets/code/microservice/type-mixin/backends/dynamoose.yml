@@ -1,2 +1,10 @@
 backends:
   - "@dynamoose"
+
+functions:
+  rawUpdate:
+    args:
+      - query
+
+    code: |
+      service.dynamoose.update(query);
