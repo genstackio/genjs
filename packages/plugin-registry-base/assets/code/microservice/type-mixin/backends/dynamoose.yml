@@ -3,6 +3,7 @@ backends:
 
 functions:
   rawUpdate:
+    async: true
     args:
       - query
 
