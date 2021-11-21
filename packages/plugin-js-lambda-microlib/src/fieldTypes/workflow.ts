@@ -1,1 +1,1 @@
-export default ({steps, autoTransitionTo}) => ({type: 'string', validators: [{type: '@values', config: {values: steps}}], prefetch: true, autoTransitionTo})
+export default ({steps, autoTransitionTo, transitions = undefined}: {steps?: any, autoTransitionTo?: string, transitions?: any}) => ({type: 'string', validators: [{type: '@values', config: {values: steps}}, ...(transitions ? [{type: '@transition', config: {transitions}}] : [])], prefetch: true, autoTransitionTo})
