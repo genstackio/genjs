@@ -50,7 +50,7 @@ export default class MicroserviceTypeOperation {
             ((<any>v).track || []).filter(track => track.on.slice(- operation.length - 1) === `_${operation}`).forEach(track => {
                 microserviceType.microservice.package.registerEventListener(
                     (<any>track).on,
-                    {join: track.join, action: track.action, ...listener}
+                    {...listener, config: {...(listener.config || {}), join: track.join, action: track.action}}
                 )
 
             })

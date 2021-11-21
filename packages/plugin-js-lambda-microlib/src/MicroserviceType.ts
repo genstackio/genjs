@@ -478,16 +478,55 @@ export default class MicroserviceType {
             return `    ${conditionCode || ''}await updateRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['targetIdField'] || config['idField']});`
         }
         if ('@create-stats' === type) {
-            requirements['stats'] = true;
-            return `    ${conditionCode || ''}await stats(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, 'create', result, query);`
+            switch (config['action']['type']) {
+                case '@inc':
+                    requirements['incrementStat'] = true;
+                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, result, query);`
+                case '@dec':
+                    requirements['decrementStat'] = true;
+                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, result, query);`
+                case '@reset':
+                    requirements['resetStat'] = true;
+                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query);`
+                default:
+                    requirements['updateStat'] = true;
+                    const {name: zzzname, key: zzzkey, ...zzzconfig} = config as any;
+                    return `    ${conditionCode || ''}await updateStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query, ${this.stringifyForHook(zzzconfig, options)});`
+            }
         }
         if ('@update-stats' === type) {
-            requirements['stats'] = true;
-            return `    ${conditionCode || ''}await stats(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, 'update', result, query);`
+            switch (config['action']['type']) {
+                case '@inc':
+                    requirements['incrementStat'] = true;
+                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
+                case '@dec':
+                    requirements['decrementStat'] = true;
+                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
+                case '@reset':
+                    requirements['resetStat'] = true;
+                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
+                default:
+                    requirements['updateStat'] = true;
+                    const {name: zzzname, key: zzzkey, ...zzzconfig} = config as any;
+                    return `    ${conditionCode || ''}await updateStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query, ${this.stringifyForHook(zzzconfig, options)});`
+            }
         }
         if ('@delete-stats' === type) {
-            requirements['stats'] = true;
-            return `    ${conditionCode || ''}await stats(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, 'delete', result, query);`
+            switch (config['action']['type']) {
+                case '@inc':
+                    requirements['incrementStat'] = true;
+                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, result, query);`
+                case '@dec':
+                    requirements['decrementStat'] = true;
+                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, result, query);`
+                case '@reset':
+                    requirements['resetStat'] = true;
+                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query);`
+                default:
+                    requirements['updateStat'] = true;
+                    const {name: zzzname, key: zzzkey, ...zzzconfig} = config as any;
+                    return `    ${conditionCode || ''}await updateStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query, ${this.stringifyForHook(zzzconfig, options)});`
+            }
         }
         if (!rawOpts && '@operation' === type) {
             requirements['call'] = true;
