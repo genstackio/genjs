@@ -481,13 +481,13 @@ export default class MicroserviceType {
             switch (config['action']['type']) {
                 case '@inc':
                     requirements['incrementStat'] = true;
-                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, result, query);`
+                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
                 case '@dec':
                     requirements['decrementStat'] = true;
-                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, result, query);`
+                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
                 case '@reset':
                     requirements['resetStat'] = true;
-                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query);`
+                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
                 default:
                     requirements['updateStat'] = true;
                     const {name: zzzname, key: zzzkey, ...zzzconfig} = config as any;
@@ -515,13 +515,13 @@ export default class MicroserviceType {
             switch (config['action']['type']) {
                 case '@inc':
                     requirements['incrementStat'] = true;
-                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, result, query);`
+                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
                 case '@dec':
                     requirements['decrementStat'] = true;
-                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, result, query);`
+                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
                 case '@reset':
                     requirements['resetStat'] = true;
-                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query);`
+                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
                 default:
                     requirements['updateStat'] = true;
                     const {name: zzzname, key: zzzkey, ...zzzconfig} = config as any;
