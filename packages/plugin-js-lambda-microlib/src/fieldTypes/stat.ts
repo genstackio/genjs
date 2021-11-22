@@ -1,1 +1,1 @@
-export default ({type, track = []}) => ({type: 'number', internal: true, stat: {type, track}, prefetch: true})
+export default ({type, track = []}) => ({type: 'number', internal: true, stat: {type, track}})

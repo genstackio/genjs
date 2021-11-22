@@ -70,7 +70,7 @@ export default class SchemaParser {
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
                 pretransform = undefined, convert = undefined, mutate = undefined,
                 dynamic = undefined, from = undefined, requires = undefined, stat = undefined,
-                props = undefined, prefix = undefined, suffix = undefined, truncate = undefined,
+                props = undefined, prefix = undefined, suffix = undefined, truncate = undefined, deletePrefetch = false,
             } = def;
             const detectedRequires = this.buildDetectedRequires(def);
             acc.fields[k] = {
@@ -126,7 +126,8 @@ export default class SchemaParser {
             primaryKey && (acc.primaryKey = k);
             upper && (acc.transformers[k].push({type: '@upper'}));
             lower && (acc.transformers[k].push({type: '@lower'}));
-            prefetch && ((acc.prefetchs['update'] = acc.prefetchs['update'] || {})[k] = true);
+            prefetch && ((acc.prefetchs['update'] = acc.prefetchs['update'] || {})[k] = prefetch);
+            deletePrefetch && ((acc.prefetchs['delete'] = acc.prefetchs['delete'] || {})[k] = deletePrefetch);
             dynamic && (acc.dynamics[k] = dynamic);
             requires && (acc.requires[k] = Array.isArray(requires) ? [...acc.requires[k], ...requires] : [...acc.requires[k], requires]);
             detectedRequires && (acc.requires[k] = Array.isArray(detectedRequires) ? [...acc.requires[k], ...detectedRequires] : [...acc.requires[k], detectedRequires]);
