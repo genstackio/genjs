@@ -79,8 +79,9 @@ export default class Handler {
             const cfrms = {};
             const cfems = {};
             needCnf = ((true === needCnf) || globalCfg.hasMiddlewares || globalCfg.hasErrorMiddlewares) as any;
+            const {z: _, ...cnfWithoutZ} = cnf;
             const x = [
-                needCnf && `const cnf = ${stringifyObject(cnf, {indent: '', inlineCharacterLimit: 1024, singleQuotes: true})};`,
+                needCnf && `const cnf = {...${stringifyObject(cnfWithoutZ, {indent: '', inlineCharacterLimit: 1024, singleQuotes: true})}, z: \`\${__dirname}/${cnf.z}\`};`,
                 ...globalCfg.middlewares.map((m, i) => {
                     if (middlewaresConfigs[m] && Object.keys(middlewaresConfigs[m]).length) {
                         cfrms[m] = middlewaresConfigs[m];
