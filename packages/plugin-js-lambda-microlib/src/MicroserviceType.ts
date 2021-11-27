@@ -409,7 +409,7 @@ export default class MicroserviceType {
         }
         if ('%event' === type) {
             requirements['event'] = true;
-            return `    ${conditionCode || ''}await event(${this.stringifyForHook(options['operationName'], options)}, result, query);`
+            return `    ${conditionCode || ''}await event(${this.stringifyForHook(config['name'] || options['operationName'], options)}, result, query);`
         }
         if ('@delete-references' === type) {
             requirements['deleteRefs'] = true;
