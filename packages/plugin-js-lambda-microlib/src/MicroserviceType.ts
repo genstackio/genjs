@@ -210,7 +210,7 @@ export default class MicroserviceType {
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before', operationName})));
         }, []);
-        const afters = ['after', 'postpopulate', 'convert', 'latepopulate', 'notify', 'clean', 'end'].reduce((acc, n) => {
+        const afters = ['after', 'postpopulate', 'convert', 'latepopulate', 'notify', 'clean', 'event', 'end'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after', operationName})));
@@ -404,7 +404,7 @@ export default class MicroserviceType {
         }
         if ('%event' === type) {
             requirements['event'] = true;
-            return `    ${conditionCode || ''}await event(${this.stringifyForHook(options['operationName'], options)}, result, query});`
+            return `    ${conditionCode || ''}await event(${this.stringifyForHook(options['operationName'], options)}, result, query);`
         }
         if ('@delete-references' === type) {
             requirements['deleteRefs'] = true;
