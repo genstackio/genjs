@@ -194,7 +194,8 @@ export default class MicroserviceType {
         };
     }
     buildServiceMethodConfig({backend, as, name, vars = {}}) {
-        const listeners = this.microservice.package.getEventListeners(`${this.name}_${name}`);
+        const operationName = `${this.name}_${name}`;
+        const listeners = this.microservice.package.getEventListeners(operationName);
         let backendDef = backend || this.defaultBackendName;
         if (backendDef) {
             if ('string' === typeof backendDef) {
@@ -207,16 +208,16 @@ export default class MicroserviceType {
         const befores = ['init', 'prepopulate', 'pretransform', 'validate', 'populate', 'transform', 'authorize', 'before', 'prepare'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
-            return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before'})));
+            return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before', operationName})));
         }, []);
         const afters = ['after', 'postpopulate', 'convert', 'latepopulate', 'notify', 'clean', 'end'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
-            return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after'})));
+            return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after', operationName})));
         }, []);
         if (listeners.length) {
             listeners.reduce((acc, l) => {
-                const hh = this.buildHookCode(localRequirements, l, {position: 'after'});
+                const hh = this.buildHookCode(localRequirements, l, {position: 'after', operationName});
                 if (hh) acc.push(hh);
                 return acc;
             }, afters);
@@ -400,6 +401,10 @@ export default class MicroserviceType {
         if ('@sns/publish' === type) {
             requirements['snsPublish'] = true;
             return `    ${conditionCode || ''}await snsPublish(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'});`
+        }
+        if ('@eventbridge/send' === type) {
+            requirements['event'] = true;
+            return `    ${conditionCode || ''}await event(${this.stringifyForHook(options['operationName'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'});`
         }
         if ('@delete-references' === type) {
             requirements['deleteRefs'] = true;
