@@ -210,7 +210,7 @@ export default class MicroserviceType {
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before', operationName})));
         }, []);
-        const afters = ['after', 'postpopulate', 'convert', 'latepopulate', 'notify', 'clean', 'event', 'end'].reduce((acc, n) => {
+        let afters = ['after', 'postpopulate', 'convert', 'latepopulate', 'clean'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after', operationName})));
@@ -222,6 +222,11 @@ export default class MicroserviceType {
                 return acc;
             }, afters);
         }
+        afters = ['notify', 'event', 'end'].reduce((acc, n) => {
+            if (!this.hooks[name]) return acc;
+            if (!this.hooks[name][n]) return acc;
+            return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after', operationName})));
+        }, afters);
         const needHook = befores.reduce((acc, b) => acc || / hook\(/.test(b), false)
             || afters.reduce((acc, b) => acc || / hook\(/.test(b), <boolean>false)
         ;
