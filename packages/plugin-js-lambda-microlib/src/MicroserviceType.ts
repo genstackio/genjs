@@ -402,9 +402,9 @@ export default class MicroserviceType {
             requirements['snsPublish'] = true;
             return `    ${conditionCode || ''}await snsPublish(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'});`
         }
-        if ('@eventbridge/send' === type) {
+        if ('%event' === type) {
             requirements['event'] = true;
-            return `    ${conditionCode || ''}await event(${this.stringifyForHook(options['operationName'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'});`
+            return `    ${conditionCode || ''}await event(${this.stringifyForHook(options['operationName'], options)}, result, query});`
         }
         if ('@delete-references' === type) {
             requirements['deleteRefs'] = true;
