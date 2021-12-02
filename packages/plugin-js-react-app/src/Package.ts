@@ -1,4 +1,5 @@
 import {JavascriptPackage} from '@genjs/genjs-bundle-javascript';
+import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package/lib/helpers/applyRefreshMakefileHelper";
 
 export default class Package extends JavascriptPackage {
     constructor(config: any) {
@@ -43,7 +44,7 @@ export default class Package extends JavascriptPackage {
         ;
     }
     protected buildMakefile(vars: any) {
-        return super.buildMakefile(vars)
+        const t = super.buildMakefile(vars)
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('env', 'dev')
@@ -62,6 +63,10 @@ export default class Package extends JavascriptPackage {
             .addPredefinedTarget('test-cov', 'js-test', {local: true})
             .addPredefinedTarget('test-ci', 'js-test', {ci: true, coverage: false})
         ;
+
+        applyRefreshMakefileHelper(t, vars, this);
+
+        return t;
     }
     protected getTechnologies() {
         return [
