@@ -31,11 +31,11 @@ const r = n => {
 const jwtSecret = String(process.env.JWT_SECRET || 'the-very-secret-secret');
 
 <% if ('undefined' !== typeof schemaFile) { -%>
-const typeDefs = gql(require('fs').readFileSync(`${__dirname}/<%- schemaFile -%>`, 'utf8'));
+<%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> typeDefs = [gql(require('fs').readFileSync(`${__dirname}/<%- schemaFile -%>`, 'utf8'))];
 <% } else { -%>
-const typeDefs = gql`
+<%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> typeDefs = [gql`
 <%- 'undefined' !== typeof schema ? schema : '' -%>
-`;
+`];
 <% } -%>
 
 const resolvers = {
@@ -48,7 +48,7 @@ const resolvers = {
 <% }) -%>
 };
 
-const context = ({event, context, req}) => {
+<%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> context = ({event, context, req}) => {
     const headers = (event || {}).headers || req.headers;
     if (!!headers) {
         event = event || {};
@@ -59,6 +59,21 @@ const context = ({event, context, req}) => {
     }
     return {event, context, throwError: true};
 };
+<% if (('undefined' !== typeof schemaExtensions) && (0 < schemaExtensions.length)) { -%>
+<% schemaExtensions.forEach((se, ii) => {
+function convertSchemaExtension(se) {
+    if ('string' === typeof se) se = {type: se};
+    se = {config: {}, ...se};
+    se['require'] = ('@' === se.type.slice(0, 1)) ? (-1 === se.type.indexOf('/') ? se.type.slice(1) : se.type) : `../schema-extensions/${se.type}.js`;
+    return se;
+}
+const _se = convertSchemaExtension(se); -%>
+const se<%= ii + 1 -%> = require('<%= _se.require -%>');
+<% if (_se['config']['scalar'] !== false) { %>se<%= ii + 1 -%>['typeDefs'] && (typeDefs = [...se<%= ii + 1 -%>['typeDefs'], ...typeDefs]); <% } -%>
+se<%= ii + 1 -%>['resolvers'] && Object.assign(resolvers, se<%= ii + 1 -%>['resolvers']);
+se<%= ii + 1 -%>['contextFactory'] && (context = se<%= ii + 1 -%>['contextFactory'](context));
+<% }) -%>
+<% } -%>
 
 const server = new ApolloServer({typeDefs, resolvers, context});
 
