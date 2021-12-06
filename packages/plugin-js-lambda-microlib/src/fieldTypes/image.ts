@@ -6,6 +6,7 @@ export default ({bucket, key, name, contentType}) => ({
     },
     convert: {
         type: '@image',
+        always: true,
         config: {bucket, key, name, contentType}
     },
 })
