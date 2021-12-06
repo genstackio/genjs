@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const {ApolloServer, gql} = require('apollo-server');
-<% if ('undefined' !== selections) { -%>
+<% if ('undefined' !== typeof selections) { -%>
 const {select} = require('@ohoareau/apollo-graphql-selections');
 <% } else { -%>
 function extractRootSelectedFieldsFromInfo(info) {
@@ -16,7 +16,7 @@ const r = n => {
     return async (parent, params = {}, {event, context, throwError = false}, info) => {
         const handlerEvent = {params};
         handlerEvent.params = handlerEvent.params || {};
-<% if ('undefined' !== selections) { -%>
+<% if ('undefined' !== typeof selections) { -%>
         const {fields = [], selections = {}} = select(info);
         handlerEvent.params.selections = selections;
         handlerEvent.params.fields = handlerEvent.params.fields || fields;
