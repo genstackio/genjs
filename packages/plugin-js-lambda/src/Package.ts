@@ -10,6 +10,7 @@ import {
     InstallableBehaviour,
     GenerateEnvLocalableBehaviour,
     TestableBehaviour,
+    LoggableBehaviour,
 } from '@genjs/genjs';
 import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package";
 
@@ -25,6 +26,7 @@ export default class Package extends AwsLambdaPackage {
             new InstallableBehaviour(),
             new GenerateEnvLocalableBehaviour(),
             new TestableBehaviour(),
+            new LoggableBehaviour(),
         ];
     }
     protected buildVars(vars: any) {
@@ -87,6 +89,9 @@ export default class Package extends AwsLambdaPackage {
             .addPredefinedTarget('test-ci', 'js-test', {ci: true})
         ;
 
+        if (this.hasFeature('loggable')) {
+            t.addPredefinedTarget('log', 'aws-logs-tail', {group: vars.log_group || `/aws/lambda/$(env)-${vars.name}`, follow: true});
+        }
         applyStarterMakefileHelper(t, vars, this);
         applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
         applyMigrateMakefileHelper(t, vars, this);

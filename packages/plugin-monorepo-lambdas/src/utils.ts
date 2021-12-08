@@ -77,6 +77,7 @@ export const buildProjectsVars = (vars: any): {
     installableProjects: any[],
     startableProjects: any[],
     refreshableProjects: any[],
+    loggableProjects: any[],
 } => {
     const originalProjects = vars.projects || {};
     const sortedProjects = Object.entries(originalProjects).reduce((acc, [id, v]) => {
@@ -95,6 +96,7 @@ export const buildProjectsVars = (vars: any): {
     const installableProjects = sortedProjects.filter(p => !!p.installable);
     const startableProjects = sortedProjects.filter(p => !!p.startable);
     const refreshableProjects = sortedProjects.filter(p => !!p.refreshable);
+    const loggableProjects = sortedProjects.filter(p => !!p.loggable);
     return {
         originalProjects,
         sortedProjects,
@@ -109,5 +111,6 @@ export const buildProjectsVars = (vars: any): {
         installableProjects,
         startableProjects,
         refreshableProjects,
+        loggableProjects,
     };
 };

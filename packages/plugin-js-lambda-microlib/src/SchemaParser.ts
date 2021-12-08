@@ -81,6 +81,7 @@ export default class SchemaParser {
             };
             acc.authorizers[k] = [];
             acc.requires[k] = [];
+            acc.validators[k] = []
             acc.multiRefAttributeTargetFields[k] = [];
             acc.indexes[k] = acc.indexes[k] || [];
             acc.mutators[k] = mutate ? (Array.isArray(mutate) ? [...mutate] : [mutate]) : [];
@@ -107,7 +108,7 @@ export default class SchemaParser {
             }
             (undefined !== reference) && (acc.referenceFields[k] = reference);
             (undefined !== ownedReferenceList) && (acc.ownedReferenceListFields[k] = ownedReferenceList);
-            (validators && 0 < validators.length) && (acc.validators[k] = [...(acc.validators[k] || []), ...validators]);
+            (validators && 0 < validators.length) && (acc.validators[k] = [...acc.validators[k], ...validators]);
             (authorizers && 0 < authorizers.length) && (acc.authorizers[k] = [...(acc.authorizers[k] || []), ...authorizers]);
             unique && (acc.validators[k].push({type: '@unique', config: {type: schema.name, index: k}}));
             (undefined !== value) && (acc.values[k] = value);
@@ -137,6 +138,7 @@ export default class SchemaParser {
             from && (acc.froms[k] = from) && (acc.dynamics[k] = {type: '@from', config: {name: from}});
             (undefined !== stat) && (acc.statFields[k] = stat);
             if (!acc.indexes[k].length) delete acc.indexes[k];
+            if (!acc.validators[k].length) delete acc.validators[k];
             if (!acc.transformers[k].length) delete acc.transformers[k];
             if (!acc.authorizers[k].length) delete acc.authorizers[k];
             if (!acc.pretransformers[k].length) delete acc.pretransformers[k];

@@ -68,6 +68,8 @@ export abstract class AbstractTarget implements ITarget {
     convertSteps(steps: string[], options: any): string[] {
         options.dir && (steps = steps.map(s => `cd ${options.dir} && ${s}`));
         options.awsProfile && (steps = steps.map(s => /(aws |make )/.test(s) ? `AWS_PROFILE=${('string' === typeof options.awsProfile) ? options.awsProfile : '$(AWS_PROFILE)'} ${s}` : s));
+        options.awsRegion && (steps = steps.map(s => /(aws |make )/.test(s) ? `AWS_REGION=${('string' === typeof options.awsRegion) ? options.awsRegion : '$(AWS_REGION)'} ${s}` : s));
+        options.awsDefaultRegion && (steps = steps.map(s => /(aws |make )/.test(s) ? `AWS_DEFAULT_REGION=${('string' === typeof options.awsDefaultRegion) ? options.awsDefaultRegion : '$(AWS_DEFAULT_REGION)'} ${s}` : s));
         options.ci && (steps = steps.map(s => `CI=${(options.ci === 'hidden') ? '' : 'true'} ${s}`));
         options.sourceLocalEnvLocal && (steps = steps.map(s => `set -a && . ./.env.local && set +a && ${s}`));
         steps = steps.map(s => (s.slice(0, 1) === '@') ? s : `@${s}`);

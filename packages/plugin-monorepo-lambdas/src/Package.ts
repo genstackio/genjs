@@ -118,6 +118,7 @@ export default class Package extends MonorepoPackage {
             refreshableProjects,
             startableProjects,
             testableProjects,
+            loggableProjects,
         } = buildProjectsVars(vars);
         const t = new MakefileTemplate({options: {npmClient: vars.npm_client}, predefinedTargets: this.predefinedTargets, relativeToRoot: this.relativeToRoot, makefile: false !== vars.makefile, ...(vars.makefile || {})})
             .addGlobalVar('env', 'dev')
@@ -154,6 +155,9 @@ export default class Package extends MonorepoPackage {
         } else {
             t.addNoopTarget('migrate');
         }
+        if (0 < loggableProjects.length) {
+            t.addTarget('log', [vars.logCmd || `npx concurrently -n ${loggableProjects.map(p => p.name)} ${loggableProjects.map(p => `"make log-${p.name}"`).join(' ')}`]);
+        }
         if (0 < generateEnvLocalableProjects.length) {
             [...Object.keys(vars.project_envs || {}), ...(!!vars.env_local ? ['local'] : [])].forEach(env => {
                 t.addTarget(`switch-${env}`, generateEnvLocalableProjects.map(p => `make -C . generate-env-local-${p.name} env=${env}`))
@@ -167,6 +171,9 @@ export default class Package extends MonorepoPackage {
         });
         testableProjects.forEach(p => {
             t.addSubTarget(`test-${p.name}`, p.fullDir, 'test');
+        });
+        loggableProjects.forEach(p => {
+            t.addSubTarget(`log-${p.name}`, p.fullDir, 'log');
         });
         generateEnvLocalableProjects.forEach(p => {
             t.addSubTarget(`generate-env-local-${p.name}`, p.fullDir, 'generate-env-local', {env: '$(env)'});

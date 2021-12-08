@@ -11,6 +11,7 @@ export default class Plugin implements IPlugin {
         const features = {
             startable: false,
             testable: false,
+            loggable: false,
             deployable: false,
             preInstallable: false,
             migratable: false,

@@ -11,3 +11,4 @@ export * from './ValidatableBehaviour';
 export * from './CleanableBehaviour';
 export * from './MigratableBehaviour';
 export * from './RefreshableBehaviour';
+export * from './LoggableBehaviour';

@@ -2,6 +2,7 @@ export * from './JsInstallTarget';
 export * from './JsInstallProdTarget';
 export * from './JsTestTarget';
 export * from './JsBuildTarget';
+export * from './JsLogTarget';
 export * from './JsServeTarget';
 export * from './JsLintTarget';
 export * from './JsStartTarget';

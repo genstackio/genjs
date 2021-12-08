@@ -11,7 +11,7 @@ import {
     InstallableBehaviour,
     TestableBehaviour,
     RefreshableBehaviour,
-    StartableBehaviour,
+    StartableBehaviour, LoggableBehaviour,
 } from "@genjs/genjs";
 
 export default class Package extends AwsLambdaPackage {
@@ -28,6 +28,7 @@ export default class Package extends AwsLambdaPackage {
             new DeployableBehaviour(),
             new RefreshableBehaviour(),
             new StartableBehaviour(),
+            new LoggableBehaviour(),
         ];
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
@@ -79,6 +80,9 @@ export default class Package extends AwsLambdaPackage {
             .addTarget('run', ['./build/bin/$(GOOS)/$(GOARCH)/$(BIN)'], [], {}, 'Execute the specified binary')
         ;
 
+        if (this.hasFeature('loggable')) {
+            t.addPredefinedTarget('log', 'aws-logs-tail', {group: vars.log_group || `/aws/lambda/$(env)-${vars.name}`, follow: true});
+        }
         applyStarterMakefileHelper(t, vars, this);
         applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
         applyRefreshMakefileHelper(t, vars, this);

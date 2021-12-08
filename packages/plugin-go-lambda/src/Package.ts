@@ -4,7 +4,13 @@ import {
     AwsLambdaPackage
 } from '@genjs/genjs-bundle-aws-lambda';
 import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package/lib/helpers/applyRefreshMakefileHelper";
-import {BuildableBehaviour, CleanableBehaviour, InstallableBehaviour, TestableBehaviour} from "@genjs/genjs";
+import {
+    BuildableBehaviour,
+    CleanableBehaviour,
+    InstallableBehaviour,
+    LoggableBehaviour,
+    TestableBehaviour
+} from "@genjs/genjs";
 
 export default class Package extends AwsLambdaPackage {
     constructor(config: any) {
@@ -17,6 +23,7 @@ export default class Package extends AwsLambdaPackage {
             new CleanableBehaviour(),
             new InstallableBehaviour(),
             new TestableBehaviour(),
+            new LoggableBehaviour(),
         ];
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
@@ -59,6 +66,9 @@ export default class Package extends AwsLambdaPackage {
             .addTarget('run', ['./build/bin/$(GOOS)/$(GOARCH)/$(BIN)'], [], {}, 'Execute the specified binary')
         ;
 
+        if (this.hasFeature('loggable')) {
+            t.addPredefinedTarget('log', 'aws-logs-tail', {group: vars.log_group || `/aws/lambda/$(env)-${vars.name}`, follow: true});
+        }
         applyStarterMakefileHelper(t, vars, this);
         applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
         applyRefreshMakefileHelper(t, vars, this);

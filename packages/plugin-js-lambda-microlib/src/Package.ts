@@ -17,6 +17,7 @@ import {
     MigratableBehaviour,
     GenerateEnvLocalableBehaviour,
     TestableBehaviour,
+    LoggableBehaviour,
 } from '@genjs/genjs';
 import MicroserviceConfigEnhancer from "./configEnhancers/MicroserviceConfigEnhancer";
 import {
@@ -111,6 +112,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             new TestableBehaviour(),
             new StartableBehaviour(),
             new MigratableBehaviour(),
+            new LoggableBehaviour(),
         ];
     }
     protected getDefaultExtraOptions(): any {
@@ -211,6 +213,9 @@ export default class Package extends AbstractPackage<PackageConfig> {
             .addPredefinedTarget('test-ci', 'js-test', {ci: true})
             .addExportedVar('CI')
         ;
+        if (this.hasFeature('loggable')) {
+            t.addPredefinedTarget('log', 'aws-logs-tail', {group: vars.log_group || `/aws/lambda/$(env)-${vars.name}`, follow: true});
+        }
         applyStarterMakefileHelper(t, vars, this);
         applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
         applyMigrateMakefileHelper(t, vars, this);
