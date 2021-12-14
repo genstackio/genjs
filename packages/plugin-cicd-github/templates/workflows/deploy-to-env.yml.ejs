@@ -1,6 +1,7 @@
 <% const dv = {
   go: '^1.16',
   node: '14.x',
+  python: '3.x',
   php: '7.1',
   terraform: '0.13.5',
   os: 'ubuntu-20.04'
@@ -8,6 +9,7 @@
 <% const v = {
   go: typeof go_version_constraint === 'undefined' ? dv.go : go_version_constraint,
   node: typeof node_version_constraint === 'undefined' ? dv.node : node_version_constraint,
+  python: typeof python_version_constraint === 'undefined' ? dv.python : python_version_constraint,
   php: typeof php_version_constraint === 'undefined' ? ('undefined' !== typeof php_version ? php_version : dv.php) : php_version_constraint,
   terraform: typeof terraform_version_constraint === 'undefined' ? ('undefined' !== typeof terraform_version ? terraform_version : dv.terraform) : terraform_version_constraint,
   os: typeof github_workflow_job_os === 'undefined' ? dv.os : github_workflow_job_os

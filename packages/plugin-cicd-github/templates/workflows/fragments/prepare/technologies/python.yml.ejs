@@ -1,0 +1,6 @@
+<% if (('undefined' !== typeof python_support)) { -%>
+      - name: Prepare Python (<%- v.python %>)
+        uses: actions/setup-python@v2
+        with:
+            python-version: <%- v.python %>
+<% } -%>
