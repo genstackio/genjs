@@ -1,5 +1,5 @@
-import {IGenerator, IPlugin} from '@genjs/genjs';
 import Package from './Package';
+import {IGenerator, IPlugin} from '@genjs/genjs';
 import registerAwsLambdaBundle from '@genjs/genjs-bundle-aws-lambda';
 import registerPythonBundle from '@genjs/genjs-bundle-python';
 

@@ -2,6 +2,7 @@ import {
     applyDeployMakefileHelper,
     applyMigrateMakefileHelper,
     applyStarterMakefileHelper,
+    applyLogMakefileHelper,
     AwsLambdaPackage
 } from '@genjs/genjs-bundle-aws-lambda';
 import {
@@ -89,9 +90,7 @@ export default class Package extends AwsLambdaPackage {
             .addPredefinedTarget('test-ci', 'js-test', {ci: true})
         ;
 
-        if (this.hasFeature('loggable')) {
-            t.addPredefinedTarget('log', 'aws-logs-tail', {group: vars.log_group || `/aws/lambda/$(env)-${vars.name}`, follow: true});
-        }
+        applyLogMakefileHelper(t, vars, this);
         applyStarterMakefileHelper(t, vars, this);
         applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
         applyMigrateMakefileHelper(t, vars, this);
