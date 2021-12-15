@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-monorepo-webapps",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
