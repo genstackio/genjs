@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-docker-image",
-  "version": "0.4.17",
+  "version": "0.4.18",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-docker-image": "^0.1.15",
-    "@genjs/genjs-bundle-javascript": "^0.1.17"
+    "@genjs/genjs-bundle-docker-image": "^0.1.16",
+    "@genjs/genjs-bundle-javascript": "^0.1.18"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.12"
+    "@genjs/genjs": "^0.4.13"
   }
 }

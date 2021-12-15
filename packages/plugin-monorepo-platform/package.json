@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-monorepo-platform",
-  "version": "0.4.21",
+  "version": "0.4.22",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,11 +25,11 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-javascript": "^0.1.17",
-    "@genjs/genjs-bundle-scm": "^0.1.5",
-    "@genjs/genjs-bundle-terraform": "^0.1.12"
+    "@genjs/genjs-bundle-javascript": "^0.1.18",
+    "@genjs/genjs-bundle-scm": "^0.1.6",
+    "@genjs/genjs-bundle-terraform": "^0.1.13"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.12"
+    "@genjs/genjs": "^0.4.13"
   }
 }
