@@ -2,7 +2,7 @@ import {GenericTarget} from '@genjs/genjs';
 
 export abstract class AbstractAwsCliTarget extends GenericTarget {
     buildOptions(options: any) {
-        return {awsProfile: '$(AWS_PROFILE)', ...options};
+        return {awsProfile: '$(AWS_PROFILE)', awsEc2MetadataDisabled: 'true', ...options};
     }
     abstract getServiceName(options: any): string;
     abstract getOperationName(options: any): string;
