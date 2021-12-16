@@ -11,6 +11,8 @@ export class AwsCloudfrontCreateInvalidationTarget extends AbstractAwsCliTarget 
         return {
             ['distribution-id']: distribution,
             paths: `'${path}'`,
+            ['no-paginate']: true,
+            'color': 'off',
         }
     }
     buildDescription() {
