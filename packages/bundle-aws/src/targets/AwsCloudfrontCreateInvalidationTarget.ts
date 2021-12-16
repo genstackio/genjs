@@ -13,6 +13,8 @@ export class AwsCloudfrontCreateInvalidationTarget extends AbstractAwsCliTarget 
             paths: `'${path}'`,
             ['no-paginate']: true,
             'color': 'off',
+            'no-cli-pager': true,
+            'output': 'text',
         }
     }
     buildDescription() {
