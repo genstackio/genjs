@@ -1,5 +1,6 @@
 import {JavascriptPackage} from '@genjs/genjs-bundle-javascript';
-import {ServableBehaviour} from '@genjs/genjs';
+import {ServableBehaviour} from "@genjs/genjs";
+import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package/lib/helpers/applyRefreshMakefileHelper";
 
 export default class Package extends JavascriptPackage {
     constructor(config: any) {
@@ -23,6 +24,12 @@ export default class Package extends JavascriptPackage {
         return super.buildReadme(vars)
             .addFragmentFromTemplate(`${__dirname}/../templates/readme/original.md.ejs`)
         ;
+    }
+    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+    protected async buildDynamicFiles(vars: any, cfg: any) {
+        return {
+            ...(await super.buildDynamicFiles({licenseFile: 'LICENSE.md', ...vars}, cfg)),
+        };
     }
     protected buildGitIgnore(vars: any) {
         return super.buildGitIgnore(vars)
@@ -95,9 +102,9 @@ export default class Package extends JavascriptPackage {
             .addGlobalVar('env', 'dev')
             .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
             .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-${vars.name}`)
-            .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()})`)
+            .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase().replace(/[^A-Z0-9_]+/g, '_')})`)
             .addPredefinedTarget('install', 'js-install')
-            .addPredefinedTarget('build', 'js-build', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
+            .addPredefinedTarget('build', 'js-build', {ci: (!!vars.hide_ci) ? 'hidden' : undefined, sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'public/'})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
@@ -109,6 +116,9 @@ export default class Package extends JavascriptPackage {
             .addPredefinedTarget('test-cov', 'js-test', {local: true})
             .addPredefinedTarget('test-ci', 'js-test', {ci: true, coverage: false})
         ;
+
+        applyRefreshMakefileHelper(t, vars, this);
+
         if (vars.publish_image) {
             t
                 .addPredefinedTarget('build-publish-image', 'docker-build', {tag: vars.publish_image.tag, path: vars.publish_image.dir || '.', buildArgs: vars.publish_image.buildArgs || {}})
@@ -119,6 +129,7 @@ export default class Package extends JavascriptPackage {
                 .addMetaTarget('deploy-raw', ['deploy-code', 'invalidate-cache'])
             ;
         }
+
         return t;
     }
     protected getTechnologies() {
