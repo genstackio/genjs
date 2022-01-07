@@ -1,3 +1,4 @@
+BigInt.prototype.toJSON || (BigInt.prototype.toJSON = function() { return this.toString() }); // fix for serialized BigInt
 const AWS = require('aws-sdk');
 const {ApolloServer, gql} = require('apollo-server');
 <% if ('undefined' !== typeof selections) { -%>
