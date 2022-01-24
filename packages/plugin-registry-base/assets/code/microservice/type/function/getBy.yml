@@ -11,8 +11,9 @@ args:
   - field
   - value
   - fields = []
+  - query
 
 code: |
-  const docs = await service.find({index: field, hashKey: value, limit: 1, fields});
+  const docs = await service.find({...query, index: field, hashKey: value, limit: 1, fields});
   if (!docs || !docs.items || (1 > docs.items.length)) throw new (require('@ohoareau/microlib/lib/errors/DocumentNotFoundError').default)('<%- type %>', value, field);
   return docs.items.shift();

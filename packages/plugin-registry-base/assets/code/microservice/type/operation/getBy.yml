@@ -10,3 +10,4 @@ wrap:
   - "'<%- field %>'"
   - query.<%- field %>
   - query.fields || []
+  - query

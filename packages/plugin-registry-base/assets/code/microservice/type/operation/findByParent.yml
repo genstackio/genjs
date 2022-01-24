@@ -9,4 +9,4 @@ inputs:
 
 wrap:
   - find
-  - "{index: '<%- index -%>', hashKey: <%- value %>}"
+  - "{...query, index: '<%- index -%>', hashKey: <%- value %>}"
