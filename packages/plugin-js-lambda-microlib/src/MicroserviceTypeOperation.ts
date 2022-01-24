@@ -123,9 +123,9 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('requires', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@requires', config: {}});
                 break;
             case 'find':
-                this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}, loop: 'items'});
+                this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {mode: 'page'}});
                 this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {mode: 'page'}});
-                this.hasHooks('requires', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@requires', config: {}});
+                this.hasHooks('requires', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@requires', config: {mode: 'page'}});
                 break;
             case 'delete':
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});

@@ -441,7 +441,7 @@ export default class MicroserviceType {
         }
         if ('@requires' === type) {
             requirements['requires'] = true;
-            return `    ${conditionCode || ''}await requires(query);`;
+            return `    ${conditionCode || ''}await requires(query${!!config['mode'] ? `, '${config['mode']}'` : ''});`;
         }
         if ('@prefetch' === type) {
             requirements['prefetch'] = true;
@@ -473,7 +473,7 @@ export default class MicroserviceType {
         }
         if ('@convert' === type) {
             requirements['convert'] = true;
-            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await convert(result, query)`, 'result', returnValue)});` : `${this.buildHookStatement(`await convert(result, query)`, 'result', returnValue)};`}`;
+            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await convert(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)});` : `${this.buildHookStatement(`await convert(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)};`}`;
         }
         if ('@populate' === type) {
             requirements['populate'] = true;
