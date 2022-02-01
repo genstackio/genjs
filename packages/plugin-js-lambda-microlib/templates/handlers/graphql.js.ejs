@@ -36,6 +36,7 @@ const jwtSecret = String(process.env.JWT_SECRET || 'the-very-secret-secret');
 <%- 'undefined' !== typeof schema ? schema : '' -%>
 `];
 <% } -%>
+const schemaDirectives = {};
 
 const resolvers = {
 <% Object.entries((('undefined' !== typeof resolvers) ? resolvers : undefined) || {}).forEach(([typeName, queries]) => { -%>
@@ -68,12 +69,13 @@ const _se = convertSchemaExtension(se); -%>
 const se<%= ii + 1 -%> = require('<%= _se.require -%>');
 <% if (_se['config']['scalar'] !== false) { %>se<%= ii + 1 -%>['typeDefs'] && (typeDefs = [...se<%= ii + 1 -%>['typeDefs'], ...typeDefs]); <% } -%>
 se<%= ii + 1 -%>['resolvers'] && Object.assign(resolvers, se<%= ii + 1 -%>['resolvers']);
+se<%= ii + 1 -%>['schemaDirectives'] && Object.assign(schemaDirectives, se<%= ii + 1 -%>['schemaDirectives']);
 se<%= ii + 1 -%>['contextFactory'] && (context = se<%= ii + 1 -%>['contextFactory'](context));
 <% }) -%>
 <% } -%>
 
 module.exports = {
-    handler: require('@ohoareau/aws-apigw-vx').vx(new ApolloServer({typeDefs, resolvers, context}).createHandler({
+    handler: require('@ohoareau/aws-apigw-vx').vx(new ApolloServer({typeDefs, resolvers, context, schemaDirectives}).createHandler({
         cors: {origin: true, credentials: true},
     })),
 };
