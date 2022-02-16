@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-ruby-lambda",
-  "version": "0.2.30",
+  "version": "0.2.31",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws-lambda": "^0.1.29",
-    "@genjs/genjs-bundle-ruby": "^0.1.17"
+    "@genjs/genjs-bundle-aws-lambda": "^0.1.30",
+    "@genjs/genjs-bundle-ruby": "^0.1.18"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.13"
+    "@genjs/genjs": "^0.4.14"
   }
 }
