@@ -59,15 +59,24 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
             parsedVars = !!match[1] ? match[2].split(/\s*,\s*/g).reduce((acc, t) => {
                 const [k, v = undefined] = t.split(/\s*=\s*/)
                 if (undefined === v) {
-                    acc['default'] = k;
+                    acc['default'] = this.replaceVarValueIfNeeded(k);
                 } else {
-                    acc[k] = YAML.parse(v || '');
+                    acc[k] = this.replaceVarValueIfNeeded(YAML.parse(v || ''));
                 }
                 return acc;
             }, {}) : {};
         }
         cfg = {...cfg, vars: {...parsedVars, ...(cfg.vars || {})}};
         return [type, cfg];
+    }
+    protected replaceVarValueIfNeeded(value: any) {
+        if ('string' !== typeof value) return value;
+        switch (value) {
+            case '$now.time': return 'new Date().getTime()';
+            case '$now': return 'new Date()';
+            case '$now.iso': return 'new Date().toISOString()';
+            default: return value;
+        }
     }
     // noinspection JSUnusedGlobalSymbols
     protected parseTypeAndConfigFromRawValue(v: any): [string|undefined, any|undefined] {
