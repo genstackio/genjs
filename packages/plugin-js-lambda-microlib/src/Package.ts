@@ -82,9 +82,9 @@ export default class Package extends AbstractPackage<PackageConfig> {
             this.features['startable'] = false;
         }
     }
-    registerEventListener(event, listener) {
+    registerEventListener(event, listener, priority = 0, deduplicateKey: string|undefined = undefined) {
         this.events[event] = this.events[event] || [];
-        this.events[event].push(listener);
+        (!deduplicateKey || !this.events[event].find(x => x[2])) && this.events[event].push([listener, priority, deduplicateKey]);
         return this;
     }
     // noinspection JSUnusedGlobalSymbols
@@ -95,6 +95,11 @@ export default class Package extends AbstractPackage<PackageConfig> {
     }
     getEventListeners(event) {
         return this.events[event] || [];
+    }
+    getSortedEventListeners(event) {
+        const x = [...this.getEventListeners(event)];
+        x.sort((a, b) => a[1] < b[1] ? 1 : (a[1] > b[1] ? -1 : 0));
+        return x.map(x => x[0]);
     }
     // noinspection JSUnusedGlobalSymbols
     getExternalEventListeners(event) {

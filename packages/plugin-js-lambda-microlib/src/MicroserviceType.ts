@@ -195,7 +195,7 @@ export default class MicroserviceType {
     }
     buildServiceMethodConfig({backend, as, name, vars = {}}) {
         const operationName = `${this.name}_${name}`;
-        const listeners = this.microservice.package.getEventListeners(operationName);
+        const listeners = this.microservice.package.getSortedEventListeners(operationName);
         let backendDef = backend || this.defaultBackendName;
         if (backendDef) {
             if ('string' === typeof backendDef) {
@@ -486,6 +486,14 @@ export default class MicroserviceType {
         if ('@update-references' === type) {
             requirements['updateRefs'] = true;
             return `    ${conditionCode || ''}await updateRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['targetIdField'] || config['idField']});`
+        }
+        if ('@add-update-references' === type) {
+            requirements['addUpdateRefs'] = true;
+            return `    ${conditionCode || ''}await addUpdateRefs(query, ${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['targetIdField'] || config['idField']}, ${this.stringifyForHook(config['trackedAttributes'], options)});`
+        }
+        if ('@process-update-references' === type) {
+            requirements['processUpdateRefs'] = true;
+            return `    ${conditionCode || ''}await processUpdateRefs(query, result);`
         }
         if ('@create-stats' === type) {
             switch (config['action']['type']) {

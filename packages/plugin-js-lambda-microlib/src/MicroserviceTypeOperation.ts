@@ -40,10 +40,12 @@ export default class MicroserviceTypeOperation {
                 configureService: false,
             }}) : undefined;
         const model = microserviceType.model;
-        const registerReferenceEventListener = (v, operation, listener) =>
+        const registerReferenceEventListener = (v, operation, listener, priority?: number, deduplicateKey?: string) =>
             microserviceType.microservice.package.registerEventListener(
                 `${(<any>v).reference.replace(/\./g, '_')}${/\./.test((<any>v).reference) ? '' : `_${microserviceType.microservice.name}`}_${operation}`,
-                listener
+                listener,
+                priority,
+                deduplicateKey
             )
         ;
         const registerStatEventListener = (v, operation, listener) => {
@@ -94,16 +96,22 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('prepare', opType, microserviceType, name) && microserviceType.registerHook(name, 'prepare', {type: '@prepare', config: {}});
                 this.hasHooks('after', opType, microserviceType, name) && microserviceType.registerHook(name, 'after', {type: '@after', config: {}});
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
-                Object.entries(model.referenceFields || {}).forEach(([k, v]: [string, any]) =>
-                    registerReferenceEventListener(v, 'update', {
-                        type: '@update-references',
+                const references = {};
+                Object.entries(model.referenceFields || {}).forEach(([k, v]: [string, any]) => {
+                    references[v.reference] = true;
+                    return registerReferenceEventListener(v, 'update', {
+                        type: '@add-update-references',
                         config: {
                             name: microserviceType.name,
                             key: k,
-                            idField: v.targetIdField || v.idField
+                            idField: v.targetIdField || v.idField,
+                            trackedAttributes: v.fetchedFields || [],
                         },
                     })
-                );
+                });
+                Object.keys(references).forEach(rr => registerReferenceEventListener({reference: rr}, 'update', {
+                    type: '@process-update-references',
+                }, -100, 'process-update-references'));
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@update-owned-items', config: {...v, field: k, mode: 'post'}})
                 );
