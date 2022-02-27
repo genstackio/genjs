@@ -57,7 +57,7 @@ export default class SchemaParser {
             const forcedDef: any = {...(<any>d || {})};
             delete forcedDef.config;
             delete forcedDef.type;
-            let officialDef = this.createField(d);
+            let officialDef = this.createField(d, {name: k});
             const def = {
                 ...officialDef,
                 ...forcedDef,
@@ -137,6 +137,7 @@ export default class SchemaParser {
             })
             from && (acc.froms[k] = from) && (acc.dynamics[k] = {type: '@from', config: {name: from}});
             (undefined !== stat) && (acc.statFields[k] = stat);
+            if (acc.requires[k] && acc.requires[k].length) acc.requires[k] = this.deduplicate(acc.requires[k]);
             if (!acc.indexes[k].length) delete acc.indexes[k];
             if (!acc.validators[k].length) delete acc.validators[k];
             if (!acc.transformers[k].length) delete acc.transformers[k];
@@ -151,6 +152,11 @@ export default class SchemaParser {
             if (!acc.multiRefAttributeTargetFields[k].length) delete acc.multiRefAttributeTargetFields[k];
             return acc;
         }, schema);
+    }
+    deduplicate(x: string[]) {
+        const y = Object.keys(x.reduce((acc: {[key: string]: true}, k: string) => Object.assign(acc, {[k]: true}), {}));
+        y.sort();
+        return y;
     }
     buildDetectedRequires(value) {
         if (!value || (true === value) || ('number' === typeof value)) return [];
@@ -238,7 +244,7 @@ export default class SchemaParser {
             (this.parsers[prefix]) && this.parsers[prefix](prefix, tokens, d, name, schema, ctx);
         }
     }
-    createField(def: any) {
+    createField(def: any, {name}: {name: string}) {
         let tt = def.type;
         const extra = <any>{};
         if (Array.isArray(tt)) {
@@ -249,7 +255,7 @@ export default class SchemaParser {
             extra.type = tt;
             tt = 'object';
         }
-        return {...this.getFieldType(tt)((def || {}).config || {}), ...extra};
+        return {...this.getFieldType(tt)((def || {}).config || {}, {name}), ...extra};
     }
     getFieldType(name: string): Function {
         if (!this.fieldTypes[name]) {
