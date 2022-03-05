@@ -99,7 +99,7 @@ export default class MicroserviceTypeOperation {
                 const references = {};
                 Object.entries(model.referenceFields || {}).forEach(([k, v]: [string, any]) => {
                     references[v.reference] = true;
-                    return registerReferenceEventListener(v, 'update', {
+                    registerReferenceEventListener(v, 'update', {
                         type: '@add-update-references',
                         config: {
                             name: microserviceType.name,
@@ -108,6 +108,12 @@ export default class MicroserviceTypeOperation {
                             trackedAttributes: v.fetchedFields || [],
                         },
                     })
+                    microserviceType.enrichTypeModel(
+                        {
+                            reference: {type: `${microserviceType.name}`, fields: v.fetchedFields || []},
+                        },
+                        `${(<any>v).reference.replace(/\./g, '_')}${/\./.test((<any>v).reference) ? '' : `_${microserviceType.microservice.name}`}`,
+                    );
                 });
                 Object.keys(references).forEach(rr => registerReferenceEventListener({reference: rr}, 'update', {
                     type: '@process-update-references',

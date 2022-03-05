@@ -109,6 +109,11 @@ export default class MicroserviceType {
         );
         this.test = test;
     }
+    enrichTypeModel(enrichment: any, typeName: string|undefined = undefined) {
+        this.microservice.package.addModelEnrichment(typeName || this.name, enrichment);
+        return this;
+    }
+
     registerHook(operation, type, hook) {
         this.hooks[operation] = this.hooks[operation] || {};
         this.hooks[operation][type] = this.hooks[operation][type] || [];
@@ -116,7 +121,8 @@ export default class MicroserviceType {
         return this;
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
-        vars = {...vars, model: this.model};
+        const finalizedModel = this.microservice.package.finalizedModels[this.name] || {};
+        vars = {...vars, model: finalizedModel};
         const service = new Service({vars, rootDir: vars.rootDir, name: `crud/${this.name}`, ...this.buildServiceConfig({attributes: this.rawAttributes, operations: this.rawOperations, functions: this.functions, test: this.test})});
         return (await Promise.all(Object.values(this.operations).map(
             async o => o.generate(vars)))).reduce((acc, r) =>
@@ -130,7 +136,7 @@ export default class MicroserviceType {
                         `const model = require('../../models/${this.name}');`,
                     ],
                 })),
-                [`models/${this.name}.js`]: ({jsStringify}) => `module.exports = ${jsStringify(this.model, 70)};`,
+                [`models/${this.name}.js`]: ({jsStringify}) => `module.exports = ${jsStringify(finalizedModel, 70)};`,
             }
         );
     }
