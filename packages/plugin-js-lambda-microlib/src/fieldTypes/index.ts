@@ -57,5 +57,8 @@ export {default as autoLongVerificationCode} from './autoLongVerificationCode';
 export {default as autoShortVerificationCode} from './autoShortVerificationCode';
 export {default as autoVerificationCode} from './autoVerificationCode';
 export {default as image} from './image';
+export {default as css} from './css';
+export {default as js} from './js';
+export {default as file} from './file';
 export {default as stat} from './stat';
 export {default as slug} from './slug';

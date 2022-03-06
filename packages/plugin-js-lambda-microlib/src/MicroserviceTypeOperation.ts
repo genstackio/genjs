@@ -121,15 +121,22 @@ export default class MicroserviceTypeOperation {
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@update-owned-items', config: {...v, field: k, mode: 'post'}})
                 );
-                Object.entries(model.statFields || {}).forEach(([k, v]: [string, any]) =>
+                Object.entries(model.statFields || {}).forEach(([k, v]: [string, any]) => {
                     registerStatEventListener(v, 'update', {
                         type: '@update-stats',
                         config: {
                             name: microserviceType.name,
                             key: k,
                         },
+                    });
+                    (v?.track || []).forEach((track: any) => {
+                        microserviceType.enrichTypeModel(
+                            {
+                                stat: {...track, field: k, mode: v.type, type: microserviceType.name},
+                            }, track.on.replace(/_[^_]+$/, '')
+                        );
                     })
-                );
+                });
                 break;
             case 'get':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});

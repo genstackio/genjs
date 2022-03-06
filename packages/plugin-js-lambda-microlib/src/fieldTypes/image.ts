@@ -1,5 +1,5 @@
-export default ({bucket, key, name, contentType, imageCode}, def) => {
-    const [code = undefined, keyField = undefined] = (imageCode || '').split(/\s*,\s*/)
+export default ({bucket, key, name, contentType, code: rawCode, imageCode}, def) => {
+    const [code = undefined, keyField = undefined] = (rawCode || imageCode || '').split(/\s*,\s*/)
     let urlPattern: string|undefined = undefined;
     if (code) {
         urlPattern = `[[process.env.IMAGE_URL_PATTERN_PREFIX]]${code}/${keyField}/<<fingerprint>>/${name || `${(def?.name || '').replace(/Image$/, '').toLowerCase() || 'image'}<<extension>>`}`;
