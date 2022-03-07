@@ -28,165 +28,193 @@ export class ModelEnhancer {
         m = this.buildFinalizedModelUpdateDefaultValues(m, enrichments);
         m = this.buildFinalizedModelAutoTransitionTo(m, enrichments);
         m = this.buildFinalizedModelMultiRefAttributeTargetFields(m, enrichments);
-        m = this.sortObject(m);
+        m = this.clean(m);
+        m = this.sort(m);
         return m;
+    }
+    protected clean(m: any) {
+        m = this.cleanObjectKeyIfEmpty(m, 'defaultValues');
+        m = this.cleanObjectKeyIfEmpty(m, 'fields');
+        m = this.cleanObjectKeyIfEmpty(m, 'privateFields');
+        m = this.cleanObjectKeyIfEmpty(m, 'indexes', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'refAttributeFields', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'referenceFields');
+        m = this.cleanObjectKeyIfEmpty(m, 'requiredFields');
+        m = this.cleanObjectKeyIfEmpty(m, 'updateValues');
+        m = this.cleanObjectKeyIfEmpty(m, 'validators', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'values');
+        m = this.cleanObjectKeyIfEmpty(m, 'dynamics');
+        m = this.cleanObjectKeyIfEmpty(m, 'statFields');
+        m = this.cleanObjectKeyIfEmpty(m, 'statTargets', 'object');
+        m = this.cleanObjectKeyIfEmpty(m, 'transformers', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'cascadeValues');
+        m = this.cleanObjectKeyIfEmpty(m, 'ownedReferenceListFields');
+        m = this.cleanObjectKeyIfEmpty(m, 'updateDefaultValues');
+        m = this.cleanObjectKeyIfEmpty(m, 'autoTransitionTo');
+        m = this.cleanObjectKeyIfEmpty(m, 'multiRefAttributeTargetFields', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'converters', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'requires', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'mutators', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'pretransformers', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'authorizers', 'array');
+        m = this.cleanObjectKeyIfEmpty(m, 'prefetchs', 'object');
+        m = this.cleanObjectKeyIfEmpty(m, 'referenceTargets', 'object');
+        return m;
+    }
+    protected sort(m: any) {
+        m.defaultValues && (m.defaultValues = this.sortObject(m.defaultValues));
+        m.fields && (m.fields = this.sortObject(m.fields));
+        m.privateFields && (m.privateFields = this.sortObject(m.privateFields));
+        m.indexes && (m.indexes = this.sortObject(m.indexes));
+        m.refAttributeFields && (m.refAttributeFields = this.sortObject(m.refAttributeFields));
+        m.referenceFields && (m.referenceFields = this.sortObject(m.referenceFields));
+        m.requiredFields && (m.requiredFields = this.sortObject(m.requiredFields));
+        m.updateValues && (m.updateValues = this.sortObject(m.updateValues));
+        m.validators && (m.validators = this.sortObject(m.validators));
+        m.values && (m.values = this.sortObject(m.values));
+        m.dynamics && (m.dynamics = this.sortObject(m.dynamics));
+        m.statFields && (m.statFields = this.sortObject(m.statFields));
+        m.statTargets && (m.statTargets = this.sortObject(m.statTargets));
+        m.transformers && (m.transformers = this.sortObject(m.transformers));
+        m.cascadeValues && (m.cascadeValues = this.sortObject(m.cascadeValues));
+        m.ownedReferenceListFields && (m.ownedReferenceListFields = this.sortObject(m.ownedReferenceListFields));
+        m.updateDefaultValues && (m.updateDefaultValues = this.sortObject(m.updateDefaultValues));
+        m.autoTransitionTo && (m.autoTransitionTo = this.sortObject(m.autoTransitionTo));
+        m.multiRefAttributeTargetFields && (m.multiRefAttributeTargetFields = this.sortObject(m.multiRefAttributeTargetFields));
+        m.converters && (m.converters = this.sortObject(m.converters));
+        m.requires && (m.requires = this.sortObject(m.requires));
+        m.mutators && (m.mutators = this.sortObject(m.mutators));
+        m.pretransformers && (m.pretransformers = this.sortObject(m.pretransformers));
+        m.authorizers && (m.authorizers = this.sortObject(m.authorizers));
+        m.prefetchs && (m.prefetchs = this.sortObject(m.prefetchs));
+        m.referenceTargets && (m.referenceTargets = this.sortObject(m.referenceTargets));
+        return this.sortObject(m);
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelDefaultValues(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'defaultValues');
-        m.defaultValues && (m.defaultValues = this.sortObject(m.defaultValues));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelFields(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'fields');
-        m.fields && (m.fields = this.sortObject(m.fields));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelPrivateFields(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'privateFields');
-        m.privateFields && (m.privateFields = this.sortObject(m.privateFields));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelIndexes(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'indexes', 'array');
-        m.indexes && (m.indexes = this.sortObject(m.indexes));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelRefAttributeFields(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'refAttributeFields', 'array');
-        m.refAttributeFields && (m.refAttributeFields = this.sortObject(m.refAttributeFields));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelReferenceFields(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'referenceFields');
-        m.referenceFields && (m.referenceFields = this.sortObject(m.referenceFields));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelRequiredFields(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'requiredFields');
-        m.requiredFields && (m.requiredFields = this.sortObject(m.requiredFields));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelUpdateValues(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'updateValues');
-        m.updateValues && (m.updateValues = this.sortObject(m.updateValues));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelValidators(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'validators', 'array');
-        m.validators && (m.validators = this.sortObject(m.validators));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelValues(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'values');
-        m.values && (m.values = this.sortObject(m.values));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelDynamics(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'dynamics');
-        m.dynamics && (m.dynamics = this.sortObject(m.dynamics));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelStatFields(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'statFields');
-        m.statFields && (m.statFields = this.sortObject(m.statFields));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelStatTargets(m: any, enrichments: any) {
-        m.statTargets = (enrichments.stat || []).reduce((acc: any, {on, type, field, ...s}: any) => {
-            const operation = on.replace(/^.+_([^_]+)$/, '$1');
+        m.statTargets = (enrichments.stat || []).reduce((acc: any, {type, operation, targetField, idField = 'id', ...s}: any) => {
             acc[operation] = acc[operation] || {};
             acc[operation][type] = acc[operation][type] || {};
-            if (acc[operation][type][field]) {
-                throw new Error(`Multiple stat from the same event and on the same target field are not allowed (${on} => ${type}.${field})`);
+            const kk = `${s.join}__${idField || 'id'}`;
+            acc[operation][type][kk] = acc[operation][type][kk] || {};
+            if (acc[operation][type][kk][targetField]) {
+                throw new Error(`Multiple stat from the same event and on the same target field are not allowed (${operation} => ${type}.${targetField})`);
             }
-            acc[operation][type][field] = s;
+            acc[operation][type][kk][targetField] = s;
+            if (s?.action?.config?.value) {
+                // trying to detect the prefetchs from the `value` expression
+                if ('%' === s.action.config.value.slice(0, 1)) {
+                    m.prefetchs = m.prefetchs || {};
+                    m.prefetchs[operation] = m.prefetchs[operation] || {};
+                    m.prefetchs[operation][s.action.config.value.slice(1)] = true;
+                } else if (/old\.([a-z0-9_]+)/.test(s.action.config.value)) {
+                    Array.from(s.action.config.value.matchAll(/old\.([a-z0-9_]+)/g)).forEach((a: any) => {
+                        m.prefetchs = m.prefetchs || {};
+                        m.prefetchs[operation] = m.prefetchs[operation] || {};
+                        m.prefetchs[operation][a[1]] = true;
+                    })
+                }
+            }
             return acc;
         }, {});
-        m = this.cleanObjectKeyIfEmpty(m, 'statTargets', 'array');
-        m.statTargets && (m.statTargets = this.sortObject(m.statTargets));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelTransformers(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'transformers', 'array');
-        m.transformers && (m.transformers = this.sortObject(m.transformers));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelCascadeValues(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'cascadeValues');
-        m.cascadeValues && (m.cascadeValues = this.sortObject(m.cascadeValues));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelOwnedReferenceListFields(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'ownedReferenceListFields');
-        m.ownedReferenceListFields && (m.ownedReferenceListFields = this.sortObject(m.ownedReferenceListFields));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelUpdateDefaultValues(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'updateDefaultValues');
-        m.updateDefaultValues && (m.updateDefaultValues = this.sortObject(m.updateDefaultValues));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelAutoTransitionTo(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'autoTransitionTo');
-        m.autoTransitionTo && (m.autoTransitionTo = this.sortObject(m.autoTransitionTo));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelMultiRefAttributeTargetFields(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'multiRefAttributeTargetFields', 'array');
-        m.multiRefAttributeTargetFields && (m.multiRefAttributeTargetFields = this.sortObject(m.multiRefAttributeTargetFields));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelConverters(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'converters', 'array');
-        m.converters && (m.converters = this.sortObject(m.converters));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelRequires(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'requires', 'array');
-        m.requires && (m.requires = this.sortObject(m.requires));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelMutators(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'mutators', 'array');
-        m.mutators && (m.mutators = this.sortObject(m.mutators));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelPretransformers(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'pretransformers', 'array');
-        m.pretransformers && (m.pretransformers = this.sortObject(m.pretransformers));
         return m;
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelAuthorizers(m: any, enrichments: any) {
-        m = this.cleanObjectKeyIfEmpty(m, 'authorizers', 'array');
-        m.authorizers && (m.authorizers = this.sortObject(m.authorizers));
         return m;
     }
     protected buildFinalizedModelReferences(m: any, enrichments: any) {
         if (!enrichments?.reference) return m;
+
+        // 1. add all required prefetchs
         m.prefetchs = enrichments.reference.reduce((acc: any, ref: any) => {
             acc['update'] = ref.fields.reduce((acc2: any, field: string) => {
                 acc2[field] = true;
@@ -194,8 +222,19 @@ export class ModelEnhancer {
             }, {...(acc['update'] || {})});
             return acc;
         }, {...(m.prefetchs || {})});
-        this.cleanObjectKeyIfEmpty(m, 'prefetchs', 'object');
-        m.prefetchs && (m.prefetchs = this.sortObject(m.prefetchs));
+
+        // 2. add the `referenceTargets` attribute
+        m.referenceTargets = enrichments.reference.reduce((acc: any, ref: any) => {
+            acc[ref.type] = acc[ref.type] || {};
+            const kk = `${ref.join}__${ref.idField}`;
+            acc[ref.type][kk] = acc[ref.type][kk] || {join: ref.join, idField: ref.idField, trackedFields: {}};
+            acc[ref.type][kk].trackedFields = ref.fields.reduce((acc2: any, field: string) => {
+                acc2[field] = {};
+                return acc2;
+
+            }, acc[ref.type][kk].trackedFields);
+            return acc;
+        }, {...(m.referenceTargets || {})});
         return m;
     }
     protected sortObject(o: any) {

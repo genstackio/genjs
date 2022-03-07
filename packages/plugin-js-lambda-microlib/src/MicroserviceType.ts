@@ -85,6 +85,7 @@ export default class MicroserviceType {
         const defaultBackendName: any = [...backends].shift();
         this.defaultBackendName = !defaultBackendName ? undefined : (('string' == typeof defaultBackendName) ? defaultBackendName : defaultBackendName.name);
         this.defaultBackendName && ('@' === this.defaultBackendName.substr(0, 1)) && (this.defaultBackendName = this.defaultBackendName.substr(1));
+        this.buildMicroserviceTypeLevelStuff();
         Object.entries(operations).forEach(
             ([name, c]: [string, any]) =>
                 this.operations[name] = new MicroserviceTypeOperation(
@@ -108,6 +109,63 @@ export default class MicroserviceType {
                 this.handlers[name] = new Handler({name: `${this.name}${'handler' === name ? '' : `_${name}`}`, ...c, directory: 'handlers', vars: {...(c.vars || {}), operations: opNames, prefix: this.name}})
         );
         this.test = test;
+    }
+    buildMicroserviceTypeLevelStuff() {
+        this.registerReferences();
+        this.registerStats();
+    }
+    registerReferences() {
+        const references = Object.entries(this.model.referenceFields || {}).reduce((acc: any, [_, v]: [string, any]) => {
+            acc[v.reference] = true;
+            return acc;
+        }, {});
+
+        // referenceFields
+        Object.entries(this.model.referenceFields || {}).forEach(([k, v]: [string, any]) => {
+            this.enrichTypeModel(
+                {
+                    reference: {type: `${this.name}`, fields: v.fetchedFields || [], idField: v.targetIdField || v.idField, join: k},
+                },
+                `${(<any>v).reference.replace(/\./g, '_')}${/\./.test((<any>v).reference) ? '' : `_${this.microservice.name}`}`,
+            );
+        });
+
+        Object.keys(references).forEach((r: any) => {
+            const prefix = `${r.replace(/\./g, '_')}${/\./.test(r) ? '' : `_${this.microservice.name}`}`;
+            this.shortRegisterHook(`${prefix}_update`, '@update-references', undefined, -100, `${prefix}_update_update-references`);
+            this.shortRegisterHook(`${prefix}_delete`, '@delete-references', undefined, -100, `${prefix}_update_delete-references`);
+        });
+    }
+    registerStats() {
+        const tracks = Object.entries(this.model.statFields || {}).reduce((acc: any, [_, v]: [string, any]) => {
+            return (v.track || []).reduce((acc2: any, t: any) => {
+                acc2[t.on] = true;
+                return acc2;
+            }, acc)
+        }, {});
+
+        Object.entries(this.model.statFields || {}).forEach(([k, {track = [], type: mode, ...v}]: [string, any]) => {
+            (track || []).forEach(({on, ...vv}: any) => {
+                this.enrichTypeModel(
+                    {
+                        stat: {type: this.name, operation: on.split(/_/g).slice(-1).join(''), mode, ...v, ...vv, targetField: k},
+                    },
+                    on.split(/_/g).slice(0, 2).join('_'),
+                );
+            })
+        });
+
+        Object.keys(tracks).forEach((t: any) => {
+            this.shortRegisterHook(t, '@update-stats', undefined, -120, `${t}_update-stats`);
+        });
+    }
+    shortRegisterHook(on: string, type: string, config: any = {}, priority: number|undefined = undefined, deduplicated: boolean|string|undefined = undefined) {
+        this.microservice.package.registerEventListener(
+            on,
+            {type, config},
+            priority,
+            deduplicated ? (deduplicated === true ? on : deduplicated) : undefined
+        );
     }
     enrichTypeModel(enrichment: any, typeName: string|undefined = undefined) {
         this.microservice.package.addModelEnrichment(typeName || this.name, enrichment);
@@ -216,7 +274,7 @@ export default class MicroserviceType {
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before', operationName})));
         }, []);
-        let afters = ['after', 'postpopulate', 'convert', 'latepopulate', 'clean'].reduce((acc, n) => {
+        let afters = ['prerefresh', 'after', 'refresh', 'postpopulate', 'convert', 'latepopulate', 'clean'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after', operationName})));
@@ -418,8 +476,12 @@ export default class MicroserviceType {
             return `    ${conditionCode || ''}await event(${this.stringifyForHook(config['name'] || options['operationName'], options)}, result, query);`
         }
         if ('@delete-references' === type) {
-            requirements['deleteRefs'] = true;
-            return `    ${conditionCode || ''}await deleteRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['targetIdField'] || config['idField']});`
+            requirements['deleteReferences'] = true;
+            return `    ${conditionCode || ''}await deleteReferences(result, query);`
+        }
+        if ('@update-stats' === type) {
+            requirements['updateStats'] = true;
+            return `    ${conditionCode || ''}await updateStats(result, query);`
         }
         if ('@authorize' === type) {
             requirements['authorize'] = true;
@@ -490,67 +552,8 @@ export default class MicroserviceType {
             return `    ${conditionCode || ''}await prepopulate(query${!!config['prefix'] ? `, '${config['prefix']}'` : ''});`;
         }
         if ('@update-references' === type) {
-            requirements['updateRefs'] = true;
-            return `    ${conditionCode || ''}await updateRefs(${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['targetIdField'] || config['idField']});`
-        }
-        if ('@add-update-references' === type) {
-            requirements['addUpdateRefs'] = true;
-            return `    ${conditionCode || ''}await addUpdateRefs(query, ${this.stringifyForHook(config['name'], options)}, ${this.stringifyForHook(config['key'], options)}, result.${config['targetIdField'] || config['idField']}, ${this.stringifyForHook(config['trackedAttributes'], options)});`
-        }
-        if ('@process-update-references' === type) {
-            requirements['processUpdateRefs'] = true;
-            return `    ${conditionCode || ''}await processUpdateRefs(query, result);`
-        }
-        if ('@create-stats' === type) {
-            switch (config['action']['type']) {
-                case '@inc':
-                    requirements['incrementStat'] = true;
-                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(((config['action']||{})['config']||{})['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
-                case '@dec':
-                    requirements['decrementStat'] = true;
-                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(((config['action']||{})['config']||{})['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
-                case '@reset':
-                    requirements['resetStat'] = true;
-                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
-                default:
-                    requirements['updateStat'] = true;
-                    const {name: zzzname, key: zzzkey, ...zzzconfig} = config as any;
-                    return `    ${conditionCode || ''}await updateStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query, ${this.stringifyForHook(zzzconfig, options)});`
-            }
-        }
-        if ('@update-stats' === type) {
-            switch (config['action']['type']) {
-                case '@inc':
-                    requirements['incrementStat'] = true;
-                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(((config['action']||{})['config']||{})['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
-                case '@dec':
-                    requirements['decrementStat'] = true;
-                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(((config['action']||{})['config']||{})['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
-                case '@reset':
-                    requirements['resetStat'] = true;
-                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
-                default:
-                    requirements['updateStat'] = true;
-                    const {name: zzzname, key: zzzkey, ...zzzconfig} = config as any;
-                    return `    ${conditionCode || ''}await updateStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query, ${this.stringifyForHook(zzzconfig, options)});`
-            }
-        }
-        if ('@delete-stats' === type) {
-            switch (config['action']['type']) {
-                case '@inc':
-                    requirements['incrementStat'] = true;
-                    return `    ${conditionCode || ''}await incrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(((config['action']||{})['config']||{})['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
-                case '@dec':
-                    requirements['decrementStat'] = true;
-                    return `    ${conditionCode || ''}await decrementStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(((config['action']||{})['config']||{})['value'] || 1, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
-                case '@reset':
-                    requirements['resetStat'] = true;
-                    return `    ${conditionCode || ''}await resetStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, ${this.stringifyForHook(config['join'], options)}, result, query);`
-                default:
-                    requirements['updateStat'] = true;
-                    const {name: zzzname, key: zzzkey, ...zzzconfig} = config as any;
-                    return `    ${conditionCode || ''}await updateStat(${this.stringifyForHook(`${config['name']}.${config['key']}`, options)}, result, query, ${this.stringifyForHook(zzzconfig, options)});`
-            }
+            requirements['updateReferences'] = true;
+            return `    ${conditionCode || ''}await updateReferences(result, query);`
         }
         if (!rawOpts && '@operation' === type) {
             requirements['call'] = true;

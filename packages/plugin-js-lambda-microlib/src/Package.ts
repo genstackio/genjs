@@ -88,7 +88,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
     }
     registerEventListener(event, listener, priority = 0, deduplicateKey: string|undefined = undefined) {
         this.events[event] = this.events[event] || [];
-        (!deduplicateKey || !this.events[event].find(x => x[2])) && this.events[event].push([listener, priority, deduplicateKey]);
+        (!deduplicateKey || !this.events[event].find(x => x[2] === deduplicateKey)) && this.events[event].push([listener, priority, deduplicateKey]);
         return this;
     }
     // noinspection JSUnusedGlobalSymbols

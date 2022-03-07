@@ -40,24 +40,6 @@ export default class MicroserviceTypeOperation {
                 configureService: false,
             }}) : undefined;
         const model = microserviceType.model;
-        const registerReferenceEventListener = (v, operation, listener, priority?: number, deduplicateKey?: string) =>
-            microserviceType.microservice.package.registerEventListener(
-                `${(<any>v).reference.replace(/\./g, '_')}${/\./.test((<any>v).reference) ? '' : `_${microserviceType.microservice.name}`}_${operation}`,
-                listener,
-                priority,
-                deduplicateKey
-            )
-        ;
-        const registerStatEventListener = (v, operation, listener) => {
-            ((<any>v).track || []).filter(track => track.on.slice(- operation.length - 1) === `_${operation}`).forEach(track => {
-                microserviceType.microservice.package.registerEventListener(
-                    (<any>track).on,
-                    {...listener, config: {...(listener.config || {}), join: track.join, action: track.action}}
-                )
-
-            })
-        }
-        ;
         const opType = as || name;
         switch (opType) {
             case 'create':
@@ -71,18 +53,9 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('after', opType, microserviceType, name) && microserviceType.registerHook(name, 'after', {type: '@after', config: {}});
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
                 this.hasHooks('autoTransitionTo', opType, microserviceType, name) && microserviceType.registerHook(name, 'end', {type: '@auto-transitions', config: {}});
+                this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@create-owned-items', config: {...v, field: k, mode: 'post'}})
-                );
-                this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
-                Object.entries(model.statFields || {}).forEach(([k, v]: [string, any]) =>
-                    registerStatEventListener(v, 'create', {
-                        type: '@create-stats',
-                        config: {
-                            name: microserviceType.name,
-                            key: k,
-                        },
-                    })
                 );
                 break;
             case 'update':
@@ -96,47 +69,9 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('prepare', opType, microserviceType, name) && microserviceType.registerHook(name, 'prepare', {type: '@prepare', config: {}});
                 this.hasHooks('after', opType, microserviceType, name) && microserviceType.registerHook(name, 'after', {type: '@after', config: {}});
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
-                const references = {};
-                Object.entries(model.referenceFields || {}).forEach(([k, v]: [string, any]) => {
-                    references[v.reference] = true;
-                    registerReferenceEventListener(v, 'update', {
-                        type: '@add-update-references',
-                        config: {
-                            name: microserviceType.name,
-                            key: k,
-                            idField: v.targetIdField || v.idField,
-                            trackedAttributes: v.fetchedFields || [],
-                        },
-                    })
-                    microserviceType.enrichTypeModel(
-                        {
-                            reference: {type: `${microserviceType.name}`, fields: v.fetchedFields || []},
-                        },
-                        `${(<any>v).reference.replace(/\./g, '_')}${/\./.test((<any>v).reference) ? '' : `_${microserviceType.microservice.name}`}`,
-                    );
-                });
-                Object.keys(references).forEach(rr => registerReferenceEventListener({reference: rr}, 'update', {
-                    type: '@process-update-references',
-                }, -100, 'process-update-references'));
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@update-owned-items', config: {...v, field: k, mode: 'post'}})
                 );
-                Object.entries(model.statFields || {}).forEach(([k, v]: [string, any]) => {
-                    registerStatEventListener(v, 'update', {
-                        type: '@update-stats',
-                        config: {
-                            name: microserviceType.name,
-                            key: k,
-                        },
-                    });
-                    (v?.track || []).forEach((track: any) => {
-                        microserviceType.enrichTypeModel(
-                            {
-                                stat: {...track, field: k, mode: v.type, type: microserviceType.name},
-                            }, track.on.replace(/_[^_]+$/, '')
-                        );
-                    })
-                });
                 break;
             case 'get':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
@@ -152,27 +87,8 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('authorize', opType, microserviceType, name) && microserviceType.registerHook(name, 'authorize', {type: '@authorize', config: {}});
                 this.hasHooks('prefetch', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@prefetch'});
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
-                Object.entries(model.referenceFields || {}).forEach(([k, v]: [string, any]) =>
-                    registerReferenceEventListener(v, 'delete', {
-                        type: '@delete-references',
-                        config: {
-                            name: microserviceType.name,
-                            key: k,
-                            idField: v.targetIdField || v.idField
-                        },
-                    })
-                );
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@delete-owned-items', config: {...v, field: k, mode: 'post'}})
-                );
-                Object.entries(model.statFields || {}).forEach(([k, v]: [string, any]) =>
-                    registerStatEventListener(v, 'delete', {
-                        type: '@delete-stats',
-                        config: {
-                            name: microserviceType.name,
-                            key: k,
-                        },
-                    })
                 );
                 break;
             default:
