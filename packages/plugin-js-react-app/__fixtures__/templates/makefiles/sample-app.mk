@@ -10,7 +10,7 @@ build: ## Build
 
 deploy: deploy-code invalidate-cache
 deploy-code: ## Synchronize remote S3 bucket with local directory
-	@AWS_PROFILE=$(AWS_PROFILE) aws s3 sync build/ s3://$(bucket) --delete
+	@AWS_EC2_METADATA_DISABLED=true AWS_PROFILE=$(AWS_PROFILE) aws s3 sync build/ s3://$(bucket) --delete
 
 generate-env-local: ## Generate the .env.local file based on dynamic configuration
 	@../node_modules/.bin/env REACT_APP_ > ./.env.local
@@ -20,7 +20,7 @@ install: ## Install the Javascript dependencies
 	@yarn --silent install
 
 invalidate-cache: ## Invalidate the CloudFront CDN cache
-	@AWS_PROFILE=$(AWS_PROFILE) aws cloudfront create-invalidation --distribution-id $(cloudfront) --paths '/*'
+	@AWS_EC2_METADATA_DISABLED=true AWS_PROFILE=$(AWS_PROFILE) aws cloudfront create-invalidation --distribution-id $(cloudfront) --paths '/*' --no-paginate --color off --no-cli-pager --output text
 
 pre-install:
 	@true

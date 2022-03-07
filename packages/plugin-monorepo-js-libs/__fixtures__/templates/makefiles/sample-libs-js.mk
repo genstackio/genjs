@@ -37,7 +37,7 @@ install-root: ## Install the Javascript dependencies
 	@yarn --silent install
 
 invalidate-cache: ## Invalidate the CloudFront CDN cache
-	@AWS_PROFILE=$(AWS_PROFILE) aws cloudfront create-invalidation --distribution-id $(cloudfront) --paths '/*'
+	@AWS_EC2_METADATA_DISABLED=true AWS_PROFILE=$(AWS_PROFILE) aws cloudfront create-invalidation --distribution-id $(cloudfront) --paths '/*' --no-paginate --color off --no-cli-pager --output text
 
 new:
 	@yarn --silent yo ./packages/generator-package 2>/dev/null

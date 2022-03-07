@@ -150,18 +150,24 @@ export class ModelEnhancer {
             }
             acc[operation][type][kk][targetField] = s;
             if (s?.action?.config?.value) {
-                // trying to detect the prefetchs from the `value` expression
-                if ('%' === s.action.config.value.slice(0, 1)) {
-                    m.prefetchs = m.prefetchs || {};
-                    m.prefetchs[operation] = m.prefetchs[operation] || {};
-                    m.prefetchs[operation][s.action.config.value.slice(1)] = true;
-                } else if (/old\.([a-z0-9_]+)/.test(s.action.config.value)) {
-                    Array.from(s.action.config.value.matchAll(/old\.([a-z0-9_]+)/g)).forEach((a: any) => {
-                        m.prefetchs = m.prefetchs || {};
-                        m.prefetchs[operation] = m.prefetchs[operation] || {};
-                        m.prefetchs[operation][a[1]] = true;
-                    })
+                const operations = [operation];
+                if ((operation !== 'delete') && (operation !== 'update') && (operation !== 'create')) {
+                    operations.push('update');
                 }
+                operations.forEach((ope: string) => {
+                    // trying to detect the prefetchs from the `value` expression
+                    if ('%' === s.action.config.value.slice(0, 1)) {
+                        m.prefetchs = m.prefetchs || {};
+                        m.prefetchs[ope] = m.prefetchs[ope] || {};
+                        m.prefetchs[ope][s.action.config.value.slice(1)] = true;
+                    } else if (/old\.([a-z0-9_]+)/.test(s.action.config.value)) {
+                        Array.from(s.action.config.value.matchAll(/old\.([a-z0-9_]+)/ig)).forEach((a: any) => {
+                            m.prefetchs = m.prefetchs || {};
+                            m.prefetchs[ope] = m.prefetchs[ope] || {};
+                            m.prefetchs[ope][a[1]] = true;
+                        })
+                    }
+                });
             }
             return acc;
         }, {});
