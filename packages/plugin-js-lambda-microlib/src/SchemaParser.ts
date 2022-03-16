@@ -165,7 +165,7 @@ export default class SchemaParser {
             const matches = [...(value as any).matchAll(r)];
             return matches.reduce((acc, m) => {
                 for (let i = 0; i < (m.length - 1); i++) {
-                    acc.push(m[i+1]);
+                    acc.push((m[i+1] || '').split('|')[0]); // we can use filter like `email|url`
                 }
                 return acc;
             }, []);
