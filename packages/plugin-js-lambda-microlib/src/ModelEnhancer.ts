@@ -20,6 +20,7 @@ export class ModelEnhancer {
         m = this.buildFinalizedModelValidators(m, enrichments);
         m = this.buildFinalizedModelValues(m, enrichments);
         m = this.buildFinalizedModelDynamics(m, enrichments);
+        m = this.buildFinalizedModelTriggers(m, enrichments);
         m = this.buildFinalizedModelStatFields(m, enrichments);
         m = this.buildFinalizedModelStatTargets(m, enrichments);
         m = this.buildFinalizedModelTransformers(m, enrichments);
@@ -44,6 +45,7 @@ export class ModelEnhancer {
         m = this.cleanObjectKeyIfEmpty(m, 'validators', 'array');
         m = this.cleanObjectKeyIfEmpty(m, 'values');
         m = this.cleanObjectKeyIfEmpty(m, 'dynamics');
+        m = this.cleanObjectKeyIfEmpty(m, 'triggers');
         m = this.cleanObjectKeyIfEmpty(m, 'statFields');
         m = this.cleanObjectKeyIfEmpty(m, 'statTargets', 'object');
         m = this.cleanObjectKeyIfEmpty(m, 'transformers', 'array');
@@ -73,6 +75,7 @@ export class ModelEnhancer {
         m.validators && (m.validators = this.sortObject(m.validators));
         m.values && (m.values = this.sortObject(m.values));
         m.dynamics && (m.dynamics = this.sortObject(m.dynamics));
+        m.triggers && (m.triggers = this.sortObject(m.triggers));
         m.statFields && (m.statFields = this.sortObject(m.statFields));
         m.statTargets && (m.statTargets = this.sortObject(m.statTargets));
         m.transformers && (m.transformers = this.sortObject(m.transformers));
@@ -132,6 +135,10 @@ export class ModelEnhancer {
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelDynamics(m: any, enrichments: any) {
+        return m;
+    }
+    // noinspection JSUnusedLocalSymbols
+    protected buildFinalizedModelTriggers(m: any, enrichments: any) {
         return m;
     }
     // noinspection JSUnusedLocalSymbols

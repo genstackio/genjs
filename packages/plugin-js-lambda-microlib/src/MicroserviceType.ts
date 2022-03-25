@@ -507,6 +507,10 @@ export default class MicroserviceType {
             requirements['dynamics'] = true;
             return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await dynamics(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)});` : `${this.buildHookStatement(`await dynamics(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)};`}`;
         }
+        if ('@triggers' === type) {
+            requirements['triggers'] = true;
+            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await triggers(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)});` : `${this.buildHookStatement(`await triggers(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)};`}`;
+        }
         if ('@requires' === type) {
             requirements['requires'] = true;
             return `    ${conditionCode || ''}await requires(query${!!config['mode'] ? `, '${config['mode']}'` : ''});`;

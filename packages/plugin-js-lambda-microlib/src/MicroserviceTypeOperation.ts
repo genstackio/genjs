@@ -54,6 +54,7 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
                 this.hasHooks('autoTransitionTo', opType, microserviceType, name) && microserviceType.registerHook(name, 'end', {type: '@auto-transitions', config: {}});
                 this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
+                this.hasHooks('triggers', opType, microserviceType, name) && microserviceType.registerHook(name, 'notify', {type: '@triggers', config: {}});
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@create-owned-items', config: {...v, field: k, mode: 'post'}})
                 );
@@ -135,6 +136,8 @@ export default class MicroserviceTypeOperation {
                 }
             case 'dynamics':
                 return !!Object.keys(microserviceType.model.dynamics || {}).length;
+            case 'triggers':
+                return !!Object.keys(microserviceType.model.triggers || {}).length;
             case 'requires':
                 return !!Object.keys(microserviceType.model.requires || {}).length;
             case 'prepare':

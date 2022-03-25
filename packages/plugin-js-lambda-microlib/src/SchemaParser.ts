@@ -69,7 +69,7 @@ export default class SchemaParser {
                 upper = false, lower = false, transform = undefined, reference = undefined, ownedReferenceList = undefined, refAttribute = undefined,
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
                 pretransform = undefined, convert = undefined, mutate = undefined,
-                dynamic = undefined, from = undefined, requires = undefined, stat = undefined,
+                dynamic = undefined, trigger = undefined, from = undefined, requires = undefined, stat = undefined,
                 props = undefined, prefix = undefined, suffix = undefined, truncate = undefined, deletePrefetch = false,
             } = def;
             const detectedRequires = this.buildDetectedRequires(def);
@@ -130,6 +130,7 @@ export default class SchemaParser {
             prefetch && ((acc.prefetchs['update'] = acc.prefetchs['update'] || {})[k] = prefetch);
             deletePrefetch && ((acc.prefetchs['delete'] = acc.prefetchs['delete'] || {})[k] = deletePrefetch);
             dynamic && (acc.dynamics[k] = dynamic);
+            trigger && (acc.triggers[k] = trigger);
             requires && (acc.requires[k] = Array.isArray(requires) ? [...acc.requires[k], ...requires] : [...acc.requires[k], requires]);
             detectedRequires && (acc.requires[k] = Array.isArray(detectedRequires) ? [...acc.requires[k], ...detectedRequires] : [...acc.requires[k], detectedRequires]);
             detectedRequires && detectedRequires.forEach(dr => {
@@ -146,6 +147,7 @@ export default class SchemaParser {
             if (!acc.converters[k].length) delete acc.converters[k];
             if (!acc.mutators[k].length) delete acc.mutators[k];
             if (!acc.dynamics[k]) delete acc.dynamics[k];
+            if (!acc.triggers[k]) delete acc.triggers[k];
             if (!acc.requires[k] || !acc.requires[k].length) delete acc.requires[k];
             if (!acc.froms[k]) delete acc.froms[k];
             if (!acc.statFields[k]) delete acc.statFields[k];
@@ -322,6 +324,7 @@ export default class SchemaParser {
             mutators: {},
             pretransformers: {},
             dynamics: {},
+            triggers: {},
             froms: {},
             requires: {},
             converters: {},
