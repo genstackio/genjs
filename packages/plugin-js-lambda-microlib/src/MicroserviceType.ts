@@ -41,7 +41,7 @@ export default class MicroserviceType {
         this.microservice = microservice;
         const configEnhancer = new MicroserviceTypeConfigEnhancer(this.microservice.package.getAsset.bind(this.microservice.package));
         const cfg = c.type ? configEnhancer.enhance(c, c.type) : c;
-        let {name, attributes = {}, indexes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined, authorizations = undefined} = cfg;
+        let {name, attributes = {}, indexes = {}, operations = {}, functions = {}, middlewares = [], backends = [], handlers = {}, test = undefined, authorizations = undefined, defaultBackendName = undefined} = cfg;
         this.name = `${microservice.name}_${name}`;
         this.rawAttributes = attributes;
         const operationConfigEnhancer = new MicroserviceTypeOperationConfigEnhancer(this.microservice.package.getAsset.bind(this.microservice.package))
@@ -82,7 +82,7 @@ export default class MicroserviceType {
             if ('string' === typeof b) b = {type: 'backend', name: b};
             return Object.assign(acc, {[b.name]: b});
         }, {});
-        const defaultBackendName: any = [...backends].shift();
+        defaultBackendName = defaultBackendName || [...backends].shift();
         this.defaultBackendName = !defaultBackendName ? undefined : (('string' == typeof defaultBackendName) ? defaultBackendName : defaultBackendName.name);
         this.defaultBackendName && ('@' === this.defaultBackendName.substr(0, 1)) && (this.defaultBackendName = this.defaultBackendName.substr(1));
         this.buildMicroserviceTypeLevelStuff();
