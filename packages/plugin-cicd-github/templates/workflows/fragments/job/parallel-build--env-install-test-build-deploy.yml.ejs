@@ -7,7 +7,7 @@
 <%- include('../checkout.yml.ejs', {dv, v}) %>
 <%- include('../prepare/env-vars.yml.ejs', {dv, v}) %>
 <%- include('../prepare/technologies.yml.ejs', {dv, v}) %>
-<%- include('../build/install-project.yml.ejs', {dv, v, project: p.project, projectPath: p.projectPath}) %>
+<%- include('../build/install-project.yml.ejs', {dv, v, project: p.project, projectPath: p.projectPath, needRoot: p.needRoot}) %>
 <%- include('../build/test-project.yml.ejs', {dv, v, project: p.project, projectPath: p.projectPath}) %>
 <%- include('../build/build-project.yml.ejs', {dv, v, project: p.project, projectPath: p.projectPath}) %>
 <%- include('../build/deploy-project.yml.ejs', {dv, v, project: p.project, projectPath: p.projectPath}) %>

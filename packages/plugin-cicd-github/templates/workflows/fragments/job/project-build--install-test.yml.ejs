@@ -3,5 +3,5 @@
     steps:
 <%- include('../checkout.yml.ejs', {dv, v}) %>
 <%- include('../prepare/technologies.yml.ejs', {dv, v}) %>
-<%- include('../build/install-project.yml.ejs', {dv, v, project, projectPath}) %>
+<%- include('../build/install-project.yml.ejs', {dv, v, project, projectPath, needRoot: p.needRoot}) %>
 <%- include('../build/test-project.yml.ejs', {dv, v, project, projectPath}) %>

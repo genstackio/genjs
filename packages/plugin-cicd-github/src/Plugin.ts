@@ -10,6 +10,7 @@ export default class Plugin implements IPlugin {
         ctx.globalContext.projectsWorkflows[p.getName()] = {
             project: p.getName(),
             projectPath: (ctx.group.getDir() === '.') ? p.getName() : `${ctx.group.getDir()}/${p.getName()}`,
+            ...((p.hasFeature('generateEnvLocalable') || p['vars']?.sourceLocalEnvLocal) ? {needRoot: true} : {}),
         };
     }
     onCicdGithubHydrate(p: IPackage, eventType: string, ctx: any): void {
@@ -20,7 +21,6 @@ export default class Plugin implements IPlugin {
         if ('.' === p.getName()) return;
         if ('.github' === p.getName()) return;
         if (!ctx.globalContext.projectsWorkflows[p.getName()]) return;
-        //console.log(ctx.globalContext.projectsWorkflows[p.getName()]);
     }
     register(generator: IGenerator): void {
         registerCicdBundle(generator);
