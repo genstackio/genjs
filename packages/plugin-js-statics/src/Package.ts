@@ -54,7 +54,7 @@ export default class Package extends JavascriptPackage {
             .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: `${vars.target_dir}/` })
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
-            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS_APP', mode: vars.env_mode || 'terraform'})
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS', mode: vars.env_mode || 'terraform'})
             .addPredefinedTarget('start', 'js-start', {port: this.getParameter('startPort'), sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('test', 'js-test', {ci: true, coverage: false})
             .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
