@@ -20,10 +20,4 @@ on:
 <%- include('fragments/on/push/to-feature-branch.yml.ejs', {dv, v}) %>
 
 jobs:
-  build:
-    runs-on: <%- v.os %>
-    steps:
-<%- include('fragments/checkout.yml.ejs', {dv, v}) %>
-<%- include('fragments/prepare/technologies.yml.ejs', {dv, v}) %>
-<%- include('fragments/build/install.yml.ejs', {dv, v}) %>
-<%- include('fragments/build/test.yml.ejs', {dv, v}) %>
+<%- include('fragments/job/build--install-test.yml.ejs', {dv, v}) %>

@@ -14,10 +14,10 @@
   terraform: typeof terraform_version_constraint === 'undefined' ? ('undefined' !== typeof terraform_version ? terraform_version : dv.terraform) : terraform_version_constraint,
   os: typeof github_workflow_job_os === 'undefined' ? dv.os : github_workflow_job_os
 }; -%>
-name: Pull-Request on Feature Branch
+name: <%= (project || '?').toUpperCase() -%> - Push to Feature Branch
 
 on:
-<%- include('fragments/on/pull-request/to-feature-branch.yml.ejs', {dv, v}) %>
+<%- include('fragments/on/push/to-feature-branch-project.yml.ejs', {dv, v, project, projectPath}) %>
 
 jobs:
-<%- include('fragments/job/build--install-test.yml.ejs', {dv, v}) %>
+<%- include('fragments/job/project-build--install-test.yml.ejs', {dv, v, project, projectPath}) %>

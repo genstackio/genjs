@@ -14,10 +14,11 @@
   terraform: typeof terraform_version_constraint === 'undefined' ? ('undefined' !== typeof terraform_version ? terraform_version : dv.terraform) : terraform_version_constraint,
   os: typeof github_workflow_job_os === 'undefined' ? dv.os : github_workflow_job_os
 }; -%>
-name: Pull-Request on Feature Branch
+name: "[Parallel] Pull-Request to Env (Basic)"
 
 on:
-<%- include('fragments/on/pull-request/to-feature-branch.yml.ejs', {dv, v}) %>
+<%- include('fragments/on/pull-request/to-env-branch.yml.ejs', {dv, v}) %>
 
 jobs:
-<%- include('fragments/job/build--install-test.yml.ejs', {dv, v}) %>
+<%- include('fragments/job/changes.yml.ejs', {dv, v, projects}) %>
+<%- include('fragments/job/parallel-build--env-install-test-build.yml.ejs', {dv, v, projects}) %>

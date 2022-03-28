@@ -20,14 +20,4 @@ on:
 <%- include('fragments/on/pull-request/to-env-branch.yml.ejs', {dv, v}) %>
 
 jobs:
-  build:
-    runs-on: <%- v.os %>
-    steps:
-<%- include('fragments/checkout.yml.ejs', {dv, v}) %>
-<%- include('fragments/prepare/env-vars.yml.ejs', {dv, v}) %>
-<%- include('fragments/prepare/technologies.yml.ejs', {dv, v}) %>
-<%- include('fragments/build/install.yml.ejs', {dv, v}) %>
-<%- include('fragments/build/test.yml.ejs', {dv, v}) %>
-<%- include('fragments/build/infra-init.yml.ejs', {dv, v}) %>
-<%- include('fragments/build/build-pre-plan.yml.ejs', {dv, v}) %>
-<%- include('fragments/build/infra-plan.yml.ejs', {dv, v}) %>
+<%- include('fragments/job/build--env-install-test-infra.yml.ejs', {dv, v}) %>

@@ -1,0 +1,6 @@
+      - name: Deploy
+        shell: 'script -q -e -c "bash {0}"'
+        run: make deploy-<%- project %> env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true

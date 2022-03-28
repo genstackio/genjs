@@ -1,0 +1,12 @@
+<% (Object.values(projects || {})).forEach(p => { -%>
+  <%- p.project %>:
+    needs: changes
+    if: ${{ needs.changes.outputs.<%- p.project %> == 'true' }}
+    runs-on: <%- v.os %>
+    steps:
+<%- include('../checkout.yml.ejs', {dv, v}) %>
+<%- include('../prepare/technologies.yml.ejs', {dv, v}) %>
+<%- include('../build/install-project.yml.ejs', {dv, v, project: p.project, projectPath: p.projectPath}) %>
+<%- include('../build/test-project.yml.ejs', {dv, v, project: p.project, projectPath: p.projectPath}) %>
+<%- include('../build/build-project.yml.ejs', {dv, v, project: p.project, projectPath: p.projectPath}) %>
+<% }) %>

@@ -1,0 +1,11 @@
+  build:
+    runs-on: <%- v.os %>
+    steps:
+<%- include('../checkout.yml.ejs', {dv, v}) %>
+<%- include('../prepare/env-vars.yml.ejs', {dv, v}) %>
+<%- include('../prepare/technologies.yml.ejs', {dv, v}) %>
+<%- include('../build/install.yml.ejs', {dv, v}) %>
+<%- include('../build/test.yml.ejs', {dv, v}) %>
+<%- include('../build/infra-init.yml.ejs', {dv, v}) %>
+<%- include('../build/build-pre-plan.yml.ejs', {dv, v}) %>
+<%- include('../build/infra-plan.yml.ejs', {dv, v}) %>

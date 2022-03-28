@@ -1,0 +1,16 @@
+  changes:
+    runs-on: <%- v.os %>
+    outputs:
+<% (Object.values(projects || {})).forEach(p => { -%>
+      <%- p.project %>: ${{ steps.filter.outputs.<%- p.project %> }}
+<% }) %>
+    steps:
+<%- include('../checkout.yml.ejs', {dv, v}) %>
+      - name: "Detect Changes in directories"
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+<% (Object.values(projects || {})).forEach(p => { -%>
+            <%- p.project %>: ['<%- p.projectPath %>/**']
+<% }) %>
