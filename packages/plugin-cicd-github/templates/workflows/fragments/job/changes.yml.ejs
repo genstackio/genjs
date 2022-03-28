@@ -10,6 +10,7 @@
         uses: dorny/paths-filter@v2
         id: filter
         with:
+          base: ${{ github.ref }}
           filters: |
 <% (Object.values(projects || {})).forEach(p => { -%>
             <%- p.project %>: ['<%- p.projectPath %>/**']
