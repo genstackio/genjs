@@ -1,0 +1,12 @@
+<% (Object.entries(layers || {})).forEach(([name, layer]) => { -%>
+  <%- layer.name || name %>:
+    needs: <%= layer.depends && layer.depends.length ? `[changes, ${layer.depends.join(', ')}]` : 'changes' %>
+    if: ${{ always() && needs.changes.outputs.<%- layer.name || name %> == 'true' }}
+    runs-on: <%- v.os %>
+    steps:
+<%- include('../checkout.yml.ejs', {dv, v}) %>
+<%- include('../prepare/env-vars.yml.ejs', {dv, v}) %>
+<%- include('../prepare/technologies.yml.ejs', {dv, v}) %>
+<%- include('../build/install.yml.ejs', {dv, v}) %>
+<%- include('../build/provision-layer.yml.ejs', {dv, v, layer: {name, ...layer}}) %>
+<% }) %>

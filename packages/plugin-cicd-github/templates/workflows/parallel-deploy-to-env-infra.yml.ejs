@@ -1,0 +1,24 @@
+<% const dv = {
+  go: '^1.16',
+  node: '14.x',
+  python: '3.x',
+  php: '7.1',
+  terraform: '0.13.5',
+  os: 'ubuntu-20.04'
+}; -%>
+<% const v = {
+  go: typeof go_version_constraint === 'undefined' ? dv.go : go_version_constraint,
+  node: typeof node_version_constraint === 'undefined' ? dv.node : node_version_constraint,
+  python: typeof python_version_constraint === 'undefined' ? dv.python : python_version_constraint,
+  php: typeof php_version_constraint === 'undefined' ? ('undefined' !== typeof php_version ? php_version : dv.php) : php_version_constraint,
+  terraform: typeof terraform_version_constraint === 'undefined' ? ('undefined' !== typeof terraform_version ? terraform_version : dv.terraform) : terraform_version_constraint,
+  os: typeof github_workflow_job_os === 'undefined' ? dv.os : github_workflow_job_os
+}; -%>
+name: "[Parallel] Deploy to Env"
+
+on:
+<%- include('fragments/on/push/to-env-branch.yml.ejs', {dv, v}) %>
+
+jobs:
+<%- include('fragments/job/changes.yml.ejs', {dv, v, branchToEnv: true, projects: Object.entries(layers).reduce((acc, [name, layer]) => Object.assign(acc, {[name]: {project: layer.name || name, projectPath: `./infra/environments/$\{{env.env}}/${layer.name || name}`}}), {})}) %>
+<%- include('fragments/job/parallel-build-layer--env-install-provision.yml.ejs', {dv, v, layers}) %>

@@ -1,0 +1,6 @@
+      - name: Plan (Infrastructure) for layer <%= layer.name %>
+        shell: 'script -q -e -c "bash {0}"'
+        run: make infra-plan layer=<%= layer.name %> env=${{env.env}}
+        env:
+          FORCE_COLOR: 3
+          CI: true
