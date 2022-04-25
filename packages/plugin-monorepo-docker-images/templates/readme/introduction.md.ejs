@@ -1,0 +1,16 @@
+# <%- ('undefined' !== typeof project_name ? project_name : name).toUpperCase() %>
+<% if (('undefined' !== typeof project_name) && ('undefined' !== typeof project_description)) { %>`<%- project_name %>` is a repository containing Docker Images source code for <%- project_description %>.
+<% } %>
+## Introduction
+
+This repository is a mono-repository that contains all the code for the docker images.
+
+<% if (sortedProjects.length > 0) { %>This mono-repo is composed of <%- sortedProjects.length -%> docker images:
+
+<% sortedProjects.forEach(p => { %>* `<%- p.name -%>`<% if (p.description) { %> (<%- p.description -%>)<% } %>
+<% }) -%><% } -%>
+<% if (sortedTechnologies.length > 0) { %>
+The noticeable technologies used in this repository are (not exhaustive):
+
+<% sortedTechnologies.forEach(t => { %>* [<%- t.name -%>](<%- t.link -%>)
+<% }) %><% } -%>

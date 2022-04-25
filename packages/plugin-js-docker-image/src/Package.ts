@@ -30,7 +30,7 @@ export default class Package extends DockerImagePackage {
             .addMetaTarget('install', ['install-code'])
             .addPredefinedTarget('push', 'docker-push', {sourceLocalEnvLocal: true, awsProfile: true, awsEcrLogin: true, tag: vars.image_tag, region: vars.image_region, domain: vars.image_domain})
             .addMetaTarget('deploy', ['push'])
-            .addPredefinedTarget('generate-env-local', 'generate-env-local')
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
         ;
     }
 }

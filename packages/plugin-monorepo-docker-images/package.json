@@ -1,0 +1,35 @@
+{
+  "name": "@genjs/genjs-plugin-monorepo-docker-images",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib",
+    "templates"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
+    "gen": "../genjs/bin/genjs",
+    "dump": "../genjs/bin/genjs dump"
+  },
+  "peerDependencies": {
+    "@genjs/genjs": "^0"
+  },
+  "dependencies": {
+    "@genjs/genjs-bundle-monorepo": "^0.1.16",
+    "@genjs/genjs-bundle-scm": "^0.1.7",
+    "@genjs/genjs-workflow-publish": "^0.1.8"
+  },
+  "devDependencies": {
+    "@genjs/genjs": "^0.4.14"
+  }
+}
