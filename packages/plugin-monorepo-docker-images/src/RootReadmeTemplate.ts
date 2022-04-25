@@ -69,5 +69,4 @@ export class RootReadmeTemplate extends ReadmeTemplate {
         ;
     }
 }
-
 export default RootReadmeTemplate
