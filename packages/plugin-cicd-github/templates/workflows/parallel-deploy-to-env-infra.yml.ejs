@@ -20,5 +20,5 @@ on:
 <%- include('fragments/on/push/to-env-branch.yml.ejs', {dv, v}) %>
 
 jobs:
-<%- include('fragments/job/changes.yml.ejs', {dv, v, branchToEnv: true, projects: Object.entries(layers).reduce((acc, [name, layer]) => Object.assign(acc, {[name]: {project: layer.name || name, projectPath: `./infra/environments/$\{{env.env}}/${layer.name || name}`}}), {})}) %>
+<%- include('fragments/job/changes.yml.ejs', {dv, v, branchToEnv: true, projects: Object.entries(layers).reduce((acc, [name, layer]) => Object.assign(acc, {[name]: {project: layer.name || name, projectPaths: [`./infra/environments/$\{{env.env}}/${layer.name || name}`, `./infra/modules/${layer.name || name}`]}}), {})}) %>
 <%- include('fragments/job/parallel-build-layer--env-install-provision.yml.ejs', {dv, v, layers}) %>
