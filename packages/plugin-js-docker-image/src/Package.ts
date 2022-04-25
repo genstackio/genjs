@@ -15,7 +15,7 @@ export default class Package extends DockerImagePackage {
         };
     }
     protected buildMakefile(vars: any) {
-        return super.buildMakefile(vars)
+        const t = super.buildMakefile(vars)
             .addGlobalVar('prefix', vars.project_prefix)
             .addGlobalVar('env', 'dev')
             .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
@@ -32,5 +32,14 @@ export default class Package extends DockerImagePackage {
             .addMetaTarget('deploy', ['push'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
         ;
+        if (this.hasFeature('testable')) {
+            t
+                .addPredefinedTarget('test', 'js-test', {ci: true, coverage: true})
+                .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
+                .addPredefinedTarget('test-cov', 'js-test', {local: true})
+                .addPredefinedTarget('test-ci', 'js-test', {ci: true})
+            ;
+        }
+        return t;
     }
 }
