@@ -34,10 +34,10 @@ export default class Package extends DockerImagePackage {
         ;
         if (this.hasFeature('testable')) {
             t
-                .addPredefinedTarget('test', 'js-test', {ci: true, coverage: true})
-                .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
-                .addPredefinedTarget('test-cov', 'js-test', {local: true})
-                .addPredefinedTarget('test-ci', 'js-test', {ci: true})
+                .addPredefinedTarget('test', 'js-test', {dir: 'code', ci: true, coverage: true})
+                .addPredefinedTarget('test-dev', 'js-test', {dir: 'code', local: true, all: true, coverage: false, color: true})
+                .addPredefinedTarget('test-cov', 'js-test', {dir: 'code', local: true})
+                .addPredefinedTarget('test-ci', 'js-test', {dir: 'code', ci: true})
             ;
         }
         return t;
