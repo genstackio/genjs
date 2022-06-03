@@ -124,7 +124,7 @@ export default class MicroserviceType {
         Object.entries(this.model.referenceFields || {}).forEach(([k, v]: [string, any]) => {
             this.enrichTypeModel(
                 {
-                    reference: {type: `${this.name}`, fields: v.fetchedFields || [], idField: v.targetIdField || v.idField, join: k},
+                    reference: {type: `${this.name}`, fields: v.fetchedFields || [], ...((v.fieldTargets && Object.keys(v.fieldTargets).length) ? {fieldTargets: v.fieldTargets} : {}), idField: v.targetIdField || v.idField, join: k},
                 },
                 `${(<any>v).reference.replace(/\./g, '_')}${/\./.test((<any>v).reference) ? '' : `_${this.microservice.name}`}`,
             );

@@ -246,6 +246,10 @@ export class ModelEnhancer {
                 return acc2;
 
             }, acc[ref.type][kk].trackedFields);
+            if (ref.fieldTargets && Object.keys(ref.fieldTargets).length) {
+                acc[ref.type][kk].fieldTargets = acc[ref.type][kk].fieldTargets || {};
+                acc[ref.type][kk].fieldTargets = {...acc[ref.type][kk].fieldTargets, ...ref.fieldTargets};
+            }
             return acc;
         }, {...(m.referenceTargets || {})});
         return m;

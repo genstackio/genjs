@@ -186,7 +186,7 @@ export default class SchemaParser {
                 } else {
                     acc.sourceFields[v.sourceField] = true;
                 }
-                acc.targetFields[v.targetField] = true;
+                acc.targetFields[v.targetField] = v.sourceField;
                 acc.values[v.targetField] = acc.updateValues[v.targetField] = {
                     type: '@ref-attribute-field',
                     config: ((schema.multiRefAttributeTargetFields || {})[v.targetField]?.length > 1)
@@ -204,10 +204,11 @@ export default class SchemaParser {
                           }
                 };
                 return acc;
-            }, {targetFields: [], sourceFields: [], values: [], updateValues: []});
+            }, {targetFields: {}, sourceFields: [], values: [], updateValues: []});
             if (!schema.referenceFields[k]) throw new Error(`${k} is not a reference field (but is a ref attribute requirement for ${Object.keys(x.targetFields).join(', ')})`);
             if (!schema.validators[k]) schema.validators[k] = [];
             schema.referenceFields[k].fetchedFields = ['id'].concat(schema.referenceFields[k].fetchedFields, Object.keys(x.sourceFields));
+            x.targetFields && Object.keys(x.targetFields).length && (schema.referenceFields[k].fieldTargets = x.targetFields);
             Object.assign(schema.values, x.values);
             Object.assign(schema.updateValues, x.updateValues);
         });
