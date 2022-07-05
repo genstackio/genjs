@@ -28,6 +28,7 @@ import {
 import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package";
 import MicroserviceType from "./MicroserviceType";
 import {ModelEnhancer} from "./ModelEnhancer";
+import {SchemaGraphqlTemplate} from "./templates/SchemaGraphqlTemplate";
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
@@ -184,6 +185,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             ['.gitignore']: this.buildGitIgnore(vars),
             ['Makefile']: this.buildMakefile(vars),
             ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
+            ...(vars.generate_graphql_schema ? {'schema.graphql': this.buildSchemaGraphqlFile(vars)} : {}),
         });
         const objects: any = (<any[]>[]).concat(
             Object.values(this.microservices),
@@ -202,6 +204,9 @@ export default class Package extends AbstractPackage<PackageConfig> {
         }
 
         return files;
+    }
+    protected buildSchemaGraphqlFile(vars: any) {
+        return new SchemaGraphqlTemplate(vars)
     }
     protected buildLicense(vars: any): LicenseTemplate {
         return new LicenseTemplate(vars);

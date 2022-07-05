@@ -1,0 +1,87 @@
+<%
+
+const hasQuery = types.Query && types.Query.fields && Object.keys(types.Query.fields).length;
+const hasMutation = types.Mutation && types.Mutation.fields && Object.keys(types.Mutation.fields).length;
+
+-%>
+<% if (hasQuery || hasMutation) { -%>
+schema {
+<% if (hasQuery) { -%>
+    query: Query
+<% } -%>
+<% if (hasMutation) { -%>
+    mutation: Mutation
+<% } -%>
+}
+<% } -%>
+
+<% if (('undefined' !== typeof graphql_scalars) && !!graphql_scalars) { -%>
+scalar BigInt # <= graphql-scalars
+scalar Date # <= graphql-scalars
+scalar Time # <= graphql-scalars
+scalar DateTime # <= graphql-scalars
+scalar Timestamp # <= graphql-scalars
+scalar UtcOffset # <= graphql-scalars
+scalar Duration # <= graphql-scalars
+scalar ISO8601Duration # <= graphql-scalars
+scalar LocalDate # <= graphql-scalars
+scalar LocalTime # <= graphql-scalars
+scalar LocalEndTime # <= graphql-scalars
+scalar EmailAddress # <= graphql-scalars
+scalar NegativeFloat # <= graphql-scalars
+scalar NegativeInt # <= graphql-scalars
+scalar NonEmptyString # <= graphql-scalars
+scalar NonNegativeFloat # <= graphql-scalars
+scalar NonNegativeInt # <= graphql-scalars
+scalar NonPositiveFloat # <= graphql-scalars
+scalar NonPositiveInt # <= graphql-scalars
+scalar PhoneNumber # <= graphql-scalars
+scalar PositiveFloat # <= graphql-scalars
+scalar PositiveInt # <= graphql-scalars
+scalar PostalCode # <= graphql-scalars
+scalar UnsignedFloat # <= graphql-scalars
+scalar UnsignedInt # <= graphql-scalars
+scalar URL # <= graphql-scalars
+scalar Byte # <= graphql-scalars
+scalar Long # <= graphql-scalars
+scalar SafeInt # <= graphql-scalars
+scalar UUID # <= graphql-scalars
+scalar GUID # <= graphql-scalars
+scalar Hexadecimal # <= graphql-scalars
+scalar HexColorCode # <= graphql-scalars
+scalar HSL # <= graphql-scalars
+scalar HSLA # <= graphql-scalars
+scalar IPv4 # <= graphql-scalars
+scalar IPv6 # <= graphql-scalars
+scalar ISBN # <= graphql-scalars
+scalar JWT # <= graphql-scalars
+scalar Latitude # <= graphql-scalars
+scalar Longitude # <= graphql-scalars
+scalar MAC # <= graphql-scalars
+scalar Port # <= graphql-scalars
+scalar RGB # <= graphql-scalars
+scalar RGBA # <= graphql-scalars
+scalar USCurrency # <= graphql-scalars
+scalar Currency # <= graphql-scalars
+scalar JSON # <= graphql-scalars
+scalar JSONObject # <= graphql-scalars
+scalar IBAN # <= graphql-scalars
+scalar ObjectID # <= graphql-scalars
+scalar Void # <= graphql-scalars
+scalar DID # <= graphql-scalars
+<% } -%>
+
+<% Object.entries(types || {}).forEach(([k, v]) => { %>type <%= k %> {
+<% Object.entries(v.fields || {}).forEach(([kk, vv]) => { -%>
+    <%= kk %>: <%= vv.resultType || 'String' %>
+<% }) %>
+}
+<% }) %>
+
+<% Object.entries(inputs || {}).forEach(([k, v]) => { %>
+input <%= k %> {
+<% Object.entries(v.fields || {}).forEach(([kk, vv]) => { %>
+    <%= kk %>: <%= vv.type %><%= vv.required ? '!' : '' %>
+<% }) %>
+}
+<% }) %>
