@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-gatsby",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,11 +25,11 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws": "^0.1.16",
-    "@genjs/genjs-bundle-docker": "^0.1.14",
-    "@genjs/genjs-bundle-javascript": "^0.1.19"
+    "@genjs/genjs-bundle-aws": "^0.1.17",
+    "@genjs/genjs-bundle-docker": "^0.1.15",
+    "@genjs/genjs-bundle-javascript": "^0.1.20"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.14"
+    "@genjs/genjs": "^0.4.15"
   }
 }
