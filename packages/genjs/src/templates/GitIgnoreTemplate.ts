@@ -12,6 +12,7 @@ export type ignore = {
 export type group = {
     name: string,
     ignores?: (string|ignore)[],
+    enclose?: boolean;
 };
 
 export class GitIgnoreTemplate extends AbstractFileTemplate {
@@ -44,6 +45,10 @@ export class GitIgnoreTemplate extends AbstractFileTemplate {
         this.groups.push(this.createGroup(name, (ignores || []).map(ignore => 'string' === typeof ignore ? this.createIgnore(ignore) : ignore)));
         return this;
     }
+    addEnclosedGroup(name: string, ignores?: (string|ignore)[]): this {
+        this.groups.push(this.createGroup(name, (ignores || []).map(ignore => 'string' === typeof ignore ? this.createIgnore(ignore) : ignore), true));
+        return this;
+    }
     addIgnore(path, group?: string): this {
         const realGroup = group ? group : '@';
         const eg: group|undefined = this.groups.find(g => g.name === realGroup);
@@ -61,8 +66,8 @@ export class GitIgnoreTemplate extends AbstractFileTemplate {
     addNonIgnore(path, group?: string): this {
         return this.addIgnore(`!${path}`, group);
     }
-    createGroup(name: string, ignores: (string|ignore)[] = []): group {
-        return {name, ignores};
+    createGroup(name: string, ignores: (string|ignore)[] = [], enclose = false, ): group {
+        return {name, ignores, enclose};
     }
     createIgnore(path: string): ignore {
         return {path};
