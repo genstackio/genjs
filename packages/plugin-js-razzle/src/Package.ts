@@ -1,5 +1,6 @@
 import {
-    applyDeployMakefileHelper,
+    applyDebugMakefileHelper,
+    applyDeployMakefileHelper, applyLogMakefileHelper,
     applyMigrateMakefileHelper,
     applyStarterMakefileHelper,
     AwsLambdaPackage
@@ -110,6 +111,8 @@ export default class Package extends AwsLambdaPackage {
             .addPredefinedTarget('test-ci', 'js-test', {ci: true})
         ;
 
+        applyDebugMakefileHelper(t, vars, this);
+        applyLogMakefileHelper(t, vars, this);
         applyStarterMakefileHelper(t, vars, this);
         applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
         applyMigrateMakefileHelper(t, vars, this);

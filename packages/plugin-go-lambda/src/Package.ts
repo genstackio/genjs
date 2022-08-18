@@ -1,5 +1,6 @@
 import {
-    applyDeployMakefileHelper,
+    applyDebugMakefileHelper,
+    applyDeployMakefileHelper, applyLogMakefileHelper,
     applyStarterMakefileHelper,
     AwsLambdaPackage
 } from '@genjs/genjs-bundle-aws-lambda';
@@ -66,9 +67,8 @@ export default class Package extends AwsLambdaPackage {
             .addTarget('run', ['./build/bin/$(GOOS)/$(GOARCH)/$(BIN)'], [], {}, 'Execute the specified binary')
         ;
 
-        if (this.hasFeature('loggable')) {
-            t.addPredefinedTarget('log', 'aws-logs-tail', {group: vars.log_group || `/aws/lambda/$(env)-${vars.name}`, follow: true});
-        }
+        applyDebugMakefileHelper(t, vars, this);
+        applyLogMakefileHelper(t, vars, this);
         applyStarterMakefileHelper(t, vars, this);
         applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});
         applyRefreshMakefileHelper(t, vars, this);

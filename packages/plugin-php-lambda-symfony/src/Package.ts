@@ -3,7 +3,7 @@ import {
     applyMigrateMakefileHelper,
     applyStarterMakefileHelper,
     applyLogMakefileHelper,
-    AwsLambdaPackage
+    AwsLambdaPackage, applyDebugMakefileHelper
 } from '@genjs/genjs-bundle-aws-lambda';
 import {
     DeployableBehaviour,
@@ -148,6 +148,7 @@ export default class Package extends AwsLambdaPackage {
             .addPredefinedTarget('test-ci', 'js-test', {ci: true})
         ;
 
+        applyDebugMakefileHelper(t, vars, this);
         applyLogMakefileHelper(t, vars, this);
         applyStarterMakefileHelper(t, vars, this);
         applyDeployMakefileHelper(t, vars, this, {predefinedTarget: 'js-deploy'});

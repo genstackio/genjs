@@ -12,11 +12,12 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
             const cdn = !!vars.cdn_support
             t
                 .addGlobalVar('AWS_DEFAULT_REGION', vars.aws_default_region || 'eu-west-3')
+                .addGlobalVar('AWS_REGION', vars.aws_region || '$(AWS_DEFAULT_REGION)')
                 .addGlobalVar('prefix', vars.project_prefix)
                 .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
-                .addGlobalVar('target_s3_bucket', vars.s3_bucket || 'please-set-target-s3-bucket-here')
-                .addGlobalVar('target_s3_key', vars.s3_key || 'please-set-target-s3-key-here')
-                .addGlobalVar('target_lambda_name', vars.lambda_name || 'please-set-target-lambda-name-here')
+                .addGlobalVar('target_s3_bucket', vars.s3_bucket || `$(env)-${vars.project_prefix}-platform-${vars.project_name}`)
+                .addGlobalVar('target_s3_key', vars.s3_key || `$(env)-${vars.name}.zip`)
+                .addGlobalVar('target_lambda_name', vars.lambda_name || `$(env)-${vars.name}`)
                 .addGlobalVar('source_package_file', vars.package_file || 'build/package.zip')
                 .addMetaTarget('deploy', ['deploy-package', assets && 'deploy-assets', 'update-lambda-code', cdn && 'invalidate-cache'].filter(x => !!x) as string[])
                 .addTarget('deploy-package', [
