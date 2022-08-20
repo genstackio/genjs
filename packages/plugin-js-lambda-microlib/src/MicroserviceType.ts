@@ -475,6 +475,26 @@ export default class MicroserviceType {
             requirements['event'] = true;
             return `    ${conditionCode || ''}await event(${this.stringifyForHook(config['name'] || options['operationName'], options)}, result, query);`
         }
+        if ('%event:' === type.slice(0, 7)) {
+            requirements['event'] = true;
+            return `    ${conditionCode || ''}await event(${this.stringifyForHook(type.slice(7), options)}, result, query);`
+        }
+        if ('%rule' === type) {
+            requirements['rule'] = true;
+            switch (options['position']) {
+                case 'before': return `    ${conditionCode || ''}await rule(${this.stringifyForHook(config['name'], options)}, query);`;
+                case 'after': return `    ${conditionCode || ''}await rule(${this.stringifyForHook(config['name'], options)}, result, query);`;
+                default: return undefined;
+            }
+        }
+        if ('%rule:' === type.slice(0, 6)) {
+            requirements['rule'] = true;
+            switch (options['position']) {
+                case 'before': return `    ${conditionCode || ''}await rule(${this.stringifyForHook(type.slice(6), options)}, query);`;
+                case 'after': return `    ${conditionCode || ''}await rule(${this.stringifyForHook(type.slice(6), options)}, result, query);`;
+                default: return undefined;
+            }
+        }
         if ('@delete-references' === type) {
             requirements['deleteReferences'] = true;
             return `    ${conditionCode || ''}await deleteReferences(result, query);`
