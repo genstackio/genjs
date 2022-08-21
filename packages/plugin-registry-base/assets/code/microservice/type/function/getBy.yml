@@ -15,5 +15,5 @@ args:
 
 code: |
   const docs = await service.find({...query, index: field, hashKey: value, limit: 1, fields});
-  if (!docs || !docs.items || (1 > docs.items.length)) throw new (require('@ohoareau/microlib/lib/errors/DocumentNotFoundError').default)('<%- type %>', value, field);
+  if (!docs || !docs.items || (1 > docs.items.length)) throw new (require('@ohoareau/errors/lib/DocumentNotFoundError').default)('<%- type %>', value, field);
   return docs.items.shift();
