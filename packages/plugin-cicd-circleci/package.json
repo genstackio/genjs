@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-cicd-circleci",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-cicd": "^0.1.15"
+    "@genjs/genjs-bundle-cicd": "^0.1.16"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.15",
+    "@genjs/genjs": "^0.4.16",
     "aws-sdk": "^2.1199.0"
   }
 }

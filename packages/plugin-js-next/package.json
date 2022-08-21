@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-next",
-  "version": "0.4.22",
+  "version": "0.4.23",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,11 +25,11 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws": "^0.1.17",
-    "@genjs/genjs-bundle-docker": "^0.1.15",
-    "@genjs/genjs-bundle-javascript": "^0.1.20"
+    "@genjs/genjs-bundle-aws": "^0.1.18",
+    "@genjs/genjs-bundle-docker": "^0.1.16",
+    "@genjs/genjs-bundle-javascript": "^0.1.21"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.15"
+    "@genjs/genjs": "^0.4.16"
   }
 }
