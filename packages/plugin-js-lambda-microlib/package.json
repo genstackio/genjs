@@ -31,6 +31,6 @@
   },
   "devDependencies": {
     "@genjs/genjs": "^0.4.15",
-    "aws-sdk": "^2.995.0"
+    "aws-sdk": "^2.1199.0"
   }
 }

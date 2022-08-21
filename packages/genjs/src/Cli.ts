@@ -78,7 +78,7 @@ export class Cli {
         ;
     }
     private registerCommands(yargs: Argv) {
-        Object.values(commands).forEach(c => yargs.command(c));
+        Object.values(commands).forEach((c: any) => yargs.command(c));
     }
     run() {
         this.yargs.argv;

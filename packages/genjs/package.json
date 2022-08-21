@@ -44,15 +44,15 @@
     "@ohoareau/aws-parse": "^0.2.0",
     "@ohoareau/dir2obj": "^0.3.1",
     "@ohoareau/technologies-detector": "^0.3.1",
-    "ejs": "^3.1.6",
-    "fs-extra": "^10.0.0",
+    "ejs": "^3.1.8",
+    "fs-extra": "^10.1.0",
     "stringify-object": "^3.3.0",
-    "yaml": "^1.10.2",
+    "yaml": "^2.1.1",
     "yargonaut": "^1.1.4",
-    "yargs": "^17.2.1"
+    "yargs": "^17.5.1"
   },
   "devDependencies": {
-    "aws-sdk": "^2.995.0"
+    "aws-sdk": "^2.1199.0"
   },
   "bin": {
     "genjs": "./bin/genjs"
