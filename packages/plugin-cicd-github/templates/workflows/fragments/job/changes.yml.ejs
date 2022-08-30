@@ -20,5 +20,5 @@
           base: ${{ github.ref }}
           filters: |
 <% (Object.values(projects || {})).forEach(p => { -%>
-            <%- p.project %>: <%- !!p.projectPaths ? JSON.stringify(p.projectPaths.map(x => `${x}/**`)) : `['${p.projectPath}/**']` %>
+            <%- p.project %>: <%- JSON.stringify(!!p.projectPaths ? p.projectPaths : [`${p.projectPath}/**`]) %>
 <% }) %>
