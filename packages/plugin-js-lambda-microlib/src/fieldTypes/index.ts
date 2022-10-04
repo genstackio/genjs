@@ -46,6 +46,7 @@ export {default as timePeriodType} from './timePeriodType';
 export {default as phone} from './phone';
 export {default as positiveInteger} from './positiveInteger';
 export {default as presets} from './presets';
+export {default as preset} from './preset';
 export {default as price} from './price';
 export {default as rcs} from './rcs';
 export {default as rm} from './rm';
