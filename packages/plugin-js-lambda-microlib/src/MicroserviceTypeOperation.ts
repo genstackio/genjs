@@ -13,6 +13,7 @@ export type MicroserviceTypeOperationConfig = {
     vars: {[key: string]: any},
     prefetch: string[],
     hooks: {[key: string]: any[]},
+    enhancers: {pre?: any[], post?: any[]},
     handler: boolean,
     wrap?: any,
     config?: {[key: string]: any},
@@ -25,7 +26,7 @@ export default class MicroserviceTypeOperation {
     constructor(microserviceType, cfg: MicroserviceTypeOperationConfig) {
         this.microserviceType = microserviceType;
         const configEnhancer = new MicroserviceTypeOperationConfigEnhancer(this.microserviceType.microservice.package.getAsset.bind(this.microserviceType.microservice.package));
-        const {name, as = undefined, handler = true, config: extraOperationConfig = {}, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}} = cfg.type ? configEnhancer.enhance(cfg, cfg.type) : cfg;
+        const {name, as = undefined, handler = true, config: extraOperationConfig = {}, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}, enhancers = {}} = cfg.type ? configEnhancer.enhance(cfg, cfg.type) : cfg;
         this.name = name;
         this.handler = handler ? new Handler({name: `${microserviceType.name}_${this.name}`, type: 'service', middlewares, errorMiddlewares, directory: 'handlers', params: {
                 on: this.name,
@@ -95,6 +96,9 @@ export default class MicroserviceTypeOperation {
             default:
                 break;
         }
+        const {pre: preEnhancers = {}, post: postEnhancers = {}} = enhancers || {};
+        Object.keys(preEnhancers).length && microserviceType.registerHook(this.name, 'pre_enhance', {type: '@pre-enhance', config: {}});
+        Object.keys(postEnhancers).length && microserviceType.registerHook(this.name, 'post_enhance', {type: '@post-enhance', config: {}});
         Object.entries(hooks).forEach(([k, v]) => {
             (v as any[]).forEach(h => microserviceType.registerHook(this.name, k, h));
         });

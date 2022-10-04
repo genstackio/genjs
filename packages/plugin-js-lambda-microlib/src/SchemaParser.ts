@@ -37,8 +37,12 @@ export default class SchemaParser {
     }
     parseOperations(def: any, schema: any) {
         Object.entries(def.operations).reduce((acc, [k, d]) => {
-            if (!d || !(<any>d)['prefetch']) return acc;
-            Object.assign(acc.prefetchs[k] = acc.prefetchs[k] || {}, (<any>d).prefetch.reduce((acc2, k) => Object.assign(acc2, {[k]: true}), {}));
+            if (!!d && !!(<any>d)['prefetch']) {
+                Object.assign(acc.prefetchs[k] = acc.prefetchs[k] || {}, (<any>d).prefetch.reduce((acc2, k) => Object.assign(acc2, {[k]: true}), {}));
+            }
+            if (!!d && !!(<any>d)['enhancers']) {
+                Object.assign(acc.enhancers[k] = acc.enhancers[k] || {}, (<any>d).enhancers);
+            }
             return acc;
         }, schema);
     }
@@ -319,6 +323,7 @@ export default class SchemaParser {
             hooks,
             name,
             prefetchs: {},
+            enhancers: {},
             autoTransitionTo: {},
             cascadeValues: {},
             authorizers: {},

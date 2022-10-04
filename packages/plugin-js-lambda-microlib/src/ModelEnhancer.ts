@@ -24,6 +24,7 @@ export class ModelEnhancer {
         m = this.buildFinalizedModelStatFields(m, enrichments);
         m = this.buildFinalizedModelStatTargets(m, enrichments);
         m = this.buildFinalizedModelTransformers(m, enrichments);
+        m = this.buildFinalizedModelEnhancers(m, enrichments);
         m = this.buildFinalizedModelCascadeValues(m, enrichments);
         m = this.buildFinalizedModelOwnedReferenceListFields(m, enrichments);
         m = this.buildFinalizedModelUpdateDefaultValues(m, enrichments);
@@ -60,6 +61,7 @@ export class ModelEnhancer {
         m = this.cleanObjectKeyIfEmpty(m, 'pretransformers', 'array');
         m = this.cleanObjectKeyIfEmpty(m, 'authorizers', 'array');
         m = this.cleanObjectKeyIfEmpty(m, 'prefetchs', 'object');
+        m = this.cleanObjectKeyIfEmpty(m, 'enhancers', 'strict_object');
         m = this.cleanObjectKeyIfEmpty(m, 'referenceTargets', 'object');
         return m;
     }
@@ -90,6 +92,7 @@ export class ModelEnhancer {
         m.pretransformers && (m.pretransformers = this.sortObject(m.pretransformers));
         m.authorizers && (m.authorizers = this.sortObject(m.authorizers));
         m.prefetchs && (m.prefetchs = this.sortObject(m.prefetchs));
+        m.enhancers && (m.enhancers = this.sortObject(m.enhancers));
         m.referenceTargets && (m.referenceTargets = this.sortObject(m.referenceTargets));
         return this.sortObject(m);
     }
@@ -213,6 +216,10 @@ export class ModelEnhancer {
         return m;
     }
     // noinspection JSUnusedLocalSymbols
+    protected buildFinalizedModelEnhancers(m: any, enrichments: any) {
+        return m;
+    }
+    // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelMutators(m: any, enrichments: any) {
         return m;
     }
@@ -265,6 +272,17 @@ export class ModelEnhancer {
         switch (mode) {
             case 'object':
                 if (0 === Object.entries(o[key] || {}).reduce((acc: number, [_, v]: [string, any]) => {
+                    return acc + Object.keys(v).length;
+                }, 0)) {
+                    delete o[key];
+                }
+                break;
+            case 'strict_object':
+                if (0 === Object.entries(o[key] || {}).reduce((acc: number, [kk, v]: [string, any]) => {
+                    if (!Object.keys(v).length) {
+                        delete o[key][kk];
+                        return acc;
+                    }
                     return acc + Object.keys(v).length;
                 }, 0)) {
                     delete o[key];

@@ -269,12 +269,12 @@ export default class MicroserviceType {
             (backendDef.name && ('@' === backendDef.name.substr(0, 1)) && (backendDef.name = backendDef.name.substr(1)));
         }
         const localRequirements = {};
-        const befores = ['init', 'prepopulate', 'pretransform', 'validate', 'populate', 'transform', 'authorize', 'before', 'prepare'].reduce((acc, n) => {
+        const befores = ['init', 'prepopulate', 'pre_enhance', 'pretransform', 'validate', 'populate', 'transform', 'authorize', 'before', 'prepare'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'before', operationName})));
         }, []);
-        let afters = ['prerefresh', 'after', 'refresh', 'postpopulate', 'convert', 'latepopulate', 'clean'].reduce((acc, n) => {
+        let afters = ['prerefresh', 'after', 'refresh', 'postpopulate', 'convert', 'latepopulate', 'post_enhance', 'clean'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after', operationName})));
@@ -486,6 +486,14 @@ export default class MicroserviceType {
                 case 'after': return `    ${conditionCode || ''}await rule(${this.stringifyForHook(config['name'], options)}, result, query);`;
                 default: return undefined;
             }
+        }
+        if ('@pre-enhance' === type) {
+            requirements['preEnhance'] = true;
+            return `    ${conditionCode || ''}await preEnhance(query);`;
+        }
+        if ('@post-enhance' === type) {
+            requirements['postEnhance'] = true;
+            return `    ${conditionCode || ''}await postEnhance(result, query);`;
         }
         if ('%rule:' === type.slice(0, 6)) {
             requirements['rule'] = true;
