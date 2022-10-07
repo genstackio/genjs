@@ -43,7 +43,7 @@
   "dependencies": {
     "@ohoareau/aws-parse": "^0.2.0",
     "@ohoareau/dir2obj": "^0.3.1",
-    "@ohoareau/technologies-detector": "^0.3.1",
+    "@ohoareau/technologies-detector": "^0.3.2",
     "ejs": "^3.1.8",
     "fs-extra": "^10.1.0",
     "stringify-object": "^3.3.0",

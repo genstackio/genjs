@@ -1,0 +1,12 @@
+import Package from './Package';
+import {IGenerator, IPlugin} from '@genjs/genjs';
+import registerAwsLambdaBundle from '@genjs/genjs-bundle-aws-lambda';
+import registerPythonBundle from '@genjs/genjs-bundle-python';
+
+export default class Plugin implements IPlugin {
+    register(generator: IGenerator): void {
+        registerAwsLambdaBundle(generator);
+        registerPythonBundle(generator);
+        generator.registerPackager('python-lambda-fastapi', cfg => new Package(cfg));
+    }
+}
