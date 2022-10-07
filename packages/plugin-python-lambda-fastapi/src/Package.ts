@@ -48,6 +48,7 @@ export default class Package extends AwsLambdaPackage {
         return {
             ...super.buildFilesFromTemplates(vars, cfg),
             ['requirements.txt']: true,
+            ['requirements-dev.txt']: true,
             ['tests/__init__.py']: true,
         };
     }
@@ -62,11 +63,13 @@ export default class Package extends AwsLambdaPackage {
         const t = super.buildMakefile(vars)
             .addGlobalVar('env', 'dev')
 
+            .addGlobalVar('pip_dev_config_file', 'requirements-dev.txt')
+            .addGlobalVar('pip_deps_dir', vars.pip_deps_dir ? vars.pip_deps_dir : 'package')
             .addGlobalVar('prefix', vars.prefix ? vars.prefix : vars.project_prefix)
             .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
             .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-${vars.name}-assets`)
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()})`)
-            .addPredefinedTarget('install', 'pip-install', {sourceLocalEnvLocal: !!vars.env_local_required}, [], !!vars.env_local_required ? ['generate-env-local'] : [])
+            .addPredefinedTarget('install', 'pip-install', {configFile: '$(pip_dev_config_file)', target: '$(pip_deps_dir)', sourceLocalEnvLocal: !!vars.env_local_required}, [], !!vars.env_local_required ? ['generate-env-local'] : [])
             .addNoopTarget('build')
 
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})

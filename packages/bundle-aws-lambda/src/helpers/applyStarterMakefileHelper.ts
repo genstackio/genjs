@@ -48,6 +48,9 @@ function buildStartTarget(t: MakefileTemplate, p: IPackage, name: string, v: any
         case 'py-script':
             t.addTarget(name, [`python ${v['script']}`], [], {...targetOpts});
             break;
+        case 'custom':
+            t.addTarget(name, Array.isArray((v['vars'] || {})['script']) ? (v['vars'] || {})['script'] : [(v['vars'] || {})['script']], (v['vars'] || {})['deps'] || [], {...targetOpts, ...((v['vars'] || {})['opts'] || {})});
+            break;
         default:
         case 'nodemon':
             const script = `${v.directory ? v.directory : ''}${v.directory ? '/' : ''}${v.name}.js`;

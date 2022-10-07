@@ -1,0 +1,3 @@
+<% Object.entries({...('undefined' === typeof dependencies ? {} : dependencies), ...('undefined' === typeof devDependencies ? {} : devDependencies)}).forEach(([name, constraint]) => { -%>
+<%= name %><%- constraint %>
+<% }) -%>
