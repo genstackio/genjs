@@ -67,7 +67,7 @@ export default class Package extends AwsLambdaPackage {
             .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-${vars.name}-assets`)
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase()})`)
             .addPredefinedTarget('install', 'pip-install', {sourceLocalEnvLocal: !!vars.env_local_required}, [], !!vars.env_local_required ? ['generate-env-local'] : [])
-            .addPredefinedTarget('build', 'python-build')
+            .addNoopTarget('build')
 
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {mode: vars.env_mode || 'terraform'})
             .addMetaTarget('clean', ['clean-build'])
