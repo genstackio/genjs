@@ -3,7 +3,7 @@ import {GenericTarget} from '@genjs/genjs';
 export class PipInstallTarget extends GenericTarget {
     buildSteps(options: any) {
         return [
-            `python3 -m pip install --disable-pip-version-check --root-user-action=ignore -r requirements.txt`,
+            `python3 -m pip --disable-pip-version-check --root-user-action=ignore install -r requirements.txt`,
         ];
     }
     buildDescription() {
