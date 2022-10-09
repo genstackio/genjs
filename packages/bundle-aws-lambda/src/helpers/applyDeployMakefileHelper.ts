@@ -42,7 +42,10 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
             }
             if (cdn) {
                 t
-                    .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
+                    .addPredefinedTarget('invalidate-cache-of', 'aws-cloudfront-create-invalidation')
+                    .addTarget('invalidate-cache', [
+                        '$(foreach f,$(cloudfront), echo "\\n----- \\033[36m$(f)\\033[0m --------------------------"; echo; AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_PROFILE=$(AWS_PROFILE) make invalidate-cache-of cloudfront=$(f);)',
+                    ])
                 ;
             }
             break;
