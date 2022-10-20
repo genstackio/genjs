@@ -49,6 +49,7 @@ export default class Package extends AwsLambdaPackage {
             ...super.buildFilesFromTemplates(vars, cfg),
             ['requirements.txt']: true,
             ['requirements-dev.txt']: true,
+            ['requirements-lambda.txt']: true,
             ['tests/__init__.py']: true,
         };
     }
