@@ -113,6 +113,7 @@ export default class MicroserviceType {
     buildMicroserviceTypeLevelStuff() {
         this.registerReferences();
         this.registerStats();
+        this.registerWatches();
     }
     registerReferences() {
         const references = Object.entries(this.model.referenceFields || {}).reduce((acc: any, [_, v]: [string, any]) => {
@@ -134,6 +135,24 @@ export default class MicroserviceType {
             const prefix = `${r.replace(/\./g, '_')}${/\./.test(r) ? '' : `_${this.microservice.name}`}`;
             this.shortRegisterHook(`${prefix}_update`, '@update-references', undefined, -100, `${prefix}_update_update-references`);
             this.shortRegisterHook(`${prefix}_delete`, '@delete-references', undefined, -100, `${prefix}_update_delete-references`);
+        });
+    }
+    registerWatches() {
+        const watches = Object.entries(this.model.watches || {}).reduce((acc: any, [k, v]: [string, any]) => {
+            return v.reduce((acc2, vv) => {
+                acc2[vv] = acc2[vv] || [];
+                acc2[vv].push(k);
+                return acc2;
+            }, acc);
+        }, {} as any);
+
+        Object.entries(watches).forEach(([k, dd]: [string, any]) => {
+            this.enrichTypeModel(
+                {
+                    watch: {track: k, notify: dd},
+                },
+                this.name,
+            )
         });
     }
     registerStats() {
@@ -538,6 +557,10 @@ export default class MicroserviceType {
         if ('@triggers' === type) {
             requirements['triggers'] = true;
             return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await triggers(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)});` : `${this.buildHookStatement(`await triggers(result, query${!!config['mode'] ? `, '${config['mode']}'` : ''})`, 'result', returnValue)};`}`;
+        }
+        if ('@refresh' === type) {
+            requirements['refresh'] = true;
+            return `    ${conditionCode ? `${conditionCode || ''}(${this.buildHookStatement(`await refresh(query)`, 'query', returnValue)});` : `${this.buildHookStatement(`await refresh(query)`, 'query', returnValue)};`}`;
         }
         if ('@requires' === type) {
             requirements['requires'] = true;

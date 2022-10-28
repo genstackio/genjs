@@ -21,6 +21,7 @@ export class ModelEnhancer {
         m = this.buildFinalizedModelValues(m, enrichments);
         m = this.buildFinalizedModelDynamics(m, enrichments);
         m = this.buildFinalizedModelTriggers(m, enrichments);
+        m = this.buildFinalizedModelWatches(m, enrichments);
         m = this.buildFinalizedModelStatFields(m, enrichments);
         m = this.buildFinalizedModelStatTargets(m, enrichments);
         m = this.buildFinalizedModelTransformers(m, enrichments);
@@ -47,6 +48,7 @@ export class ModelEnhancer {
         m = this.cleanObjectKeyIfEmpty(m, 'values');
         m = this.cleanObjectKeyIfEmpty(m, 'dynamics');
         m = this.cleanObjectKeyIfEmpty(m, 'triggers');
+        m = this.cleanObjectKeyIfEmpty(m, 'watchTargets');
         m = this.cleanObjectKeyIfEmpty(m, 'statFields');
         m = this.cleanObjectKeyIfEmpty(m, 'statTargets', 'object');
         m = this.cleanObjectKeyIfEmpty(m, 'transformers', 'array');
@@ -78,6 +80,7 @@ export class ModelEnhancer {
         m.values && (m.values = this.sortObject(m.values));
         m.dynamics && (m.dynamics = this.sortObject(m.dynamics));
         m.triggers && (m.triggers = this.sortObject(m.triggers));
+        m.watchTargets && (m.watchTargets = this.sortObject(m.watchTargets));
         m.statFields && (m.statFields = this.sortObject(m.statFields));
         m.statTargets && (m.statTargets = this.sortObject(m.statTargets));
         m.transformers && (m.transformers = this.sortObject(m.transformers));
@@ -142,6 +145,19 @@ export class ModelEnhancer {
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelTriggers(m: any, enrichments: any) {
+        return m;
+    }
+    // noinspection JSUnusedLocalSymbols
+    protected buildFinalizedModelWatches(m: any, enrichments: any) {
+        if (!enrichments.watch) return m;
+
+        m.watchTargets = enrichments.watch.reduce((acc, w) => {
+            acc[w.track] = acc[w.track] || [];
+            acc[w.track] = [...acc[w.track], ...w.notify]
+            acc[w.track].sort();
+            return acc;
+        }, m.watchTargets || {} as any);
+
         return m;
     }
     // noinspection JSUnusedLocalSymbols

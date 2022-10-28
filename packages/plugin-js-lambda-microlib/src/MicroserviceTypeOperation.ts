@@ -56,6 +56,7 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('autoTransitionTo', opType, microserviceType, name) && microserviceType.registerHook(name, 'end', {type: '@auto-transitions', config: {}});
                 this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
                 this.hasHooks('triggers', opType, microserviceType, name) && microserviceType.registerHook(name, 'notify', {type: '@triggers', config: {}});
+                this.hasHooks('watch', opType, microserviceType, name) && microserviceType.registerHook(name, 'populate', {type: '@refresh', config: {}});
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@create-owned-items', config: {...v, field: k, mode: 'post'}})
                 );
@@ -71,6 +72,7 @@ export default class MicroserviceTypeOperation {
                 this.hasHooks('prepare', opType, microserviceType, name) && microserviceType.registerHook(name, 'prepare', {type: '@prepare', config: {}});
                 this.hasHooks('after', opType, microserviceType, name) && microserviceType.registerHook(name, 'after', {type: '@after', config: {}});
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
+                this.hasHooks('watch', opType, microserviceType, name) && microserviceType.registerHook(name, 'populate', {type: '@refresh', config: {}});
                 Object.entries(model.ownedReferenceListFields || {}).forEach(([k, v]: [string, any]) =>
                     microserviceType.registerHook(name, 'after', {type: '@update-owned-items', config: {...v, field: k, mode: 'post'}})
                 );
@@ -142,6 +144,8 @@ export default class MicroserviceTypeOperation {
                 return !!Object.keys(microserviceType.model.dynamics || {}).length;
             case 'triggers':
                 return !!Object.keys(microserviceType.model.triggers || {}).length;
+            case 'watch':
+                return !!Object.keys(microserviceType.model.watches || {}).length;
             case 'requires':
                 return !!Object.keys(microserviceType.model.requires || {}).length;
             case 'prepare':

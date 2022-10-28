@@ -75,6 +75,7 @@ export default class SchemaParser {
                 pretransform = undefined, convert = undefined, mutate = undefined,
                 dynamic = undefined, trigger = undefined, from = undefined, requires = undefined, stat = undefined,
                 props = undefined, prefix = undefined, suffix = undefined, truncate = undefined, deletePrefetch = false,
+                watch = undefined,
             } = def;
             const detectedRequires = this.buildDetectedRequires(def);
             acc.fields[k] = {
@@ -86,6 +87,7 @@ export default class SchemaParser {
             acc.authorizers[k] = [];
             acc.requires[k] = [];
             acc.validators[k] = []
+            acc.watches[k] = []
             acc.multiRefAttributeTargetFields[k] = [];
             acc.indexes[k] = acc.indexes[k] || [];
             acc.mutators[k] = mutate ? (Array.isArray(mutate) ? [...mutate] : [mutate]) : [];
@@ -124,6 +126,7 @@ export default class SchemaParser {
             (undefined !== autoTransitionTo) && (acc.autoTransitionTo[k] = {type: '@value', config: {value: autoTransitionTo}});
             (undefined !== cascadePopulate) && (acc.cascadeValues[k] = cascadePopulate);
             (undefined !== cascadeClear) && (acc.cascadeValues[k] = this.mergeCascades(acc.cascadeValues[k], cascadeClear));
+            (undefined !== watch) && (acc.watches[k] = Array.isArray(watch) ? watch : [watch]);
             (undefined !== permissions) && (acc.authorizers[k].push({type: '@permissions', config: {permissions}}));
             internal && (acc.privateFields[k] = true);
             index && (index.length > 0) && (acc.indexes[k] = [...(acc.indexes[k] || []), ...index]);
@@ -152,6 +155,7 @@ export default class SchemaParser {
             if (!acc.mutators[k].length) delete acc.mutators[k];
             if (!acc.dynamics[k]) delete acc.dynamics[k];
             if (!acc.triggers[k]) delete acc.triggers[k];
+            if (!acc.watches[k].length) delete acc.watches[k];
             if (!acc.requires[k] || !acc.requires[k].length) delete acc.requires[k];
             if (!acc.froms[k]) delete acc.froms[k];
             if (!acc.statFields[k]) delete acc.statFields[k];
@@ -335,6 +339,7 @@ export default class SchemaParser {
             requires: {},
             converters: {},
             statFields: {},
+            watches: {},
             multiRefAttributeTargetFields: {},
             shortName: shortName || (name || '').replace(/^.+_([^_]+)$/, '$1'),
         };
