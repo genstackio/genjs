@@ -68,7 +68,7 @@ export default class SchemaParser {
                 validators: [].concat(officialDef.validators || [], forcedDef.validators || []),
             };
             const {
-                unique = false, type = 'string', prefetch = false, list = false, volatile = false, required = false, index = [], internal = false, validators = undefined, primaryKey = false,
+                unique = false, type = 'string', prefetch = false, once = false, list = false, volatile = false, required = false, index = [], internal = false, validators = undefined, primaryKey = false,
                 value = undefined, default: rawDefaultValue = undefined, defaultValue = undefined, updateValue = undefined, updateDefault: rawUpdateDefaultValue = undefined, updateDefaultValue = undefined,
                 upper = false, lower = false, transform = undefined, reference = undefined, ownedReferenceList = undefined, refAttribute = undefined,
                 autoTransitionTo = undefined, cascadePopulate = undefined, cascadeClear = undefined, permissions = undefined, authorizers = [],
@@ -98,6 +98,7 @@ export default class SchemaParser {
             suffix && acc.transformers[k].push({type: '@suffix', config: {suffix}});
             truncate && acc.transformers[k].push({type: '@truncate', config: {length: ('number' === typeof truncate) ? truncate : parseInt(truncate)}});
             required && (acc.requiredFields[k] = true);
+            once && (acc.onceFields[k] = true);
             if (refAttribute) {
                 const refAttributes = Array.isArray(refAttribute) ? refAttribute : [refAttribute];
                 refAttributes.forEach(ra => {
@@ -313,6 +314,7 @@ export default class SchemaParser {
             fields: {},
             privateFields: {},
             requiredFields: {},
+            onceFields: {},
             validators: {},
             values: {},
             updateValues: {},
