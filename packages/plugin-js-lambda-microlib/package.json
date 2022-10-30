@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-lambda-microlib",
-  "version": "0.5.22",
+  "version": "0.5.23",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
