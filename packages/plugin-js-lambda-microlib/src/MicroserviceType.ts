@@ -84,7 +84,7 @@ export default class MicroserviceType {
         }, {});
         defaultBackendName = defaultBackendName || [...backends].shift();
         this.defaultBackendName = !defaultBackendName ? undefined : (('string' == typeof defaultBackendName) ? defaultBackendName : defaultBackendName.name);
-        this.defaultBackendName && ('@' === this.defaultBackendName.substr(0, 1)) && (this.defaultBackendName = this.defaultBackendName.substr(1));
+        this.defaultBackendName && ('@' === this.defaultBackendName.slice(0, 1)) && (this.defaultBackendName = this.defaultBackendName.slice(1));
         this.buildMicroserviceTypeLevelStuff();
         Object.entries(operations).forEach(
             ([name, c]: [string, any]) =>
@@ -222,17 +222,17 @@ export default class MicroserviceType {
         backends.sort((a, b) => a[0] < b[0] ? -1 : (a[0] === b[0] ? 0 : -1));
         return backends.reduce((acc, [n, {type, name, realName, ...c}]) => {
             realName = realName || n;
-            n = '@' === n.substr(0, 1) ? n.substr(1) : n;
+            n = '@' === n.slice(0, 1) ? n.slice(1) : n;
             if ('backend' === type) {
-                if ('@' === realName.substr(0, 1)) {
-                    const nn = realName.substr(1);
+                if ('@' === realName.slice(0, 1)) {
+                    const nn = realName.slice(1);
                     acc[n] = {code: `require('@ohoareau/microlib/lib/backends/${nn}').default(model${(c && !!Object.keys(c).length) ? `, ${stringifyObject(c, {indent: '', inlineCharacterLimit: 1024, singleQuotes: true})}` : ''})`};
                 } else {
                     acc[n] = {code: `require('../../backends/${realName}')(model${(c && !!Object.keys(c).length) ? `, ${stringifyObject(c, {indent: '', inlineCharacterLimit: 1024, singleQuotes: true})}` : ''})`};
                 }
             } else {
-                if ('@' === realName.substr(0, 1)) {
-                    const nn = realName.substr(1);
+                if ('@' === realName.slice(0, 1)) {
+                    const nn = realName.slice(1);
                     acc[n] = {code: `require('@ohoareau/microlib/lib/${type}s/${nn}').default`};
                 } else {
                     acc[n] = {code: `require('../../${type}s/${realName}')`};
@@ -261,8 +261,8 @@ export default class MicroserviceType {
                 ...test,
                 mocks: [...(test['mocks'] || []), ...Object.entries(this.backends).map(([n, {realName, type}]) => {
                     n = realName || n;
-                    if ('@' === n.substr(0, 1)) {
-                        return `@ohoareau/microlib/lib/${type}s/${n.substr(1)}`;
+                    if ('@' === n.slice(0, 1)) {
+                        return `@ohoareau/microlib/lib/${type}s/${n.slice(1)}`;
                     } else {
                         return `../../${type}s/${n}`;
                     }
@@ -285,7 +285,7 @@ export default class MicroserviceType {
                 backendDef = {name: backendDef};
             }
             backendDef = {method: as || name, args: ['query'], ...backendDef};
-            (backendDef.name && ('@' === backendDef.name.substr(0, 1)) && (backendDef.name = backendDef.name.substr(1)));
+            (backendDef.name && ('@' === backendDef.name.slice(0, 1)) && (backendDef.name = backendDef.name.slice(1)));
         }
         const localRequirements = {};
         const befores = ['init', 'prepopulate', 'pre_enhance', 'pretransform', 'validate', 'populate', 'transform', 'authorize', 'before', 'prepare'].reduce((acc, n) => {
@@ -315,7 +315,7 @@ export default class MicroserviceType {
         ;
         const batchMode = /^batch/.test(name);
         let nonBatchName = name.replace(/^batch/, '');
-        nonBatchName = `${nonBatchName.substr(0, 1).toLowerCase()}${nonBatchName.substr(1)}`;
+        nonBatchName = `${nonBatchName.slice(0, 1).toLowerCase()}${nonBatchName.slice(1)}`;
         const neededUtils = [...(needHook ? ['hook'] : []), ...Object.keys(localRequirements)];
         neededUtils.sort();
         const lines = [
@@ -696,7 +696,7 @@ export default class MicroserviceType {
             while ((a = r.exec(x)) !== null) {
                 x = x.replace(a[0], `\${${prefix}${a[1]}}`);
             }
-            x = `\`${x.substr(1, x.length - 2)}\``;
+            x = `\`${x.slice(1, x.length - 1)}\``;
         }
         if (/'%[a-z0-9_]+'/i.test(x)) {
             let a;

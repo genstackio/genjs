@@ -97,17 +97,17 @@ export default class Handler {
                     return undefined;
                 }),
                 ...globalCfg.middlewares.map((m, i) => {
-                    if ('@' === m.substr(0, 1)) {
-                        return `const rm${i + 1} = require('@ohoareau/microlib/lib/middlewares/${m.substr(1)}').default(${cfrms[m] ? `rc${i + 1}` : 'cnf'});`
-                    } else if (':' === m.substr(0, 1)) {
+                    if ('@' === m.slice(0, 1)) {
+                        return `const rm${i + 1} = require('@ohoareau/microlib/lib/middlewares/${m.slice(1)}').default(${cfrms[m] ? `rc${i + 1}` : 'cnf'});`
+                    } else if (':' === m.slice(0, 1)) {
                         return undefined;
                     }
                     return `const rm${i + 1} = require('${offsetDir}/middlewares/${m}')(${cfrms[m] ? `rc${i + 1}` : 'cnf'});`
                 }),
                 ...globalCfg.errorMiddlewares.map((m, i) => {
-                    if ('@' === m.substr(0, 1)) {
-                        return `const em${i + 1} = require('@ohoareau/microlib/lib/error-middlewares/${m.substr(1)}').default(${cfems[m] ? `ec${i + 1}` : 'cnf'});`
-                    } else if (':' === m.substr(0, 1)) {
+                    if ('@' === m.slice(0, 1)) {
+                        return `const em${i + 1} = require('@ohoareau/microlib/lib/error-middlewares/${m.slice(1)}').default(${cfems[m] ? `ec${i + 1}` : 'cnf'});`
+                    } else if (':' === m.slice(0, 1)) {
                         return undefined;
                     }
                     return `const em${i + 1} = require('${offsetDir}/error-middlewares/${m}')(${cfems[m] ? `ec${i + 1}` : 'cnf'});`
@@ -142,7 +142,7 @@ export default class Handler {
     stringifyForOptions(o) {
         return stringifyObject(o, {indent: '', inlineCharacterLimit: 1024, singleQuotes: true, transform: (obj, prop, originalResult) => {
             if (/^'`[^`]+`'$/.test(originalResult)) {
-                return originalResult.substr(1, originalResult.length - 2);
+                return originalResult.slice(1, originalResult.length - 1);
             }
             return originalResult;
         }});
