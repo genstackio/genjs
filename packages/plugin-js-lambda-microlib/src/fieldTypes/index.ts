@@ -33,6 +33,7 @@ export {default as integer} from './integer';
 export {default as isbn} from './isbn';
 export {default as js} from './js';
 export {default as json} from './json';
+export {default as jsonFile} from './jsonFile';
 export {default as jsonString} from './jsonString';
 export {default as lastName} from './lastName';
 export {default as loggedAt} from './loggedAt';

@@ -8,6 +8,7 @@ export {default as fingerprint}  from './fingerprint';
 export {default as image}  from './image';
 export {default as css}  from './css';
 export {default as js}  from './js';
+export {default as json}  from './json';
 export {default as file}  from './file';
 export {default as stat}  from './stat';
 export {default as constant}  from './constant';
