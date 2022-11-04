@@ -1,0 +1,54 @@
+module.exports = ({requireOperation, gql}) => {
+    const r = n => {
+        return async (parent, params = {}, {event, context, throwError = false}, info) => {
+            const handlerEvent = {params};
+            handlerEvent.params = handlerEvent.params || {};
+            const {fields = [], selections = {}} = require('@ohoareau/apollo-graphql-selections').select(info);
+            handlerEvent.params.selections = selections;
+            handlerEvent.params.fields = handlerEvent.params.fields || fields;
+            (!!event && !!event.user) && (handlerEvent.user = event.user);
+            !!parent && (handlerEvent.params.parent = parent);
+            return requireOperation(n).handler(handlerEvent, {...context, info, throwError});
+        };
+    };
+    const jwtSecret = String(process.env.JWT_SECRET || 'the-very-secret-secret');
+
+<% if ('undefined' !== typeof schemaFile) { -%>
+    <%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> typeDefs = [gql(require('fs').readFileSync(`${__dirname}/<%- schemaFile -%>`, 'utf8'))];
+<% } else { -%>
+    <%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> typeDefs = [gql`
+<%- 'undefined' !== typeof schema ? schema : '' -%>
+`];
+<% } -%>
+    const schemaDirectives = {};
+    const resolvers = require('./resolvers')(r);
+    <%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> context = ({event, context, req}) => {
+        const headers = (event || {}).headers;
+        if (!!headers) {
+            event = event || {};
+            const authHeader = headers.Authorization || headers.authorization;
+            if (!!authHeader) {
+                event.user = require('jsonwebtoken').verify((authHeader || '').split(' ')[1], jwtSecret);
+            }
+        }
+        return {event, context, throwError: true};
+    };
+<% if (('undefined' !== typeof schemaExtensions) && (0 < schemaExtensions.length)) { -%>
+<% schemaExtensions.forEach((se, ii) => {
+    function convertSchemaExtension(se) {
+        if ('string' === typeof se) se = {type: se};
+        se = {config: {}, ...se};
+        se['require'] = ('@' === se.type.slice(0, 1)) ? (-1 === se.type.indexOf('/') ? se.type.slice(1) : se.type) : `./schema-extensions/${se.type}.js`;
+        return se;
+    }
+    const _se = convertSchemaExtension(se); -%>
+    const se<%= ii + 1 -%> = require('<%= _se.require -%>');
+<% if (_se['config']['scalar'] !== false) { %>    se<%= ii + 1 -%>['typeDefs'] && (typeDefs = [...se<%= ii + 1 -%>['typeDefs'], ...typeDefs]); <% } -%>
+    se<%= ii + 1 -%>['resolvers'] && Object.assign(resolvers, se<%= ii + 1 -%>['resolvers']);
+    se<%= ii + 1 -%>['schemaDirectives'] && Object.assign(schemaDirectives, se<%= ii + 1 -%>['schemaDirectives']);
+    se<%= ii + 1 -%>['contextFactory'] && (context = se<%= ii + 1 -%>['contextFactory'](context));
+<% }) -%>
+<% } -%>
+
+    return {typeDefs, resolvers, context, schemaDirectives}
+};

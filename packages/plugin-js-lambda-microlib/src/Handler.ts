@@ -1,5 +1,6 @@
 import TestFile, {TestFileConfig} from './TestFile';
 import stringifyObject from 'stringify-object';
+import globalConfig from './config';
 
 export type HandlerConfig = {
     name: string,
@@ -133,6 +134,10 @@ export default class Handler {
         };
         const files = {
             [`${this.directory ? `${this.directory}/` : ''}${this.name}.js`]: ({renderFile}) => renderFile(cfg)(`handlers/${this.type}.js.ejs`, vars),
+            ...Object.entries(((globalConfig?.handlers || {})[this.name] || {})['files'] || {}).reduce((acc, [k, v]) => {
+                acc[k] = ({renderFile}) => renderFile(cfg)(`${k}.ejs`, vars)
+                return acc;
+            }, {} as any)
         };
         if (this.test) {
             files[`__tests__/${this.directory ? `${this.directory}/` : ''}${this.name}.test.js`] = ({renderFile}) => renderFile(cfg)(`tests/handler.test.js.ejs`, {...vars, test: this.test});
