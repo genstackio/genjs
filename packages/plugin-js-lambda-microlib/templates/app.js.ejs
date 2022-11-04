@@ -23,7 +23,7 @@ module.exports = ({requireOperation, gql}) => {
     const schemaDirectives = {};
     const resolvers = require('./resolvers')(r);
     <%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> context = ({event, context, req}) => {
-        const headers = (event || {}).headers;
+        const headers = (event || {}).headers || req.headers;
         if (!!headers) {
             event = event || {};
             const authHeader = headers.Authorization || headers.authorization;
