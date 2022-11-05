@@ -111,7 +111,7 @@ export default class MicroserviceTypeOperation {
             case 'authorize':
                 return !!Object.keys(microserviceType.model.authorizers || {}).length;
             case 'prefetch':
-                return !!Object.keys(microserviceType.model.prefetchs || {}).length;
+                return !!Object.keys(microserviceType.model.prefetchs || {}).length || !!Object.keys(microserviceType.model.requires || {}).length;
             case 'validate':
                 return !!Object.keys(microserviceType.model.fields || {}).length;
             case 'transform':
