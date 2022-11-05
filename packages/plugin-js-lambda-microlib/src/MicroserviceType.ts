@@ -568,7 +568,7 @@ export default class MicroserviceType {
         }
         if ('@prefetch' === type) {
             requirements['prefetch'] = true;
-            return `    ${conditionCode || ''}await prefetch(query);`;
+            return `    ${conditionCode || ''}await prefetch(query${!!config['mode'] ? `, '${config['mode']}'` : ''});`;
         }
         if ('@transform' === type) {
             requirements['transform'] = true;

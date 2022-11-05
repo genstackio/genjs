@@ -79,11 +79,13 @@ export default class MicroserviceTypeOperation {
                 break;
             case 'get':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {}});
+                this.hasHooks('prefetch-read', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@prefetch', config: {mode: 'requires-only'}});
                 this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {}});
                 this.hasHooks('requires', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@requires', config: {}});
                 break;
             case 'find':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {mode: 'page'}});
+                this.hasHooks('prefetch-read', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@prefetch', config: {mode: 'requires-only'}});
                 this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {mode: 'page'}});
                 this.hasHooks('requires', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@requires', config: {mode: 'page'}});
                 break;
@@ -112,6 +114,8 @@ export default class MicroserviceTypeOperation {
                 return !!Object.keys(microserviceType.model.authorizers || {}).length;
             case 'prefetch':
                 return !!Object.keys(microserviceType.model.prefetchs || {}).length || !!Object.keys(microserviceType.model.requires || {}).length;
+            case 'prefetch-read':
+                return !!Object.keys(microserviceType.model.requires || {}).length;
             case 'validate':
                 return !!Object.keys(microserviceType.model.fields || {}).length;
             case 'transform':
