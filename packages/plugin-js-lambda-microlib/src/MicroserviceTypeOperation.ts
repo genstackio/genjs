@@ -85,7 +85,7 @@ export default class MicroserviceTypeOperation {
                 break;
             case 'find':
                 this.hasHooks('convert', opType, microserviceType, name) && microserviceType.registerHook(name, 'convert', {type: '@convert', config: {mode: 'page'}});
-                this.hasHooks('prefetch-read', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@prefetch', config: {mode: 'requires-only'}});
+                //this.hasHooks('prefetch-read', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@prefetch', config: {mode: 'requires-only'}});
                 this.hasHooks('dynamics', opType, microserviceType, name) && microserviceType.registerHook(name, 'postpopulate', {type: '@dynamics', config: {mode: 'page'}});
                 this.hasHooks('requires', opType, microserviceType, name) && microserviceType.registerHook(name, 'init', {type: '@requires', config: {mode: 'page'}});
                 break;
