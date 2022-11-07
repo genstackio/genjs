@@ -4,6 +4,9 @@ const AWS = require('aws-sdk');
 const app = require('../app')({requireOperation: n => require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/${n}`), gql});
 const server = new ApolloServer(app);
 
+<% if ('undefined' !== typeof starter_init) { -%>
+require('<%- starter_init %>').init({mode: 'node'});
+<% } -%>
 server.listen(process.env.PORT ? {port: process.env.PORT} : {}).then(({ url }) => {
     console.log(`🚀 GraphQL Server ready at ${url} (AWS region is ${AWS.config.region})`);
 });
