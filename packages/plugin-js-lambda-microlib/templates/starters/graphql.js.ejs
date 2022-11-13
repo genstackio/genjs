@@ -4,6 +4,8 @@ const AWS = require('aws-sdk');
 const app = require('../app')({requireOperation: n => require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/${n}`), gql});
 const server = new ApolloServer(app);
 
+<% if ('undefined' !== typeof starter_requires) { %><% (starter_requires || []).forEach(r => { %>require('<%- r %>');
+<% }) %><% } %>
 <% if ('undefined' !== typeof starter_init) { -%>
 require('<%- starter_init %>').init({mode: 'node'});
 <% } -%>

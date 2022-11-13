@@ -3,5 +3,6 @@ const {ApolloServer, gql} = require('apollo-server-lambda');
 
 const app = require('../app')({requireOperation: n => require(`.<%- ('undefined' === typeof operationDirectory) ? '' : `/${operationDirectory}` -%>/${n}`), gql});
 const server = new ApolloServer(app);
-
+<% if ('undefined' !== typeof lambda_requires) { %><% (lambda_requires || []).forEach(r => { %>require('<%- r %>');
+<% }) %><% } %>
 module.exports = {handler: <%- ('undefined' !== typeof lambda_wrapper) ? `require('${lambda_wrapper}').default(` : '' -%>require('@ohoareau/aws-apigw-vx').vx(server.createHandler({cors: {origin: true, credentials: true}}))<%- ('undefined' !== typeof lambda_wrapper) ? ')' : '' -%>};
