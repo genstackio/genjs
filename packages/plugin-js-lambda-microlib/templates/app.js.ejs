@@ -50,5 +50,8 @@ module.exports = ({requireOperation, gql}) => {
 <% }) -%>
 <% } -%>
 
-    return {typeDefs, resolvers, context, schemaDirectives}
+    const <%- ('undefined' !== typeof custom_format_error) ? `{formatError} = require('${custom_format_error}')` : 'formatError = undefined;' %>
+    const plugins = <%- ('undefined' !== typeof graphql_server_plugins) ? `[${graphql_server_plugins.map(p => `require('${p}')`).join(', ')}]` : '[]' %>;
+
+    return {typeDefs, resolvers, context, schemaDirectives, formatError, plugins};
 };
