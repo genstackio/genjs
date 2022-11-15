@@ -1,1 +1,1 @@
-export default () => ({type: 'string', validators: [{type: '@visaNumber'}]})
+export default () => ({type: 'string', searchType: 'keyword', validators: [{type: '@visaNumber'}]})

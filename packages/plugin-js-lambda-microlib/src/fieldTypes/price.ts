@@ -1,1 +1,1 @@
-export default () => ({type: 'number', validators: [{type: '@positive'}]})
+export default () => ({type: 'number', searchType: 'float', validators: [{type: '@positive'}]})

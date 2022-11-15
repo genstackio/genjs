@@ -1,1 +1,1 @@
-export default () => ({type: 'number', value: {type: '@now'}})
+export default () => ({type: 'number', searchType: 'timestampms', value: {type: '@now'}})

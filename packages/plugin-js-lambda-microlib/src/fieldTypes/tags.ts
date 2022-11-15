@@ -1,1 +1,1 @@
-export default () => ({type: 'string', list: true, defaultValue: {type: '@value', config: {value: []}}})
+export default () => ({type: 'string', searchType: 'keyword', list: true, defaultValue: {type: '@value', config: {value: []}}})

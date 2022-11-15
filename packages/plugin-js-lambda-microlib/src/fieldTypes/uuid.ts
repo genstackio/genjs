@@ -1,1 +1,1 @@
-export default () => ({type: 'string', validators: [{type: '@uuid'}]})
+export default () => ({type: 'string', searchType: 'keyword', validators: [{type: '@uuid'}]})

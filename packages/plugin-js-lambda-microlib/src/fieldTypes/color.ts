@@ -1,1 +1,1 @@
-export default () => ({type: 'string', validators: [{type: '@match', config: {pattern: '^\#[A-F0-9]{6}$', flags: 'i', message: 'Not a valid Hexadecimal color'}}], lower: true})
+export default () => ({type: 'string', searchType: 'keyword', validators: [{type: '@match', config: {pattern: '^\#[A-F0-9]{6}$', flags: 'i', message: 'Not a valid Hexadecimal color'}}], lower: true})

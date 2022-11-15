@@ -1,1 +1,1 @@
-export default () => ({type: 'string', validators: [{type: '@isbn'}]})
+export default () => ({type: 'string', searchType: 'keyword', validators: [{type: '@isbn'}]})

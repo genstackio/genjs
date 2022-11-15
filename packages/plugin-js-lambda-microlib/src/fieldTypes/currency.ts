@@ -1,1 +1,1 @@
-export default () => ({type: 'string', validators: [{type: '@currency-code'}]})
+export default () => ({type: 'string', searchType: 'keyword', validators: [{type: '@currency-code'}]})

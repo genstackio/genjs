@@ -1,1 +1,1 @@
-export default () => ({type: 'number', validators: [{type: '@year'}]})
+export default () => ({type: 'number', searchType: 'integer', validators: [{type: '@year'}]})

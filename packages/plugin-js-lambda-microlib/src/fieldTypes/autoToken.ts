@@ -1,1 +1,1 @@
-export default () => ({type: 'string', value: {type: '@token'}})
+export default () => ({type: 'string', searchType: 'keyword', value: {type: '@token'}})

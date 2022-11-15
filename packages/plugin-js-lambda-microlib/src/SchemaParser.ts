@@ -147,6 +147,7 @@ export default class SchemaParser {
             from && (acc.froms[k] = from) && (acc.dynamics[k] = {type: '@from', config: {name: from}});
             (undefined !== stat) && (acc.statFields[k] = stat);
             if (acc.requires[k] && acc.requires[k].length) acc.requires[k] = this.deduplicate(acc.requires[k]);
+            acc.searchFields[k] = this.buildSearchField(k, def, acc);
             if (!acc.indexes[k].length) delete acc.indexes[k];
             if (!acc.validators[k].length) delete acc.validators[k];
             if (!acc.transformers[k].length) delete acc.transformers[k];
@@ -161,8 +162,47 @@ export default class SchemaParser {
             if (!acc.froms[k]) delete acc.froms[k];
             if (!acc.statFields[k]) delete acc.statFields[k];
             if (!acc.multiRefAttributeTargetFields[k].length) delete acc.multiRefAttributeTargetFields[k];
+            if (!acc.searchFields[k] || !Object.keys(acc.searchFields[k]).length) delete acc.searchFields[k];
             return acc;
         }, schema);
+    }
+    buildSearchField(k: string, def: any, acc: any) {
+        const {type = 'string', searchType = undefined, searchExtraTypes = {}}: {type: any, list?: boolean, searchType?: string, searchExtraTypes?: {[key: string]: string}} = def;
+        let m: any;
+        if ('string' !== typeof type) {
+            // this is probably a 'map' (real object), ignore it for now
+            return undefined;
+        }
+        m = this.mapSearchType(searchType, type);
+        if (!m || !m.type || ('none' === m.type)) return undefined;
+        if (searchExtraTypes && !!Object.keys(searchExtraTypes).length) {
+            m.extraTypes = Object.entries(searchExtraTypes).reduce((acc, [k, v]) => {
+                acc[k] = this.mapSearchType(v, type);
+                return acc;
+            }, {} as any);
+        }
+        return m;
+    }
+    mapSearchType(searchType: string|undefined, type: any) {
+        let m: any;
+        switch (type) {
+            case 'string':
+                m = {type: searchType || 'text'};
+                break;
+            case 'boolean':
+                m = {type: searchType || 'boolean'};
+                break;
+            case 'number':
+                m = {type: searchType || 'float'};
+                break;
+            case 'object':
+                m = {type: searchType || 'none'};
+                break;
+            default:
+                m = {type: searchType || 'text'};
+                break;
+        }
+        return m;
     }
     deduplicate(x: string[]) {
         const y = Object.keys(x.reduce((acc: {[key: string]: true}, k: string) => Object.assign(acc, {[k]: true}), {}));
@@ -315,6 +355,7 @@ export default class SchemaParser {
             privateFields: {},
             requiredFields: {},
             onceFields: {},
+            searchFields: {},
             validators: {},
             values: {},
             updateValues: {},

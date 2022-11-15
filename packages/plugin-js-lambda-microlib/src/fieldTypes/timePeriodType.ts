@@ -1,1 +1,1 @@
-export default () => ({type: 'string', validators: [{type: '@values', config: {values: ['HOUR_QUARTER', 'HOUR', 'DAY', 'WEEK', 'BIWEEK', 'MONTH', 'QUARTER', 'SEMESTER', 'YEAR', 'GLOBAL']}}]})
+export default () => ({type: 'string', searchType: 'keyword', validators: [{type: '@values', config: {values: ['HOUR_QUARTER', 'HOUR', 'DAY', 'WEEK', 'BIWEEK', 'MONTH', 'QUARTER', 'SEMESTER', 'YEAR', 'GLOBAL']}}]})

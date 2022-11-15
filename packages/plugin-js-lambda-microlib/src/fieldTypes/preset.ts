@@ -1,1 +1,1 @@
-export default () => ({type: 'string'})
+export default () => ({type: 'string', searchType: 'keyword'})

@@ -1,5 +1,6 @@
 export default () => ({
     type: 'string',
+    searchType: 'none',
     validators: [
         {type: '@maxLength', config: {max: 64}},
         {type: '@minLength', config: {min: 8}},

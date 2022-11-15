@@ -1,1 +1,1 @@
-export default ({values: allowedValues = []}) => ({type: 'string', validators: [{type: '@values', config: {values: allowedValues}}]})
+export default ({values: allowedValues = []}) => ({type: 'string', searchType: 'keyword', validators: [{type: '@values', config: {values: allowedValues}}]})

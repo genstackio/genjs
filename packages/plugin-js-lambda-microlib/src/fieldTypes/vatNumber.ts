@@ -1,1 +1,1 @@
-export default () => ({type: 'string', validators: [{type: '@match', config: {pattern: '^[A-Z]{2,3}.{7,13}$', flags: 'i', message: 'Not a valid VAT Number'}}], upper: true})
+export default () => ({type: 'string', searchType: 'keyword', validators: [{type: '@match', config: {pattern: '^[A-Z]{2,3}.{7,13}$', flags: 'i', message: 'Not a valid VAT Number'}}], upper: true})

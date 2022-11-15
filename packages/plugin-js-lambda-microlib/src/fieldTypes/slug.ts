@@ -1,1 +1,1 @@
-export default () => ({type: 'string', transform: {type: '@slug'}})
+export default () => ({type: 'string', searchType: 'keyword', searchExtraTypes: {text: 'text'}, transform: {type: '@slug'}})

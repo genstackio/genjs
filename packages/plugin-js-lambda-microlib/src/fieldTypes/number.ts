@@ -1,1 +1,1 @@
-export default () => ({type: 'number'})
+export default () => ({type: 'number', searchType: 'float'})
