@@ -37,16 +37,16 @@ function buildStartTarget(t: MakefileTemplate, p: IPackage, name: string, v: any
             t.addPredefinedTarget(name, 'air-cli', {...targetOpts, envs: {AWS_PROFILE: '$(AWS_PROFILE)', AWS_REGION: '$(AWS_DEFAULT_REGION)', AWS_SDK_LOAD_CONFIG: '1', PORT: port, ...targetOpts.envs}});
             break;
         case 'npm':
-            t.addPredefinedTarget(name, 'js-start', {...targetOpts, script: v['script'], npm_client: 'npm'});
+            t.addPredefinedTarget(name, 'js-start', {...targetOpts, script: (v['vars'] || {})['script'], npm_client: 'npm'});
             break;
         case 'yarn':
-            t.addPredefinedTarget(name, 'js-start', {...targetOpts, script: v['script'], npm_client: 'yarn'});
+            t.addPredefinedTarget(name, 'js-start', {...targetOpts, script: (v['vars'] || {})['script'], npm_client: 'yarn'});
             break;
         case 'js-script':
-            t.addPredefinedTarget(name, 'js-start', {...targetOpts, script: v['script']});
+            t.addPredefinedTarget(name, 'js-start', {...targetOpts, script: (v['vars'] || {})['script']});
             break;
         case 'py-script':
-            t.addTarget(name, [`python ${v['script']}`], [], {...targetOpts});
+            t.addTarget(name, [`python ${(v['vars'] || {})['script']}`], [], {...targetOpts});
             break;
         case 'custom':
             t.addTarget(name, Array.isArray((v['vars'] || {})['script']) ? (v['vars'] || {})['script'] : [(v['vars'] || {})['script']], (v['vars'] || {})['deps'] || [], {...targetOpts, ...((v['vars'] || {})['opts'] || {})});
