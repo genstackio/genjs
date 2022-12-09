@@ -38,6 +38,7 @@ export {default as jsonString} from './jsonString';
 export {default as lastName} from './lastName';
 export {default as loggedAt} from './loggedAt';
 export {default as negativeInteger} from './negativeInteger';
+export {default as nickName} from './nickName';
 export {default as number} from './number';
 export {default as object} from './object';
 export {default as password} from './password';

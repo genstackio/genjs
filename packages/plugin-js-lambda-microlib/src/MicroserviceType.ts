@@ -305,7 +305,7 @@ export default class MicroserviceType {
                 return acc;
             }, afters);
         }
-        afters = ['notify', 'event', 'end'].reduce((acc, n) => {
+        afters = ['lateafter', 'notify', 'event', 'end'].reduce((acc, n) => {
             if (!this.hooks[name]) return acc;
             if (!this.hooks[name][n]) return acc;
             return acc.concat(this.hooks[name][n].map(h => this.buildHookCode(localRequirements, h, {position: 'after', operationName})));

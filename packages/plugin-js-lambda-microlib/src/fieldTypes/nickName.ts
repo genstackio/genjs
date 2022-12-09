@@ -1,0 +1,1 @@
+export default () => ({type: 'string', searchType: 'keyword', searchExtraTypes: {text: 'text'}, validators: [{type: '@maxLength', config: {max: 50}}]})
