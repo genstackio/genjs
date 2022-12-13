@@ -10,6 +10,7 @@ export {default as css}  from './css';
 export {default as js}  from './js';
 export {default as json}  from './json';
 export {default as file}  from './file';
+export {default as screenshots}  from './screenshots';
 export {default as stat}  from './stat';
 export {default as constant}  from './constant';
 export {default as objectList}  from './objectList';

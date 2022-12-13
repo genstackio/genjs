@@ -52,6 +52,7 @@ export {default as preset} from './preset';
 export {default as price} from './price';
 export {default as rcs} from './rcs';
 export {default as rm} from './rm';
+export {default as screenshots} from './screenshots';
 export {default as siren} from './siren';
 export {default as siret} from './siret';
 export {default as slug} from './slug';
