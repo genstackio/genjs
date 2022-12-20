@@ -51,7 +51,7 @@ export default class Package extends JavascriptPackage {
             .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase().replace(/[^A-Z0-9_]+/g, '_')})`)
             .addPredefinedTarget('install', 'js-install')
             .addPredefinedTarget('build', 'js-build', {ci: (!!vars.hide_ci) ? 'hidden' : undefined, sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
-            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: `${vars.target_dir}/` })
+            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: `${vars.target_dir}/`, cacheControl: vars.s3_cache_control})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS', mode: vars.env_mode || 'terraform'})

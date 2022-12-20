@@ -73,7 +73,7 @@ export default class Package extends AwsLambdaPackage {
             .addTarget('pre-install')
             .addPredefinedTarget('install', 'js-install')
             .addPredefinedTarget('build', 'js-build')
-            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'build/'})
+            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'build/', cacheControl: vars.s3_cache_control})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'STATICS', mode: vars.env_mode || 'terraform'})

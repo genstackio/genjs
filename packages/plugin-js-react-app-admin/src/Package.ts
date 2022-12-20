@@ -200,7 +200,7 @@ export default class Package extends AbstractPackage {
             .setDefaultTarget('install')
             .addPredefinedTarget('install', 'js-install')
             .addPredefinedTarget('build', 'js-build', {ci: (!!vars.hide_ci) ? 'hidden' : undefined})
-            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'build/'})
+            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'build/', cacheControl: vars.s3_cache_control})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'REACT_APP', mode: vars.env_mode || 'terraform'})

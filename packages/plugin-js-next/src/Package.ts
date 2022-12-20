@@ -120,7 +120,7 @@ export default class Package extends JavascriptPackage {
             .addPredefinedTarget('install', 'js-install')
             .addPredefinedTarget('build-code', 'js-build', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
             .addPredefinedTarget('build-package', 'js-package', {sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
-            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: vars.s3_source_dir || 'public/', targetDir: vars.s3_target_dir})
+            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: vars.s3_source_dir || 'public/', cacheControl: vars.s3_cache_control, targetDir: vars.s3_target_dir})
             .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addMetaTarget('build', ['build-code', 'build-package'])

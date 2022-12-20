@@ -10,8 +10,12 @@ export class AwsS3SyncTarget extends AbstractAwsCliTarget {
     getOperationArgs({source = 'build/', target = 's3://$(bucket)', targetDir = undefined}) {
         return [source, targetDir ? `${target}/${targetDir}` : target];
     }
-    getOperationOptions() {
-        return {delete: true};
+    getOperationOptions({cacheControl, storageClass}) {
+        return {
+            delete: true,
+            ...(cacheControl ? {['cache-control']: cacheControl} : {}),
+            ...(storageClass ? {['storage-class']: storageClass} : {}),
+        };
     }
     buildDescription() {
         return 'Synchronize remote S3 bucket with local directory';

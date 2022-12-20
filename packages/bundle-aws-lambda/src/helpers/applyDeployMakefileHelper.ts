@@ -21,7 +21,7 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
                 .addGlobalVar('source_package_file', vars.package_file || 'build/package.zip')
                 .addMetaTarget('deploy', ['deploy-package', assets && 'deploy-assets', 'update-lambda-code', cdn && 'invalidate-cache'].filter(x => !!x) as string[])
                 .addTarget('deploy-package', [
-                    'AWS_EC2_METADATA_DISABLED=true AWS_PROFILE=$(AWS_PROFILE) aws s3 cp $(source_package_file) s3://$(target_s3_bucket)/$(target_s3_key)',
+                    `AWS_EC2_METADATA_DISABLED=true AWS_PROFILE=$(AWS_PROFILE) aws s3 cp $(source_package_file) s3://$(target_s3_bucket)/$(target_s3_key)${vars.s3_cache_control ? ` --cache-control '${vars.s3_cache_control}'` : ''}`,
                 ])
                 .addTarget('update-lambda-code', [
                     '$(foreach f,$(target_lambda_name), echo "\\n----- \\033[36m$(f)\\033[0m --------------------------"; echo; AWS_EC2_METADATA_DISABLED=true AWS_PAGER= AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket) --s3-key $(target_s3_key) --output yaml;)',
@@ -37,7 +37,7 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
                     .addGlobalVar('source_assets_dir', vars.assets_source_dir || './build/public/')
                     .addGlobalVar('target_assets_s3_bucket', vars.assets_s3_bucket || 'please-set-target-assets-s3-bucket-here')
                     .addGlobalVar('target_assets_s3_key', vars.assets_s3_key || '')
-                    .addPredefinedTarget('deploy-assets', 'aws-s3-sync', {source: '$(source_assets_dir)', targetDir: '$(target_assets_s3_bucket)/${target_assets_s3_key)'})
+                    .addPredefinedTarget('deploy-assets', 'aws-s3-sync', {source: '$(source_assets_dir)', cacheControl: '$(assets_cache_control)', targetDir: '$(target_assets_s3_bucket)/${target_assets_s3_key)'})
                 ;
             }
             if (cdn) {
