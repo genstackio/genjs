@@ -23,8 +23,8 @@ install-test:
 pre-install: create-venv
 
 system-install: ## Install Python build-utils
-	@python3 -m pip install --upgrade pip
-	@python3 -m pip install --upgrade setuptools wheel twine
+	@python3 -m pip --disable-pip-version-check install --upgrade pip
+	@python3 -m pip --disable-pip-version-check install --upgrade setuptools wheel twine
 
 test:
 	@source venv/bin/activate && python -m unittest tests/*.py -v
