@@ -1,4 +1,8 @@
 module.exports = ({requireOperation, gql}) => {
+    const t = f => require('fs').readFileSync(`${__dirname}/${f}`, 'utf8');
+    const g = c => gql(c);
+    const s = f => g(t(f));
+    const q = f => t(f).trim().split(/\n/g).filter(x => !!x).map(s);
     const r = n => {
         return async (parent, params = {}, {event, context, throwError = false}, info) => {
             const handlerEvent = {params};
@@ -12,9 +16,10 @@ module.exports = ({requireOperation, gql}) => {
         };
     };
     const jwtSecret = String(process.env.JWT_SECRET || 'the-very-secret-secret');
+    const cacheMode = !!process.env.SCHEMA_CACHE_ENABLED;
 
-<% if ('undefined' !== typeof schemaFile) { -%>
-    <%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> typeDefs = [gql(require('fs').readFileSync(`${__dirname}/<%- schemaFile -%>`, 'utf8'))];
+<% if (('undefined' !== typeof schemaFiles) || ('undefined' !== typeof schemaFile)) { -%>
+    <%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> typeDefs = cacheMode ? s('.cache/schema.cache') : q('schema.files');
 <% } else { -%>
     <%= ('undefined' === typeof schemaExtensions) ? 'const' : 'let' %> typeDefs = [gql`
 <%- 'undefined' !== typeof schema ? schema : '' -%>

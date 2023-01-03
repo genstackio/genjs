@@ -168,6 +168,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
     protected async buildDynamicFiles(vars: any, cfg: any): Promise<any> {
+        vars = {...vars, packageDir: this.absoluteTargetDir};
         const files = (await Promise.all([...Object.values(this.handlers), ...Object.values(this.starters)].map(async h => h.generate(vars)))).reduce((acc, f) => ({...acc, ...f}), {
             ['package.json']: () => JSON.stringify({
                 name: vars.name,

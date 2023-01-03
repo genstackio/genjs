@@ -4,6 +4,7 @@ const config = {
             files: {
                 'resolvers.js': true,
                 'app.js': true,
+                'schema.files': true,
             }
         }
     }

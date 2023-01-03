@@ -199,7 +199,7 @@ export default class MicroserviceType {
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
         const finalizedModel = this.microservice.package.finalizedModels[this.name] || {};
-        vars = {...vars, model: finalizedModel};
+        vars = {...vars, model: finalizedModel, packageDir: this.microservice.package.absoluteTargetDir};
         const service = new Service({vars, rootDir: vars.rootDir, name: `crud/${this.name}`, ...this.buildServiceConfig({attributes: this.rawAttributes, operations: this.rawOperations, functions: this.functions, test: this.test})});
         return (await Promise.all(Object.values(this.operations).map(
             async o => o.generate(vars)))).reduce((acc, r) =>

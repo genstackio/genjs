@@ -45,6 +45,7 @@ export default class Microservice {
         );
     }
     async generate(vars: any = {}): Promise<{[key: string]: Function}> {
+        vars = {...vars, packageDir: this.package.absoluteTargetDir};
         return (await Promise.all(Object.values(this.types).map(
             async o => o.generate(vars)))).reduce((acc, r) =>
                 Object.assign(acc, r),

@@ -27,7 +27,8 @@
   },
   "dependencies": {
     "@genjs/genjs-bundle-aws-lambda": "^0.1.38",
-    "@genjs/genjs-bundle-javascript": "^0.1.22"
+    "@genjs/genjs-bundle-javascript": "^0.1.22",
+    "glob": "^8.0.3"
   },
   "devDependencies": {
     "@genjs/genjs": "^0.4.17",

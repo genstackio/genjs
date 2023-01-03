@@ -1,0 +1,18 @@
+<%
+
+function convertSchemaFiles(items) {
+    items = Array.isArray(items) ? items : [items];
+
+    const x = items.reduce((acc, item) => {
+        return [...acc, ...glob(item)];
+    }, []);
+
+    x.sort();
+
+    x.map(xx => xx.replace(packageDir, ''));
+
+    return x;
+}
+-%>
+<% convertSchemaFiles('undefined' !== typeof schemaFiles ? schemaFiles : ('undefined' !== typeof schemaFile ? schemaFile : [])).forEach(f => { %><%- f %>
+<% }) -%>

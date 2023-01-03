@@ -1,6 +1,7 @@
 import TestFile, {TestFileConfig} from './TestFile';
 import stringifyObject from 'stringify-object';
 import globalConfig from './config';
+import glob from 'glob';
 
 export type HandlerConfig = {
     name: string,
@@ -131,6 +132,9 @@ export default class Handler {
             fnName,
             ...vars,
             directory: this.directory,
+            glob: (pattern: string, options?: any) => {
+                return glob.sync(`${vars.packageDir}/${pattern}`, options).map(x => x.replace(`${vars.packageDir}/`, ''));
+            },
         };
         const files = {
             [`${this.directory ? `${this.directory}/` : ''}${this.name}.js`]: ({renderFile}) => renderFile(cfg)(`handlers/${this.type}.js.ejs`, vars),
