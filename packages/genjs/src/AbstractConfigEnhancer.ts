@@ -1,5 +1,6 @@
 import YAML from 'yaml';
 import IConfigEnhancer from './IConfigEnhancer';
+import ejs from 'ejs';
 
 export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
     private readonly assetFetcher: Function;
@@ -19,10 +20,99 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
             c = this.merge(a, b);
         }
         const d = (c.mixins || []).reduce((acc, m) => {
-            const [asset, cfg] = this.enhanceConfig(`${this.location}-mixin`, ...this.parseTypeAndConfigFromRawValue(m))
+            let [asset, cfg] = this.enhanceConfig(`${this.location}-mixin`, ...this.parseTypeAndConfigFromRawValue(m))
+            if (!!Object.keys(cfg.vars || {}).length) {
+                const {attributesPrefix: vAttributesPrefix, operationsPrefix: vOperationsPrefix, functionsPrefix: vFunctionsPrefix, attributesSuffix: vAttributesSuffix, operationsSuffix: vOperationsSuffix, functionsSuffix: vFunctionsSuffix, attributes: vAttributes, operations: vOperations, functions: vFunctions, vars: vVars} = Object.entries(cfg.vars).reduce((acc, [k, v]: [string, any]) => {
+                    if ('_attributes' === k) {
+                        acc.attributes = v;
+                    } else if ('_attributesPrefix' === k) {
+                        acc.attributesPrefix = v;
+                    } else if ('_attributesSuffix' === k) {
+                        acc.attributesSuffix = v;
+                    } else if ('_operations' === k) {
+                        acc.operations = v;
+                    } else if ('_operationsPrefix' === k) {
+                        acc.operationsPrefix = v;
+                    } else if ('_operationsSuffix' === k) {
+                        acc.operationsSuffix = v;
+                    } else if ('_functions' === k) {
+                        acc.functions = v;
+                    } else if ('_functionsPrefix' === k) {
+                        acc.functionsPrefix = v;
+                    } else if ('_functionsSuffix' === k) {
+                        acc.functionsSuffix = v;
+                    } else {
+                        acc.vars[k] = v;
+                    }
+                    return acc;
+                }, {attributesPrefix: undefined, operationsPrefix: undefined, functionsPrefix: undefined, attributesSuffix: undefined, operationsSuffix: undefined, functionsSuffix: undefined, attributes: {}, operations: {}, functions: {}, vars: {}} as {attributesPrefix?: string, operationsPrefix?: string, functionsPrefix?: string, attributesSuffix?: string, operationsSuffix?: string, functionsSuffix?: string, attributes: Record<string, string>, operations: Record<string, string>, functions: Record<string, string>, vars: Record<string, any>});
+                asset = (!vAttributesPrefix || !asset?.attributes) ? asset : Object.entries(asset.attributes).reduce((acc, [k, v]) => {
+                    acc.attributes[`${vAttributesPrefix}${k.slice(0, 1).toUpperCase()}${k.slice(1)}`] = v;
+                    delete acc.attributes[k];
+                    return acc;
+                }, asset);
+                asset = (!vAttributesSuffix || !asset?.attributes) ? asset : Object.entries(asset.attributes).reduce((acc, [k, v]) => {
+                    acc.attributes[`${k}${vAttributesSuffix.slice(0, 1).toUpperCase()}${vAttributesSuffix.slice(1)}`] = v;
+                    delete acc.attributes[k];
+                    return acc;
+                }, asset);
+                asset = (!vOperationsPrefix || !asset?.operations) ? asset : Object.entries(asset.operations).reduce((acc, [k, v]) => {
+                    acc.operations[`${vOperationsPrefix}${k.slice(0, 1).toUpperCase()}${k.slice(1)}`] = v;
+                    delete acc.operations[k];
+                    return acc;
+                }, asset);
+                asset = (!vOperationsSuffix || !asset?.operations) ? asset : Object.entries(asset.operations).reduce((acc, [k, v]) => {
+                    acc.operations[`${k}${vOperationsSuffix.slice(0, 1).toUpperCase()}${vOperationsSuffix.slice(1)}`] = v;
+                    delete acc.operations[k];
+                    return acc;
+                }, asset);
+                asset = (!vFunctionsPrefix || !asset?.functions) ? asset : Object.entries(asset.functions).reduce((acc, [k, v]) => {
+                    acc.functions[`${vFunctionsPrefix}${k.slice(0, 1).toUpperCase()}${k.slice(1)}`] = v;
+                    delete acc.functions[k];
+                    return acc;
+                }, asset);
+                asset = (!vFunctionsSuffix || !asset?.functions) ? asset : Object.entries(asset.functions).reduce((acc, [k, v]) => {
+                    acc.functions[`${k}${vFunctionsSuffix.slice(0, 1).toUpperCase()}${vFunctionsSuffix.slice(1)}`] = v;
+                    delete acc.functions[k];
+                    return acc;
+                }, asset);
+                asset = Object.entries(vAttributes).reduce((acc, [k, v]: [string, string]) => {
+                    if ((!asset?.attributes || {})[k]) return acc;
+                    acc.attributes[v] = acc.attributes[k];
+                    delete acc.attributes[k];
+                    return acc;
+                }, asset);
+                asset = Object.entries(vOperations).reduce((acc, [k, v]: [string, string]) => {
+                    if ((!asset?.operations || {})[k]) return acc;
+                    acc.operations[v] = acc.operations[k];
+                    delete acc.operations[k];
+                    return acc;
+                }, asset);
+                asset = Object.entries(vFunctions).reduce((acc, [k, v]: [string, string]) => {
+                    if ((!asset?.functions || {})[k]) return acc;
+                    acc.functions[v] = acc.functions[k];
+                    delete acc.functions[k];
+                    return acc;
+                }, asset);
+                asset = this.replaceVarsRecursive(asset, vVars);
+            }
             return this.merge(acc, this.merge(asset, cfg));
         }, {});
         return this.merge(d, c);
+    }
+    protected replaceVarsRecursive(data: any, vars: any) {
+        if (!data) return data;
+        if ('string' === typeof data) return ejs.render(data, vars);
+        if ('boolean' === typeof data) return data;
+        if ('number' === typeof data) return data;
+        if ('object' === typeof data) {
+            if (Array.isArray(data)) return data.map(x => this.replaceVarsRecursive(x, vars));
+            return Object.entries(data).reduce((acc, [k, v]) => {
+                acc[this.replaceVarsRecursive(k, vars)] = this.replaceVarsRecursive(v, vars);
+                return acc;
+            }, {});
+        }
+        return data;
     }
     enhance(c: any, type: string) {
         const [asset, cfg] = this.enhanceConfig(this.location, ...this.parseConfigType(c, type));
@@ -87,6 +177,39 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
         return type ? this.parseConfigType(cfg, type) : [undefined, cfg];
     }
     protected prepareVarsFromAssetInputs(vars, inputs) {
+        const vv = Object.entries(vars || {}).reduce((acc, [k, v]) => {
+                if ('@' === k.slice(0, 1)) {
+                    if ('@prefix@' === k) {
+                        acc['_attributesPrefix'] = v;
+                    } else if ('@suffix@' === k) {
+                        acc['_attributesSuffix'] = v;
+                    } else {
+                        acc['_attributes'] = acc['_attributes'] || {};
+                        acc['_attributes'][k.slice(1)] = v;
+                    }
+                }
+                if ('%' === k.slice(0, 1)) {
+                    if ('%prefix%' === k) {
+                        acc['_operationsPrefix'] = v;
+                    } else if ('%suffix%' === k) {
+                        acc['_operationsSuffix'] = v;
+                    } else {
+                        acc['_operations'] = acc['_operations'] || {};
+                        acc['_operations'][k.slice(1)] = v;
+                    }
+                }
+                if (':' === k.slice(0, 1)) {
+                    if (':prefix:' === k) {
+                        acc['_functionsPrefix'] = v;
+                    } else if (':suffix:' === k) {
+                        acc['_functionsSuffix'] = v;
+                    } else {
+                        acc['_functions'] = acc['_functions'] || {};
+                        acc['_functions'][k.slice(1)] = v;
+                    }
+                }
+                return acc;
+        }, {});
         return Object.entries(inputs || {}).reduce((acc, [k, v]) => {
             const input = {required: true, type: 'string', ...((null === v || undefined === v) ? {} : <any>v)};
             let value = vars[k] || undefined;
@@ -104,7 +227,7 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
             }
             acc[k] = value;
             return acc;
-        }, {});
+        }, vv);
     }
     protected mergeMapOfLists(a: any = {}, b: any = {}) {
         return Object.keys(b).reduce((acc, k) => {
