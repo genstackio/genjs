@@ -1,8 +1,23 @@
+inputs:
+  type:
+    main: true
+    type: string
+    default: autoToken
+  internal:
+    type: boolean
+    default: true
+  indexed:
+    type: boolean
+    default: true
+  optional:
+    type: boolean
+    default: true
+
 attributes:
-  token: ":@autoToken"
+  token: "<%- internal ? ':' : '' %><%- indexed ? '@' : '' %><%- type %><%- optional ? '' : '!' %>"
 
 functions:
-  getBy: getBy(type=<%- model.shortName %>)
+  getBy: getBy(type=<%- '<' %>%- model.shortName <%- '%' %>>)
 
 operations:
   getByToken: getBy(token)

@@ -1,6 +1,6 @@
-import YAML from 'yaml';
 import IConfigEnhancer from './IConfigEnhancer';
 import ejs from 'ejs';
+import {parseConfigType} from "./utils";
 
 export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
     private readonly assetFetcher: Function;
@@ -102,7 +102,13 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
     }
     protected replaceVarsRecursive(data: any, vars: any) {
         if (!data) return data;
-        if ('string' === typeof data) return ejs.render(data, vars);
+        if ('string' === typeof data) {
+            try {
+                return ejs.render(data, vars);
+            } catch (e: any) {
+                throw new Error(`EJS template rendering error in template [${data}]: ${e.message}, with vars: ${JSON.stringify(vars)}`);
+            }
+        }
         if ('boolean' === typeof data) return data;
         if ('number' === typeof data) return data;
         if ('object' === typeof data) {
@@ -141,32 +147,8 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
     protected mergeVars(a: any = {}, b: any = {}) {
         return {...a, ...b};
     }
-    protected parseConfigType = (cfg: any, type: string): [string|undefined, any|undefined] => {
-        const match = type.match(/^([^(]+)\(([^)]*)\)$/);
-        let parsedVars = {};
-        if (!!match && !!match.length) {
-            type = match[1];
-            parsedVars = !!match[1] ? match[2].split(/\s*,\s*/g).reduce((acc, t) => {
-                const [k, v = undefined] = t.split(/\s*=\s*/)
-                if (undefined === v) {
-                    acc['default'] = this.replaceVarValueIfNeeded(k);
-                } else {
-                    acc[k] = this.replaceVarValueIfNeeded(YAML.parse(v || ''));
-                }
-                return acc;
-            }, {}) : {};
-        }
-        cfg = {...cfg, vars: {...parsedVars, ...(cfg.vars || {})}};
-        return [type, cfg];
-    }
-    protected replaceVarValueIfNeeded(value: any) {
-        if ('string' !== typeof value) return value;
-        switch (value) {
-            case '$now.time': return 'new Date().getTime()';
-            case '$now': return 'new Date()';
-            case '$now.iso': return 'new Date().toISOString()';
-            default: return value;
-        }
+    protected parseConfigType(cfg: any, type: string): [string|undefined, any|undefined] {
+        return parseConfigType(cfg, type);
     }
     // noinspection JSUnusedGlobalSymbols
     protected parseTypeAndConfigFromRawValue(v: any): [string|undefined, any|undefined] {

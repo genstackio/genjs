@@ -42,6 +42,7 @@ export {default as nickName} from './nickName';
 export {default as number} from './number';
 export {default as object} from './object';
 export {default as password} from './password';
+export {default as priceAsCents} from './priceAsCents';
 export {default as timePeriodEnd} from './timePeriodEnd';
 export {default as timePeriodStart} from './timePeriodStart';
 export {default as timePeriodType} from './timePeriodType';

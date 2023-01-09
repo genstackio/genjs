@@ -1,8 +1,11 @@
 type: cicd-github
 
 name: .github
+description: CI/CD pipeline scripts
 
 vars:
+  node_support: true
+  node_version_constraint: 16.x
   github:
     workflows:
       push-to-master: true

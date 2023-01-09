@@ -1,0 +1,236 @@
+input CssInput {
+    content: String
+}
+input FileInput {
+    bucket: String
+    content: String
+    contentType: String
+    key: String
+    name: String
+    url: String
+}
+input ImageInput {
+    bucket: String
+    content: String
+    contentType: String
+    key: String
+    name: String
+    url: String
+}
+input JsInput {
+    content: String
+}
+input JsonFileInput {
+    bucket: String
+    content: String
+    contentType: String
+    key: String
+    name: String
+    url: String
+}
+input SearchQueryCriteriumInput {
+    booleanValue: Boolean
+    field: String
+    floatListValue: [Float!]
+    floatValue: Float
+    intListValue: [Int!]
+    intValue: Int
+    listValue: [String!]
+    not: Boolean
+    operator: String
+    type: String
+    value: String
+}
+input SearchQueryInput {
+    criteria: [SearchQueryCriteriumInput!]!
+    sort: SortInput
+}
+input SortFieldInput {
+    name: String!
+    order: String!
+}
+input SortInput {
+    fields: [SortFieldInput!]!
+}
+
+type AxisPeriodStats {
+    labels: [String]
+    values: [Float]
+}
+type AxisStats {
+    all: AxisPeriodStats
+    days: AxisPeriodStats
+    hours: AxisPeriodStats
+    months: AxisPeriodStats
+    semesters: AxisPeriodStats
+    trimesters: AxisPeriodStats
+    weeks: AxisPeriodStats
+    years: AxisPeriodStats
+}
+type Css {
+    available: Boolean
+    bucket: String
+    cdnBucket: String
+    cdnKey: String
+    cdnUrl: String
+    content: String
+    contentAsBase64: String
+    contentAsBase64Url: String
+    contentType: String
+    downloadUrl: String
+    downloadUrlInfos: DownloadUrlInfos
+    eTag: String
+    fingerprint: String
+    key: String
+    lastModified: String
+    name: String
+    realContentType: String
+    size: Int
+    uploadUrl: String
+    uploadUrlInfos: UploadUrlInfos
+    url: String
+    urlInfos: String
+    viewUrl: String
+    viewUrlInfos: ViewUrlInfos
+}
+type DeleteResponse {
+    id: String
+}
+type DownloadUrlInfos {
+    downloadUrl: String
+    fields: String
+    filename: String
+    fileUrl: String
+}
+type File {
+    available: Boolean
+    bucket: String
+    cdnBucket: String
+    cdnKey: String
+    cdnUrl: String
+    content: String
+    contentAsBase64: String
+    contentAsBase64Url: String
+    contentAsJson: JSON
+    contentType: String
+    downloadUrl: String
+    downloadUrlInfos: DownloadUrlInfos
+    eTag: String
+    fingerprint: String
+    key: String
+    lastModified: String
+    name: String
+    realContentType: String
+    size: Int
+    uploadUrl: String
+    uploadUrlInfos: UploadUrlInfos
+    url: String
+    urlInfos: String
+    viewUrl: String
+    viewUrlInfos: ViewUrlInfos
+}
+type Image {
+    available: Boolean
+    bucket: String
+    cdnBucket: String
+    cdnKey: String
+    cdnUrl: String
+    content: String
+    contentAsBase64: String
+    contentAsBase64Url: String
+    contentType: String
+    downloadUrl: String
+    downloadUrlInfos: DownloadUrlInfos
+    eTag: String
+    fingerprint: String
+    key: String
+    lastModified: String
+    name: String
+    realContentType: String
+    size: Int
+    uploadUrl: String
+    uploadUrlInfos: UploadUrlInfos
+    url(format: String): String
+    urlInfos: String
+    viewUrl: String
+    viewUrlInfos: ViewUrlInfos
+}
+type Js {
+    available: Boolean
+    bucket: String
+    cdnBucket: String
+    cdnKey: String
+    cdnUrl: String
+    content: String
+    contentAsBase64: String
+    contentAsBase64Url: String
+    contentType: String
+    downloadUrl: String
+    downloadUrlInfos: DownloadUrlInfos
+    eTag: String
+    fingerprint: String
+    key: String
+    lastModified: String
+    name: String
+    realContentType: String
+    size: Int
+    uploadUrl: String
+    uploadUrlInfos: UploadUrlInfos
+    url: String
+    urlInfos: String
+    viewUrl: String
+    viewUrlInfos: ViewUrlInfos
+}
+type JsonFile {
+    available: Boolean
+    bucket: String
+    cdnBucket: String
+    cdnKey: String
+    cdnUrl: String
+    content: String
+    contentAsBase64: String
+    contentAsBase64Url: String
+    contentAsJson: JSON
+    contentType: String
+    downloadUrl: String
+    downloadUrlInfos: DownloadUrlInfos
+    eTag: String
+    fingerprint: String
+    key: String
+    lastModified: String
+    name: String
+    realContentType: String
+    size: Int
+    uploadUrl: String
+    uploadUrlInfos: UploadUrlInfos
+    url: String
+    urlInfos: String
+    viewUrl: String
+    viewUrlInfos: ViewUrlInfos
+}
+type MigrateResponse {
+    deployed: [String]
+    failed: [String]
+    planned: [String]
+}
+type Screenshot {
+    fullscreenUrl: String
+    url: String
+}
+type Screenshots {
+    desktop: Screenshot
+    mobile: Screenshot
+    tablet: Screenshot
+    thumbnail: Screenshot
+}
+type UploadUrlInfos {
+    fields: String
+    fileUrl: String
+    uploadUrl: String
+}
+type ViewUrlInfos {
+    fields: String
+    filename: String
+    fileUrl: String
+    viewUrl: String
+}

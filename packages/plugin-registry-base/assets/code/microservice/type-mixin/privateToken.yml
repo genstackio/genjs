@@ -1,2 +1,17 @@
+inputs:
+  type:
+    main: true
+    type: string
+    default: autoUuid
+  internal:
+    type: boolean
+    default: true
+  indexed:
+    type: boolean
+    default: false
+  optional:
+    type: boolean
+    default: true
+
 attributes:
-  privateToken: ':autoUuid'
+  privateToken: "<%- internal ? ':' : '' %><%- indexed ? '@' : '' %><%- type %><%- optional ? '' : '!' %>"

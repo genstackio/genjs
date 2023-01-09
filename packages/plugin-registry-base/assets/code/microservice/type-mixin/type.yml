@@ -1,2 +1,17 @@
+inputs:
+  type:
+    main: true
+    type: string
+    default: string
+  internal:
+    type: boolean
+    default: false
+  indexed:
+    type: boolean
+    default: false
+  optional:
+    type: boolean
+    default: false
+
 attributes:
-  type: string!
+  type: "<%- internal ? ':' : '' %><%- indexed ? '@' : '' %><%- type %><%- optional ? '' : '!' %>"

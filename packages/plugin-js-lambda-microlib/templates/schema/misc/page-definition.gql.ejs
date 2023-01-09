@@ -1,0 +1,64 @@
+type PageDefinition {
+    backgroundColor: String
+    body: PageDefinitionBody
+    facebookPixelActions: [PageDefinitionFacebookPixelAction]
+    facebookPixelId: String
+    lang: String
+    metas: [PageDefinitionMeta]
+    styles: String
+    template: String
+    theme: String
+    title: String
+}
+type PageDefinitionBody {
+    items: [PageDefinitionBodyItem]
+}
+type PageDefinitionBodyItem {
+    config: PageDefinitionBodyItemConfig
+    type: String
+}
+type PageDefinitionBodyItemConfig {
+    items: [PageDefinitionBodyItemConfigItem]
+    params: [PageDefinitionBodyItemConfigParam]
+    state: String
+    styles: String
+    theme: String
+    type: String
+    visibility: String
+    zone: String
+}
+type PageDefinitionBodyItemConfigItem {
+    params: [PageDefinitionBodyItemConfigItemParam]
+    state: String
+    styles: String
+    theme: String
+    visibility: String
+}
+type PageDefinitionBodyItemConfigItemParam {
+    booleanValue: Boolean
+    floatValue: Float
+    intValue: Int
+    jsonValue: String
+    name: String
+    type: String
+    value: String
+}
+type PageDefinitionBodyItemConfigParam {
+    booleanValue: Boolean
+    floatValue: Float
+    intValue: Int
+    jsonValue: String
+    name: String
+    type: String
+    value: String
+}
+type PageDefinitionFacebookPixelAction {
+    action: String
+    data: String
+    name: String
+}
+type PageDefinitionMeta {
+    name: String
+    type: String
+    value: String
+}

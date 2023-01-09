@@ -173,17 +173,17 @@ export default class SchemaParser {
             // this is probably a 'map' (real object), ignore it for now
             return undefined;
         }
-        m = this.mapSearchType(searchType, type);
+        m = this.mapSearchType(k, searchType, type);
         if (!m || !m.type || ('none' === m.type)) return undefined;
         if (searchExtraTypes && !!Object.keys(searchExtraTypes).length) {
             m.extraTypes = Object.entries(searchExtraTypes).reduce((acc, [k, v]) => {
-                acc[k] = this.mapSearchType(v, type);
+                acc[k] = this.mapSearchType(k, v, type);
                 return acc;
             }, {} as any);
         }
         return m;
     }
-    mapSearchType(searchType: string|undefined, type: any) {
+    mapSearchType(fieldName: string, searchType: string|undefined, type: any) {
         let m: any;
         switch (type) {
             case 'string':
@@ -193,7 +193,10 @@ export default class SchemaParser {
                 m = {type: searchType || 'boolean'};
                 break;
             case 'number':
-                m = {type: searchType || 'float'};
+                if (/Amount$/.test(fieldName)) m = {type: searchType || 'integer'};
+                else if (/At$/.test(fieldName)) m = {type: searchType || 'bigint'};
+                else if (/Date$/.test(fieldName)) m = {type: searchType || 'bigint'};
+                else m = {type: searchType || 'float'};
                 break;
             case 'object':
                 m = {type: searchType || 'none'};

@@ -51,3 +51,33 @@ export const mergeData = (a, b) => {
     return populateData({...a}, b);
 }
 export const parseYaml = x => YAML.parse(x);
+
+export function replaceVarValueIfNeeded(value: any) {
+    if ('string' !== typeof value) return value;
+    switch (value) {
+        case '$now.time': return 'new Date().getTime()';
+        case '$now': return 'new Date()';
+        case '$now.iso': return 'new Date().toISOString()';
+        default: return value;
+    }
+}
+
+export function parseConfigType(cfg: any, type: string|undefined): [string|undefined, any|undefined] {
+    const match = (type || '').match(/^([^(]+)\(([^)]*)\)$/);
+    let parsedVars = {};
+    if (!!match && !!match.length) {
+        type = match[1];
+        parsedVars = !!match[1] ? match[2].split(/\s*,\s*/g).reduce((acc, t) => {
+            const [k, v = undefined] = t.split(/\s*=\s*/)
+            if (undefined === v) {
+                acc['default'] = replaceVarValueIfNeeded(k);
+            } else {
+                acc[k] = replaceVarValueIfNeeded(YAML.parse(v || ''));
+            }
+            return acc;
+        }, {}) : {};
+    }
+    cfg = {...cfg, vars: {...parsedVars, ...(cfg.vars || {})}};
+    return [type, cfg];
+
+}

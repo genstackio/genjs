@@ -1,0 +1,21 @@
+<%
+
+const inputNames = Object.keys(inputs);
+inputNames.sort();
+
+const typeNames = Object.keys(types);
+typeNames.sort();
+
+-%>
+<% inputNames.forEach(name => { const item = inputs[name]; %>input <%- item.name %> {
+<% Object.entries(item.fields || {}).forEach(([kk, vv]) => { -%>
+    <%= kk %>: <%= vv.gqlType || 'String' %><%- vv.required ? '!' : '' %>
+<% }) -%>
+}
+<% }) %>
+<% typeNames.forEach(name => { const item = types[name]; %>type <%- item.name %> {
+<% Object.entries(item.fields || {}).forEach(([kk, vv]) => { -%>
+    <%= kk %><%- vv.args ? `(${vv.args.map(a => `${a.name}: ${a.gqlType}${a.required ? '!' : ''}`).join(', ')})` : ''%>: <%= vv.gqlType || 'String' %><%- vv.required ? '!' : '' %>
+<% }) -%>
+}
+<% }) %>

@@ -30,6 +30,7 @@ import {applyRefreshMakefileHelper} from "@genjs/genjs-bundle-package";
 import MicroserviceType from "./MicroserviceType";
 import {ModelEnhancer} from "./ModelEnhancer";
 import {SchemaGraphqlTemplate} from "./templates/SchemaGraphqlTemplate";
+import {SchemaGraphqlModel} from "./SchemaGraphqlModel";
 
 export type PackageConfig = BasePackageConfig & {
     events?: {[key: string]: any[]},
@@ -188,6 +189,7 @@ export default class Package extends AbstractPackage<PackageConfig> {
             ['Makefile']: this.buildMakefile(vars),
             ['terraform-to-vars.json']: this.buildTerraformToVars(vars),
             ...(vars.generate_graphql_schema ? {'schema.graphql': this.buildSchemaGraphqlFile(vars)} : {}),
+            ...(vars.generate_graphql_schema_dir ? await this.buildGraphqlSchemaDir(vars) : {}),
         });
         const objects: any = (<any[]>[]).concat(
             Object.values(this.microservices),
@@ -206,6 +208,27 @@ export default class Package extends AbstractPackage<PackageConfig> {
         }
 
         return files;
+    }
+    protected async buildGraphqlSchemaDir(vars: any) {
+        const schema = await this.buildSchemaModel(vars);
+        const cfg = {templatePath: `${__dirname}/../templates/schema`};
+
+        return {
+            'schema/schema.gql': ({renderFile}) => renderFile(cfg)('schema.gql.ejs', {...vars, schema}),
+            'schema/scalars.gql': ({renderFile}) => renderFile(cfg)('scalars.gql.ejs', {...vars, schema}),
+            'schema/query.gql': ({renderFile}) => renderFile(cfg)('query.gql.ejs', {...vars, schema}),
+            'schema/mutation.gql': ({renderFile}) => renderFile(cfg)('mutation.gql.ejs', {...vars, schema}),
+            'schema/misc/common.gql': ({renderFile}) => renderFile(cfg)('misc/common.gql.ejs', {...vars, schema}),
+            'schema/misc/opensearch.gql': ({renderFile}) => renderFile(cfg)('misc/opensearch.gql.ejs', {...vars, schema}),
+            'schema/misc/page-definition.gql': ({renderFile}) => renderFile(cfg)('misc/page-definition.gql.ejs', {...vars, schema}),
+            ...Object.entries(schema.types).reduce((acc, [k, v]: [string, any]) => {
+                acc[`schema/types/${v.fullName.replace('_', '/')}.gql`] = ({renderFile}) => renderFile(cfg)('types/type.gql.ejs', {...vars, typeName: k, ...v, schema});
+                return acc;
+            }, {} as any),
+        }
+    }
+    protected async buildSchemaModel(vars: any) {
+        return new SchemaGraphqlModel(this, vars).getVars();
     }
     protected buildSchemaGraphqlFile(vars: any) {
         return new SchemaGraphqlTemplate(vars)

@@ -1,2 +1,10 @@
+inputs:
+  optional:
+    type: boolean
+    default: false
+  indexed:
+    type: boolean
+    default: true
+
 attributes:
-  code: "@string!"
+  code: "<%- indexed ? '@' : '' %>string<%- optional ? '' : '!' %>"

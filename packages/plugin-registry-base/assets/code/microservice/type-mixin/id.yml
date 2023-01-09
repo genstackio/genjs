@@ -1,2 +1,18 @@
+inputs:
+  type:
+    main: true
+    type: string
+    default: autoUuid
+  internal:
+    type: boolean
+    default: true
+  primary:
+    type: boolean
+    default: true
+  optional:
+    type: boolean
+    default: true
+
+
 attributes:
-  id: "&:autoUuid"
+  id: "<%- primary ? '&' : '' %><%- internal ? ':' : '' %><%- type %><%- optional ? '' : '!' %>"
