@@ -56,6 +56,9 @@ export class SchemaGraphqlModel {
                 type: 'id' === fieldName ? 'id' : field.type,
                 automatic: !!(type.model.statFields || {})[fieldName],
                 searchType: type.model.searchFields[fieldName],
+                outputType: (type.model.outputTypes || {})[fieldName],
+                inputType: (type.model.inputTypes || {})[fieldName],
+                nonFetchable: !!(type.model.nonFetchables || {})[fieldName],
                 list: !!field.list,
                 required: !!(type.model.requiredFields || {})[fieldName],
                 private: !!type.model.privateFields[fieldName],
@@ -223,19 +226,37 @@ export class SchemaGraphqlModel {
             return {operationNature: undefined, operationType: undefined, operationGqlType: undefined};
         }
         if ('string' !== typeof op) {
-            console.log('BBB => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
-            return {};
+            if (op?.wrap) {
+                op = op.wrap[0];
+            } else {
+                console.log('BBB => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
+                return {};
+            }
         }
         const [operationNature] = parseConfigType({}, op);
+        let pageType: string = '';
         switch (operationNature) {
             case 'findInIndexByHashKey':
-                const pageType = `${this.camelCase(msType)}Page`;
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ]};
+            case 'findInIndexByHashKeyAndRangeKey':
+                pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
                         {name: 'offset', type: 'string', gqlType: 'String'},
                         {name: 'limit', type: 'integer', gqlType: 'Int'},
                         {name: 'sort', type: 'string', gqlType: 'String'},
                     ]};
             default:
+                if (/^fetchAll/.test(operationNature || '')) {
+                    pageType = `${this.camelCase(msType)}Page`;
+                    return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                            {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        ]};
+                }
                 console.log('CCC => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
                 return {};
         }
@@ -253,20 +274,20 @@ export class SchemaGraphqlModel {
     protected buildTypeCreateInput(name: string, type: any) {
         return {
             name,
-            fields: this.buildTypeFields(type, 'create'),
+            fields: this.buildTypeFields(type, 'create', true),
         };
     }
     protected buildTypeUpdateInput(name: string, type: any) {
         return {
             name,
-            fields: this.buildTypeFields(type, 'update'),
+            fields: this.buildTypeFields(type, 'update', true),
         };
     }
-    protected buildTypeFields(type: any, mode: string) {
+    protected buildTypeFields(type: any, mode: string, input: boolean = false) {
         return Object.entries(type.fields || {}).reduce((acc, [k, v]: [string, any]) => {
             let f: any = undefined;
             const typeName = v.list ? `${v.type}[]` : v.type;
-            const gqlTypeName = v.list ? `[${this.mapTypeToGqlType(v, mode)}]` : this.mapTypeToGqlType(v, mode);
+            const gqlTypeName = v.list ? this.mapTypeToGqlType(v, mode, true, input) : this.mapTypeToGqlType(v, mode, false, input);
             if (!this.isTypeFieldExposedFor(k, v, type, mode)) return acc;
             switch (mode) {
                 case 'object':
@@ -297,7 +318,8 @@ export class SchemaGraphqlModel {
                 default:
                     break;
             }
-            f && (acc[k] = f);
+
+            f && (input || (!input && !v.nonFetchable)) && (acc[k] = f);
             return acc;
         }, {} as any);
     }
@@ -320,9 +342,11 @@ export class SchemaGraphqlModel {
                 return false;
         }
     }
-    protected mapTypeToGqlType(type: any, mode: string) {
-        const inferredSpecialType = this.infertSpecialType(type, mode);
-        if (!!inferredSpecialType) return inferredSpecialType;
+    protected mapTypeToGqlType(type: any, mode: string, list: boolean = false, input: boolean = false) {
+        let forcedType = input ? type.inputType : type.outputType;
+        const inferredSpecialType = forcedType ? undefined : this.inferSpecialType(type, mode);
+        if (!!inferredSpecialType) return list ? `[${inferredSpecialType}]` : inferredSpecialType;
+        if (forcedType) return forcedType;
         const map = {
             id: 'ID',
             string: 'String',
@@ -338,11 +362,17 @@ export class SchemaGraphqlModel {
                 bigint: 'BigInt',
                 number: 'Int',
             }
-            return mapNumber[type.searchType.type || ''] || 'Int';
+            const r = mapNumber[type.searchType.type || ''] || 'Int';
+            return list ? `[${r}]` : r;
         }
-        return map[type.type || ''] || 'String';
+        if (type.searchType?.type && (type.searchType?.type !== 'text')) {
+            const r = map[type.searchType?.type] || map[type.type || ''] || 'String';
+            return list ? `[${r}]` : r;
+        }
+        const r = map[type.type || ''] || 'String';
+        return list ? `[${r}]` : r;
     }
-    protected infertSpecialType(type: any, mode: string) {
+    protected inferSpecialType(type: any, mode: string) {
         const n: string = type.name;
         const map = {
             object: {
@@ -351,6 +381,9 @@ export class SchemaGraphqlModel {
                 file: 'File',
                 css: 'Css',
                 js: 'Js',
+                screenshot: 'Screenshot',
+                screenshots: 'Screenshots',
+                pagedefinition: 'PageDefinition',
             },
             create: {
                 image: 'ImageInput',
@@ -373,6 +406,9 @@ export class SchemaGraphqlModel {
         switch (true) {
             case /Date/.test(n): i = 'bigint'; break;
             case /Image$/.test(n): i = 'image'; break;
+            case /Screenshots$/.test(n): i = 'screenshots'; break;
+            case /Screenshot$/.test(n): i = 'screenshot'; break;
+            case /PageDefinition$/.test(n): i = 'pagedefinition'; break;
             case /At$/.test(n): i = 'bigint'; break;
             case /File$/.test(n): i = 'file'; break;
             case /Css/.test(n): i = 'css'; break;

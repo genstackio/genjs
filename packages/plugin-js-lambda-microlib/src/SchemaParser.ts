@@ -75,7 +75,7 @@ export default class SchemaParser {
                 pretransform = undefined, convert = undefined, mutate = undefined,
                 dynamic = undefined, trigger = undefined, from = undefined, requires = undefined, stat = undefined,
                 props = undefined, prefix = undefined, suffix = undefined, truncate = undefined, deletePrefetch = false,
-                watch = undefined,
+                watch = undefined, outputType = undefined, inputType = undefined, fetchable = true,
             } = def;
             const detectedRequires = this.buildDetectedRequires(def);
             acc.fields[k] = {
@@ -145,6 +145,9 @@ export default class SchemaParser {
                 (acc.prefetchs['update'] = acc.prefetchs['update'] || {})[dr] = true;
             })
             from && (acc.froms[k] = from) && (acc.dynamics[k] = {type: '@from', config: {name: from}});
+            inputType && (acc.inputTypes[k] = inputType);
+            outputType && (acc.outputTypes[k] = outputType);
+            !fetchable && (acc.nonFetchables[k] = true);
             (undefined !== stat) && (acc.statFields[k] = stat);
             if (acc.requires[k] && acc.requires[k].length) acc.requires[k] = this.deduplicate(acc.requires[k]);
             acc.searchFields[k] = this.buildSearchField(k, def, acc);
@@ -163,6 +166,9 @@ export default class SchemaParser {
             if (!acc.statFields[k]) delete acc.statFields[k];
             if (!acc.multiRefAttributeTargetFields[k].length) delete acc.multiRefAttributeTargetFields[k];
             if (!acc.searchFields[k] || !Object.keys(acc.searchFields[k]).length) delete acc.searchFields[k];
+            if (!acc.inputTypes[k]) delete acc.inputTypes[k];
+            if (!acc.outputTypes[k]) delete acc.outputTypes[k];
+            if (!acc.nonFetchables[k]) delete acc.nonFetchables[k];
             return acc;
         }, schema);
     }
@@ -173,7 +179,7 @@ export default class SchemaParser {
             // this is probably a 'map' (real object), ignore it for now
             return undefined;
         }
-        m = this.mapSearchType(k, searchType, type);
+        m = this.mapSearchType(k, searchType, type, acc.outputTypes[k]);
         if (!m || !m.type || ('none' === m.type)) return undefined;
         if (searchExtraTypes && !!Object.keys(searchExtraTypes).length) {
             m.extraTypes = Object.entries(searchExtraTypes).reduce((acc, [k, v]) => {
@@ -183,9 +189,9 @@ export default class SchemaParser {
         }
         return m;
     }
-    mapSearchType(fieldName: string, searchType: string|undefined, type: any) {
+    mapSearchType(fieldName: string, searchType: string|undefined, type: any, outputType?: string) {
         let m: any;
-        switch (type) {
+        switch (outputType || type) {
             case 'string':
                 m = {type: searchType || 'text'};
                 break;
@@ -193,6 +199,7 @@ export default class SchemaParser {
                 m = {type: searchType || 'boolean'};
                 break;
             case 'number':
+                if (/Count/.test(fieldName)) m = {type: searchType || 'integer'};
                 if (/Amount$/.test(fieldName)) m = {type: searchType || 'integer'};
                 else if (/At$/.test(fieldName)) m = {type: searchType || 'bigint'};
                 else if (/Date$/.test(fieldName)) m = {type: searchType || 'bigint'};
@@ -386,6 +393,9 @@ export default class SchemaParser {
             converters: {},
             statFields: {},
             watches: {},
+            inputTypes: {},
+            outputTypes: {},
+            nonFetchables: {},
             multiRefAttributeTargetFields: {},
             shortName: shortName || (name || '').replace(/^.+_([^_]+)$/, '$1'),
         };

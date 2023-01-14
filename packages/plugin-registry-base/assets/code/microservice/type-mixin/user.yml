@@ -1,6 +1,8 @@
 attributes:
   email: "!@email!"
-  password: password!
+  password:
+    type: password!
+    fetchable: false
   firstName: firstName!
   lastName: lastName!
 
