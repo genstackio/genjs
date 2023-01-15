@@ -1,10 +1,10 @@
 <%
 
-function buildQueries() {
-    return 'bla';
-}
+const queryNames = Object.keys(schema.queries);
+queryNames.sort();
 
 -%>
 type Query {
-<%- buildQueries() %>
+<% queryNames.forEach(name => { const item = schema.queries[name]; %>    <%= name %><% if ((item.args || []).length) { %>(<%= item.args.map(a => `${a.name}: ${a.gqlType}${a.required ? '!' : ''}`).join(', ') %>)<% } %>: <%= item.gqlType || 'String' %>
+<% }) -%>
 }

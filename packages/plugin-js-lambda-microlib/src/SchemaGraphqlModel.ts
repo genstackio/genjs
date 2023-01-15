@@ -19,7 +19,7 @@ export class SchemaGraphqlModel {
     protected subscriptions: gql_subscriptions;
     protected scalars: gql_scalars;
     constructor(pkg: any, config: SchemaGraphqlConfig = {}) {
-        const ctx = this.buildCtxFromPkg(pkg);
+        const ctx = this.buildCtxFromPkg(pkg, config);
         const {types, queries, mutations, subscriptions, scalars} = this.buildGroupedData(ctx, {
             types: this.buildTypes(ctx, config),
             inputs: this.buildInputs(ctx, config),
@@ -35,7 +35,17 @@ export class SchemaGraphqlModel {
         this.subscriptions = subscriptions;
         this.scalars = scalars;
     }
-    protected buildCtxFromPkg(pkg: any) {
+    protected buildOperations(pkg: any) {
+        return Object.entries(pkg.microservices).reduce((acc: any, [k, v]: [string, any]) => {
+            return Object.entries(v.types || {}).reduce((acc2, [kk, vv]: [string, any]) => {
+                return Object.entries(vv.operations).reduce((acc3, [kkk, vvv]: [string, any]) => {
+                    acc3[`${k}_${kk}_${kkk}`] = {name: kkk, type: vvv.type || kkk, gqlType: `${kk.slice(0, 1).toUpperCase()}${kk.slice(1)}`};
+                    return acc3;
+                }, acc2);
+            }, acc);
+        }, {});
+    }
+    protected buildCtxFromPkg(pkg: any, config: SchemaGraphqlConfig) {
         return {
             types: this.sort(Object.entries(pkg?.microservices || {}).reduce((acc, [microserviceName, microservice]: [string, any]) => {
                 return Object.entries(microservice?.types || {}).reduce((acc2, [typeName, type]) => {
@@ -47,6 +57,7 @@ export class SchemaGraphqlModel {
                     return acc2;
                 }, acc);
             }, {} as any)),
+            operations: this.sort(this.buildOperations(pkg)),
         }
     }
     protected buildTypeModelFields(type) {
@@ -137,7 +148,7 @@ export class SchemaGraphqlModel {
         };
     }
     protected buildFinalQuery(name: string, cfg: any, data: data): final_query {
-        return {
+        return data.queries[name] || {
             name,
             args: [], // @todo change
             type: 'string', // @todo change
@@ -145,7 +156,7 @@ export class SchemaGraphqlModel {
         };
     }
     protected buildFinalMutation(name: string, cfg: any, data: data): final_mutation {
-        return {
+        return data.mutations[name] || {
             name,
             args: [], // @todo change
             type: 'string', // @todo change
@@ -153,7 +164,7 @@ export class SchemaGraphqlModel {
         };
     }
     protected buildFinalSubscription(name: string, cfg: any, data: data): final_subscription {
-        return {
+        return data.subscriptions[name] || {
             name,
             args: [], // @todo change
             type: 'string', // @todo change
@@ -174,13 +185,106 @@ export class SchemaGraphqlModel {
         }, {} as gql_types);
     }
     protected buildQueries(ctx: any, config: SchemaGraphqlConfig): gql_queries {
-        return {};
+        const resolvers = (config as any).handlers?.graphql?.vars?.resolvers || {};
+
+        return Object.entries(resolvers?.Query || {}).reduce((acc, [k, v]: [string, any]) => Object.assign(acc, {[k]: this.buildQuery(k, v, ctx, config)}), {} as any);
     }
     protected buildMutations(ctx: any, config: SchemaGraphqlConfig): gql_mutations {
-        return {};
+        const resolvers = (config as any).handlers?.graphql?.vars?.resolvers || {};
+
+        return Object.entries(resolvers?.Mutation || {}).reduce((acc, [k, v]: [string, any]) => Object.assign(acc, {[k]: this.buildMutation(k, v, ctx, config)}), {} as any);
     }
     protected buildSubscriptions(ctx: any, config: SchemaGraphqlConfig): gql_subscriptions {
-        return {};
+        const resolvers = (config as any).handlers?.graphql?.vars?.resolvers || {};
+
+        return Object.entries(resolvers?.Subscription || {}).reduce((acc, [k, v]: [string, any]) => Object.assign(acc, {[k]: this.buildSubscription(k, v, ctx, config)}), {} as any);
+    }
+    protected buildQuery(name: string, resolverName: string, ctx: any, config: SchemaGraphqlConfig): any {
+        const op = (ctx.operations || {})[resolverName] || {name};
+        const [a, b, c] = resolverName.split(/_/g);
+        switch (op.type || op.name) {
+            case 'search': return {
+                name,
+                type: 'search',
+                args: [
+                    {name: 'offset', gqlType: 'String'},
+                    {name: 'limit', gqlType: 'Int'},
+                    {name: 'query', gqlType: 'SearchQueryInput'},
+                    {name: 'sort', gqlType: 'String'},
+                ],
+                gqlType: `${op.gqlType}Page`,
+            };
+            case 'find': return {
+                name,
+                type: 'find',
+                args: [
+                    {name: 'offset', gqlType: 'String'},
+                    {name: 'limit', gqlType: 'Int'},
+                ],
+                gqlType: `${op.gqlType}Page`,
+            };
+            case 'get': return {
+                name,
+                type: 'get',
+                args: [
+                    {name: 'id', gqlType: 'ID', required: true}
+                ],
+                gqlType: op.gqlType,
+            };
+            case 'getByCode': return {
+                name,
+                type: 'getByCode',
+                args: [
+                    {name: 'code', gqlType: 'String', required: true}
+                ],
+                gqlType: op.gqlType,
+            };
+            default:
+                const {operationNature, operationGqlType, operationArgs} = this.parseOperationValue((config as any).microservices[a]?.types[b]?.operations[c], {parentType: {name: 'Query'}, parentField: name, microservice: a, type: b, operation: c});
+
+                return {
+                    name,
+                    type: operationNature,
+                    args: operationArgs,
+                    gqlType: operationGqlType,
+                };
+        }
+    }
+    protected buildMutation(name: string, resolverName: string, ctx: any, config: SchemaGraphqlConfig): any {
+        const op = (ctx.operations || {})[resolverName] || {name};
+        switch (op.type || op.name) {
+            case 'create': return {
+                name,
+                type: 'create',
+                args: [
+                    {name: 'data', gqlType: `Create${op.gqlType.slice(0, 1).toUpperCase()}${op.gqlType.slice(1)}Input`, required: true}
+                ],
+                gqlType: op.gqlType,
+            };
+            case 'update': return {
+                name,
+                type: 'update',
+                args: [
+                    {name: 'id', gqlType: 'ID', required: true},
+                    {name: 'data', gqlType: `Update${op.gqlType.slice(0, 1).toUpperCase()}${op.gqlType.slice(1)}Input`, required: true}
+                ],
+                gqlType: op.gqlType,
+            };
+            case 'delete': return {
+                name,
+                type: 'delete',
+                args: [
+                    {name: 'id', gqlType: 'ID', required: true}
+                ],
+                gqlType: 'DeleteResponse',
+            };
+            default: return {
+                name,
+            };
+        }
+    }
+    protected buildSubscription(name: string, resolverName: string, ctx: any, config: SchemaGraphqlConfig): any {
+        return {name};
     }
     protected buildScalars(ctx: any, config: SchemaGraphqlConfig): gql_scalars {
         return {};
@@ -228,14 +332,29 @@ export class SchemaGraphqlModel {
         if ('string' !== typeof op) {
             if (op?.wrap) {
                 op = op.wrap[0];
+            } else if (op?.backend) {
+                console.log('DDD => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
+                return {};
             } else {
                 console.log('BBB => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
                 return {};
             }
         }
-        const [operationNature] = parseConfigType({}, op);
+        const [operationNature, cfg] = parseConfigType({}, op);
         let pageType: string = '';
         switch (operationNature) {
+            case 'findInIndex':
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ]};
+            case 'getBy':
+                pageType = this.camelCase(msType);
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: cfg?.vars?.default || 'value', type: 'string', gqlType: 'String', required: true},
+                    ]};
             case 'findInIndexByHashKey':
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [

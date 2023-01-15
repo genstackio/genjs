@@ -213,11 +213,18 @@ export default class Package extends AbstractPackage<PackageConfig> {
         const schema = await this.buildSchemaModel(vars);
         const cfg = {templatePath: `${__dirname}/../templates/schema`};
 
+        const hasQueries = !!Object.keys(schema.queries || {}).length;
+        const hasMutations = !!Object.keys(schema.mutations || {}).length;
+        const hasSubscriptions = !!Object.keys(schema.subscriptions || {}).length;
+
+        vars = {...vars, hasQueries, hasMutations, hasSubscriptions};
+
         return {
             'schema/schema.gql': ({renderFile}) => renderFile(cfg)('schema.gql.ejs', {...vars, schema}),
             'schema/scalars.gql': ({renderFile}) => renderFile(cfg)('scalars.gql.ejs', {...vars, schema}),
-            'schema/query.gql': ({renderFile}) => renderFile(cfg)('query.gql.ejs', {...vars, schema}),
-            'schema/mutation.gql': ({renderFile}) => renderFile(cfg)('mutation.gql.ejs', {...vars, schema}),
+            ...(hasQueries ? {'schema/query.gql': ({renderFile}) => renderFile(cfg)('query.gql.ejs', {...vars, schema})} : {}),
+            ...(hasMutations ? {'schema/mutation.gql': ({renderFile}) => renderFile(cfg)('mutation.gql.ejs', {...vars, schema})} : {}),
+            ...(hasSubscriptions ? {'schema/subscription.gql': ({renderFile}) => renderFile(cfg)('subscription.gql.ejs', {...vars, schema})} : {}),
             'schema/misc/common.gql': ({renderFile}) => renderFile(cfg)('misc/common.gql.ejs', {...vars, schema}),
             'schema/misc/opensearch.gql': ({renderFile}) => renderFile(cfg)('misc/opensearch.gql.ejs', {...vars, schema}),
             'schema/misc/page-definition.gql': ({renderFile}) => renderFile(cfg)('misc/page-definition.gql.ejs', {...vars, schema}),

@@ -1,10 +1,10 @@
 <%
 
-function buildMutations() {
-    return 'bla';
-} 
+const queryNames = Object.keys(schema.mutations);
+queryNames.sort();
 
 -%>
 type Mutation {
-<%- buildMutations() %>
+<% queryNames.forEach(name => { const item = schema.mutations[name]; %>    <%= name %><% if ((item.args || []).length) { %>(<%= item.args.map(a => `${a.name}: ${a.gqlType}${a.required ? '!' : ''}`).join(', ') %>)<% } %>: <%= item.gqlType || 'String' %>
+<% }) -%>
 }

@@ -1,0 +1,10 @@
+<%
+
+const queryNames = Object.keys(schema.subscriptions);
+queryNames.sort();
+
+-%>
+type Subscription {
+<% queryNames.forEach(name => { const item = schema.subscriptions[name]; %>    <%= name %>(): <%= item.gqlType || 'String' %>
+<% }) -%>
+}
