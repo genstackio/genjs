@@ -1,0 +1,18 @@
+async: true
+
+require:
+  - getBy
+  - update
+
+inputs:
+  key:
+    main: true
+    default: id
+
+args:
+  - field
+  - value
+  - query
+
+code: |
+  return service.update({...query, id: (await service.getBy(field, value, query)).<%- key -%>});

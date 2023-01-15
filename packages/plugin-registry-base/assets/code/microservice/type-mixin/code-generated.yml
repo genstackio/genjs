@@ -1,0 +1,18 @@
+inputs:
+  generator:
+    type: string
+    required: true
+    main: true
+  indexed:
+    type: boolean
+    default: false
+  prefix:
+    type: string
+    default: ''
+
+attributes:
+  code:
+    type: "<%- indexed ? '@' : '' %>string"
+    prefix: "<%- prefix || '' %>"
+    value:
+      type: "<%- generator %>"

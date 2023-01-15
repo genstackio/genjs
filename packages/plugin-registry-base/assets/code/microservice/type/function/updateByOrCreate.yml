@@ -1,0 +1,26 @@
+async: true
+
+require:
+  - getBy
+  - create
+  - update
+
+inputs:
+  key:
+    main: true
+    default: id
+
+args:
+  - field
+  - value
+  - query
+
+code: |
+  let doc;
+  try {
+    doc = await service.getBy(field, value, query);
+    return service.update({...query, id: doc.<%- key -%>});
+  } catch (e) {
+    // not found. probably not an error, try to create
+    return service.create({...query});
+  }

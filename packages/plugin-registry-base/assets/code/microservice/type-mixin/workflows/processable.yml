@@ -1,0 +1,29 @@
+attributes:
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      QUEUED: { queuedAt: '@now', statusAt: '@now' }
+      PROCESSING: { processingAt: '@now', statusAt: '@now' }
+      PROCESSED: { processedAt: '@now', statusAt: '@now' }
+      ERRORED: { erroredAt: '@now', statusAt: '@now' }
+      ABORTED: { abortedAt: '@now', statusAt: '@now' }
+      cascadeClear:
+        CREATED: [ queuedAt, processingAt, processedAt, erroredAt, abortedAt ]
+        QUEUED: [ processingAt, processedAt, erroredAt, abortedAt ]
+        PROCESSING: [ processedAt, erroredAt, abortedAt ]
+        PROCESSED: [ erroredAt, abortedAt ]
+        ERRORED: [ abortedAt ]
+        ABORTED: [ ]
+    config:
+      steps: [CREATED, QUEUED, PROCESSING, PROCESSED, ERRORED, ABORTED]
+      autoTransitionTo: QUEUED
+      transitions:
+        undefined: [CREATED]
+        CREATED: [QUEUED, ABORTED, ERRORED]
+        QUEUED: [PROCESSING, ABORTED, ERRORED]
+        PROCESSING: [PROCESSED, ERRORED, ABORTED]
+        PROCESSED: [QUEUED]
+        ERRORED: [ABORTED, QUEUED]
+        ABORTED: [QUEUED]

@@ -194,7 +194,7 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
         }, {});
         return Object.entries(inputs || {}).reduce((acc, [k, v]) => {
             const input = {required: true, type: 'string', ...((null === v || undefined === v) ? {} : <any>v)};
-            let value = vars[k] || undefined;
+            let value = vars[k];
             if (!!input.main && vars.default) value = vars.default;
             (undefined === value) && (value = input.default);
             if ((undefined === value) && input.required) throw new Error(`Required input '${k}' is missing (vars: ${JSON.stringify(vars)}, inputs: ${JSON.stringify(inputs)})`);

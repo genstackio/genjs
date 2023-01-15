@@ -1,0 +1,25 @@
+async: true
+
+inputs:
+  fetcher: ~
+  rankProperty: ~
+
+args:
+  - query
+
+code: |
+  const bigPage = await service.<%- fetcher %>({...query, id: query.parentId});
+  const foundIndex = bigPage.items.findIndex(x => x.id === query.id);
+  if (0 > foundIndex) throw new Error(`Item not found`);
+  const otherIndex = (query.direction === 'up') ? (foundIndex - 1) : (foundIndex + 1);
+  if (0 > otherIndex) throw new Error(`Already first item`);
+  if (bigPage.items.length <= otherIndex) throw new Error(`Already last item`);
+  const other = bigPage.items[otherIndex];
+  const found = bigPage.items[foundIndex]
+  const reports = await Promise.allSettled([
+    service.update({...query, id: other.id, data: {<%- rankProperty %>: found.<%- rankProperty %>}}),
+    service.update({...query, id: found.id, data: {<%- rankProperty %>: other.<%- rankProperty %>}}),
+  ]);
+  const errors = reports.filter(x => x.status !== 'fulfilled');
+  if (0 < errors.length) throw new Error(`Error when moving item`);
+  return service.get({...query, id: found.id});

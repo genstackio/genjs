@@ -1,0 +1,8 @@
+inputs:
+  index:
+    type: string
+    required: true
+    main: true
+
+operations:
+  search: search(<%= index %>)

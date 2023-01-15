@@ -21,7 +21,7 @@ export class SchemaGraphqlModel {
     constructor(pkg: any, config: SchemaGraphqlConfig = {}) {
         const ctx = this.buildCtxFromPkg(pkg, config);
         const {types, queries, mutations, subscriptions, scalars} = this.buildGroupedData(ctx, {
-            types: this.buildTypes(ctx, config),
+            types: this.buildTypes(ctx, config, pkg),
             inputs: this.buildInputs(ctx, config),
             queries: this.buildQueries(ctx, config),
             mutations: this.buildMutations(ctx, config),
@@ -176,10 +176,10 @@ export class SchemaGraphqlModel {
             name,
         };
     }
-    protected buildTypes(ctx: any, config: SchemaGraphqlConfig): gql_types {
+    protected buildTypes(ctx: any, config: SchemaGraphqlConfig, pkg: any): gql_types {
         return Object.entries(ctx?.types || {}).reduce((acc, [typeName, type]: [string, any]) => {
             const camelCaseTypeName = this.camelCase(typeName);
-            acc[camelCaseTypeName] = this.buildTypeType(camelCaseTypeName, type, config);
+            acc[camelCaseTypeName] = this.buildTypeType(camelCaseTypeName, type, config, pkg);
             acc[`${camelCaseTypeName}Page`] = this.buildTypePageType(`${camelCaseTypeName}Page`, camelCaseTypeName, type);
             return acc;
         }, {} as gql_types);
@@ -239,8 +239,32 @@ export class SchemaGraphqlModel {
                 ],
                 gqlType: op.gqlType,
             };
+            case 'getByToken': return {
+                name,
+                type: 'getByToken',
+                args: [
+                    {name: 'token', gqlType: 'String', required: true}
+                ],
+                gqlType: op.gqlType,
+            };
+            case 'getByKey': return {
+                name,
+                type: 'getByKey',
+                args: [
+                    {name: 'key', gqlType: 'String', required: true}
+                ],
+                gqlType: op.gqlType,
+            };
+            case 'getByEmail': return {
+                name,
+                type: 'getByEmail',
+                args: [
+                    {name: 'email', gqlType: 'String', required: true}
+                ],
+                gqlType: op.gqlType,
+            };
             default:
-                const {operationNature, operationGqlType, operationArgs} = this.parseOperationValue((config as any).microservices[a]?.types[b]?.operations[c], {parentType: {name: 'Query'}, parentField: name, microservice: a, type: b, operation: c});
+                const {operationNature, operationGqlType, operationArgs} = this.parseOperationValue(((((config as any).microservices || {})[a]?.types || {})[b]?.operations || {})[c], {parentType: {name: 'Query'}, parentField: name, microservice: a, type: b, operation: c});
 
                 return {
                     name,
@@ -297,22 +321,22 @@ export class SchemaGraphqlModel {
             return acc;
         }, {} as gql_inputs);
     }
-    protected buildTypeType(name: string, type: any, config: any) {
+    protected buildTypeType(name: string, type: any, config: any, pkg: any) {
         const resolvers = config.handlers?.graphql?.vars?.resolvers || {};
 
         return {
             name,
             fields: this.sort({
                 ...this.buildTypeFields(type, 'object'),
-                ...this.buildTypeJoinFields(type, resolvers[this.camelCase(type.name)], config),
+                ...this.buildTypeJoinFields(type, resolvers[this.camelCase(type.name)], config, pkg),
             }),
         };
     }
-    protected buildTypeJoinFields(type: any, resolvers: Record<string, string>, config: any): Record<string, gql_type_field> {
+    protected buildTypeJoinFields(type: any, resolvers: Record<string, string>, config: any, pkg: any): Record<string, gql_type_field> {
         return Object.entries(resolvers || {}).reduce((acc, [name, v]: [string, string]) => {
             const [a, b = undefined, c = undefined] = v.split(/_/g);
             if (!b || !c) return acc;
-            const {operationNature, operationType, operationGqlType, operationArgs} = this.parseOperationValue(config.microservices[a]?.types[b]?.operations[c], {parentType: type, parentField: name, microservice: a, type: b, operation: c});
+            const {operationNature, operationType, operationGqlType, operationArgs} = this.parseOperationValue(pkg.microservices[a]?.types[b]?.operations[c], {parentType: type, parentField: name, microservice: a, type: b, operation: c});
             if (!operationNature) return acc;
             acc[name] = {
                 name,
@@ -326,18 +350,18 @@ export class SchemaGraphqlModel {
     }
     protected parseOperationValue(op: any, {parentType, parentField, microservice, type: msType, operation: msOperation}) {
         if (!op) {
-            console.log('AAA => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
-            return {operationNature: undefined, operationType: undefined, operationGqlType: undefined};
+            op = msOperation;
         }
         if ('string' !== typeof op) {
             if (op?.wrap) {
                 op = op.wrap[0];
+            } else if (op?.rawType) {
+                op = op.rawType;
             } else if (op?.backend) {
                 console.log('DDD => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
                 return {};
             } else {
-                console.log('BBB => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
-                return {};
+                op = msOperation;
             }
         }
         const [operationNature, cfg] = parseConfigType({}, op);
@@ -353,16 +377,26 @@ export class SchemaGraphqlModel {
             case 'getBy':
                 pageType = this.camelCase(msType);
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
-                        {name: cfg?.vars?.default || 'value', type: 'string', gqlType: 'String', required: true},
+                        {name: cfg?.vars?.default || cfg?.vars?.field || 'value', type: 'string', gqlType: 'String', required: true},
                     ]};
             case 'findInIndexByHashKey':
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        /Parent/.test(msOperation) ? false : {name: 'id', type: 'string', gqlType: 'String', required: true},
                         {name: 'offset', type: 'string', gqlType: 'String'},
                         {name: 'limit', type: 'integer', gqlType: 'Int'},
                         {name: 'sort', type: 'string', gqlType: 'String'},
-                    ]};
+                    ].filter(x => !!x)};
             case 'findInIndexByHashKeyAndRangeKey':
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        /Parent/.test(msOperation) ? false : {name: /InPeriodBy/.test(msOperation) ? cfg.vars.key || 'id' : 'id', type: 'string', gqlType: 'String', required: true},
+                        /InPeriodBy/.test(msOperation) ? {name: 'period', type: '[bigint!]!]', gqlType: '[BigInt!]!'} : {name: 'value', type: 'string', gqlType: 'String'},
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ].filter(x => !!x)};
+            case 'findByParentTenant':
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
                         {name: 'offset', type: 'string', gqlType: 'String'},
@@ -376,7 +410,43 @@ export class SchemaGraphqlModel {
                             {name: 'limit', type: 'integer', gqlType: 'Int'},
                         ]};
                 }
-                console.log('CCC => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
+                if (/^findByParent/.test(operationNature || '')) {
+                    pageType = `${this.camelCase(msType)}Page`;
+                    return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                            {name: 'offset', type: 'string', gqlType: 'String'},
+                            {name: 'limit', type: 'integer', gqlType: 'Int'},
+                            {name: 'sort', type: 'string', gqlType: 'String'},
+                        ]};
+                }
+                if (/^findRankedByParent/.test(operationNature || '')) {
+                    pageType = `${this.camelCase(msType)}Page`;
+                    return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                            {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        ]};
+                }
+                if (/^findBy/.test(operationNature || '')) {
+                    pageType = `${this.camelCase(msType)}Page`;
+                    return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                            {name: 'id', type: 'string', gqlType: 'String', required: true},
+                            {name: 'offset', type: 'string', gqlType: 'String'},
+                            {name: 'limit', type: 'integer', gqlType: 'Int'},
+                            {name: 'sort', type: 'string', gqlType: 'String'},
+                        ]};
+                }
+                if (/^findRankedBy/.test(operationNature || '')) {
+                    pageType = `${this.camelCase(msType)}Page`;
+                    return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                            {name: 'id', type: 'string', gqlType: 'String', required: true},
+                            {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        ]};
+                }
+                if (/^getBy/.test(operationNature || '')) {
+                    pageType = this.camelCase(msType);
+                    return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                            {name: cfg?.vars?.default || cfg?.vars?.field || 'value', type: 'string', gqlType: 'String', required: true},
+                        ]};
+                }
+                console.log('CCC => ', 'object' === typeof op ? '[Object]' : op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
                 return {};
         }
     }
@@ -463,9 +533,9 @@ export class SchemaGraphqlModel {
     }
     protected mapTypeToGqlType(type: any, mode: string, list: boolean = false, input: boolean = false) {
         let forcedType = input ? type.inputType : type.outputType;
-        const inferredSpecialType = forcedType ? undefined : this.inferSpecialType(type, mode);
-        if (!!inferredSpecialType) return list ? `[${inferredSpecialType}]` : inferredSpecialType;
         if (forcedType) return forcedType;
+        const inferredSpecialType = this.inferSpecialType(type, mode);
+        if (!!inferredSpecialType) return list ? `[${inferredSpecialType}]` : inferredSpecialType;
         const map = {
             id: 'ID',
             string: 'String',
@@ -502,7 +572,6 @@ export class SchemaGraphqlModel {
                 js: 'Js',
                 screenshot: 'Screenshot',
                 screenshots: 'Screenshots',
-                pagedefinition: 'PageDefinition',
             },
             create: {
                 image: 'ImageInput',
@@ -527,7 +596,6 @@ export class SchemaGraphqlModel {
             case /Image$/.test(n): i = 'image'; break;
             case /Screenshots$/.test(n): i = 'screenshots'; break;
             case /Screenshot$/.test(n): i = 'screenshot'; break;
-            case /PageDefinition$/.test(n): i = 'pagedefinition'; break;
             case /At$/.test(n): i = 'bigint'; break;
             case /File$/.test(n): i = 'file'; break;
             case /Css/.test(n): i = 'css'; break;

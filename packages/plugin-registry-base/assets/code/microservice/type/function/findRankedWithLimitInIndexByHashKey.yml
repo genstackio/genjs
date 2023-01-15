@@ -1,0 +1,45 @@
+async: true
+
+require:
+  - find
+
+inputs:
+  index:
+    main: true
+  key: ~
+  value: ~
+  rankProperty: ~
+  maxPage:
+    type: number
+    default: 1000
+
+args:
+  - query
+
+code: |
+  let offset = undefined;
+  let page = undefined;
+  let items = [];
+  let maxPages = <%- maxPage %>
+  let n = 0;
+  do {
+    page = await service.find({...query, index: '<%- index %>', hashKey: ['<%- key %>', <%- value %>], offset})
+    offset = page.cursor;
+    items = [...items, ...page.items];
+    n++;
+  } while (!!offset && (n <= maxPages));
+  
+  items.sort((a, b) => {
+    const x = query.sort ? ((query.sort === 'descending' || query.sort === -1) ? -1 : 1) : 1;
+    if (undefined !== a.<%- rankProperty %>) {
+      if (undefined !== b.<%- rankProperty %>) {
+        return (a.<%- rankProperty %> < b.<%- rankProperty %>) ? -x : ((a.<%- rankProperty %> > b.<%- rankProperty %>) ? x : 0);
+      }
+      return -x;
+    }
+    if (undefined !== b.<%- rankProperty %>) return x;
+    return 0;
+  });
+  (undefined !== query.limit) && (items = items.slice(0, query.limit));
+  
+  return {cursor: undefined, count: items.length, items};

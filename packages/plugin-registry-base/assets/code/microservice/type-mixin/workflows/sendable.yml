@@ -1,0 +1,22 @@
+attributes:
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', createdBy: '@user_id', statusAt: '@now' }
+      SENDING: { sendingAt: '@now', sendingBy: '@user_id', statusAt: '@now' }
+      SENDING_FAILED: { sendingFailedAt: '@now', sendingFailedBy: '@user_id', statusAt: '@now' }
+      SENT: { sentAt: '@now', sentBy: '@user_id', statusAt: '@now' }
+      cascadeClear:
+        CREATED: [ sendingAt, sendingBy, sendingFailedAt, sendingFailedBy, sentAt, sentBy ]
+        SENDING: [ sentAt, sentBy, sendingFailedAt, sendingFailedBy ]
+        SENDING_FAILED: [ sentAt, sentBy ]
+        SENT: [ sendingFailedAt, sendingFailedBy ]
+    config:
+      steps: [CREATED, SENDING, SENDING_FAILED, SENT]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [SENDING]
+        SENDING: [SENDING_FAILED, SENT]
+        SENDING_FAILED: [SENDING]
+        SENT: [SENDING]

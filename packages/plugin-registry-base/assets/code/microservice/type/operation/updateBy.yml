@@ -1,0 +1,11 @@
+async: true
+
+inputs:
+  key:
+    main: true
+
+wrap:
+  - updateBy
+  - "'<%- key -%>'"
+  - query.id
+  - query

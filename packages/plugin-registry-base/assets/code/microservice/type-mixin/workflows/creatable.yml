@@ -1,0 +1,13 @@
+attributes:
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      cascadeClear:
+        CREATED: [  ]
+    config:
+      steps: [CREATED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: []

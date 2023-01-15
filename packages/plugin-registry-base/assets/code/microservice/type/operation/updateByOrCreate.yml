@@ -1,0 +1,13 @@
+async: true
+
+inputs:
+  key:
+    main: true
+  idKey:
+    default: id
+
+wrap:
+  - updateByOrCreate
+  - "'<%- key -%>'"
+  - query.<%- idKey -%>
+  - query

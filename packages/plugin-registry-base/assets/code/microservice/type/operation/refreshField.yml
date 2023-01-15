@@ -1,0 +1,14 @@
+require:
+  - get
+  - update
+
+async: true
+
+inputs:
+  field:
+    main: true
+
+
+wrap:
+  - update
+  - "{...query, data: {<%- field -%>: (await service.get({...query, fields: ['id', '<%- field -%>']})).<%- field -%>}}"

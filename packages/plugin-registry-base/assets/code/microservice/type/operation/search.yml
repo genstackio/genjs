@@ -1,0 +1,13 @@
+async: true
+
+inputs:
+  index:
+    main: true
+
+as: find
+
+backend:
+  name: searchapi
+  method: search
+  args:
+    - "{...query, index: '<%- index %>'}"

@@ -1,0 +1,31 @@
+attributes:
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      QUEUED: { queuedAt: '@now', statusAt: '@now' }
+      STARTED: { startedAt: '@now', statusAt: '@now' }
+      PAUSED: { pausedAt: '@now', statusAt: '@now' }
+      COMPLETED: { completedAt: '@now', statusAt: '@now' }
+      ERRORED: { erroredAt: '@now', statusAt: '@now' }
+      ABORTED: { abortedAt: '@now', statusAt: '@now' }
+      cascadeClear:
+        CREATED: [ queuedAt, startedAt, pausedAt, completedAt, erroredAt, abortedAt ]
+        QUEUED: [ startedAt, pausedAt, completedAt, erroredAt, abortedAt ]
+        STARTED: [ pausedAt, completedAt, erroredAt, abortedAt ]
+        PAUSED: [ completedAt, erroredAt, abortedAt ]
+        COMPLETED: [ erroredAt, abortedAt ]
+        ERRORED: [ abortedAt ]
+        ABORTED: [ ]
+    config:
+      steps: [CREATED, QUEUED, STARTED, PAUSED, COMPLETED, ERRORED, ABORTED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [QUEUED, ABORTED, ERRORED]
+        QUEUED: [STARTED, PAUSED, ABORTED, ERRORED]
+        STARTED: [PAUSED, COMPLETED, ERRORED, ABORTED]
+        PAUSED: [COMPLETED, STARTED, ABORTED, ERRORED]
+        COMPLETED: [QUEUED]
+        ERRORED: [ABORTED, QUEUED]
+        ABORTED: [QUEUED]

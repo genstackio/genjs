@@ -1,0 +1,17 @@
+attributes:
+  activatedAt: :timestamp
+  activatedBy: uuid
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: {createdAt: '@now', createdBy: '@user_id'}
+      ACTIVATED: {activatedAt: '@now', activatedBy: '@user_id'}
+    cascadeClear:
+      CREATED: [activatedAt, activatedBy]
+    config:
+      steps: [CREATED,ACTIVATED]
+
+operations:
+  activate: updateStatus(ACTIVATED)
+  unactivate: updateStatus(CREATED)
