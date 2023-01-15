@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-bundle-java",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -22,9 +22,9 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-package": "^0.1.22"
+    "@genjs/genjs-bundle-package": "^0.1.23"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.19"
+    "@genjs/genjs": "^0.4.20"
   }
 }
