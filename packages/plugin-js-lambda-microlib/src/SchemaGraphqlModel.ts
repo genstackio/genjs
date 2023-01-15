@@ -391,7 +391,7 @@ export class SchemaGraphqlModel {
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
                         /Parent/.test(msOperation) ? false : {name: /InPeriodBy/.test(msOperation) ? cfg.vars.key || 'id' : 'id', type: 'string', gqlType: 'String', required: true},
-                        /InPeriodBy/.test(msOperation) ? {name: 'period', type: '[bigint!]!]', gqlType: '[BigInt!]!'} : {name: 'value', type: 'string', gqlType: 'String'},
+                        /InPeriodBy/.test(msOperation) ? {name: 'period', type: '[bigint!]!]', gqlType: '[BigInt!]!'} : false,
                         {name: 'offset', type: 'string', gqlType: 'String'},
                         {name: 'limit', type: 'integer', gqlType: 'Int'},
                         {name: 'sort', type: 'string', gqlType: 'String'},
