@@ -4,7 +4,13 @@ require:
 inputs:
   index:
     main: true
+  overwriteIndex:
+    type: boolean
+    default: true
+  backend:
+    type: string
+    default: ''
 
 wrap:
-  - find
-  - "{...query, index: '<%- index %>'}"
+  - "<%- backend ? `${backend}.` : '' %>find"
+  - "{<%- overwriteIndex ? '' : `index: '${index}', ` %>...query<%- overwriteIndex ? `, index: '${index}'` : '' %>}"

@@ -382,7 +382,14 @@ export class SchemaGraphqlModel {
             case 'findInIndexByHashKey':
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
-                        /Parent/.test(msOperation) ? false : {name: 'id', type: 'string', gqlType: 'String', required: true},
+                        {name: 'id', type: 'string', gqlType: 'String', required: true},
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ].filter(x => !!x)};
+            case 'findInIndexByHardCodedHashKey':
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
                         {name: 'offset', type: 'string', gqlType: 'String'},
                         {name: 'limit', type: 'integer', gqlType: 'Int'},
                         {name: 'sort', type: 'string', gqlType: 'String'},
@@ -390,8 +397,31 @@ export class SchemaGraphqlModel {
             case 'findInIndexByHashKeyAndRangeKey':
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
-                        /Parent/.test(msOperation) ? false : {name: /InPeriodBy/.test(msOperation) ? cfg.vars.key || 'id' : 'id', type: 'string', gqlType: 'String', required: true},
+                        {name: cfg.vars.key || 'id', type: 'string', gqlType: 'String', required: true},
+                        /InPeriodBy/.test(msOperation) ? {name: 'period', type: '[bigint!]!]', gqlType: '[BigInt!]!'} : {name: cfg.vars.r_key || 'code', type: 'string!', gqlType: 'String!'},
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ].filter(x => !!x)};
+            case 'findInIndexByHashKeyAndHardCodedRangeKey':
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: cfg.vars.key || 'id', type: 'string', gqlType: 'String', required: true},
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ].filter(x => !!x)};
+            case 'findInIndexByHardCodedHashKeyAndRangeKey':
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
                         /InPeriodBy/.test(msOperation) ? {name: 'period', type: '[bigint!]!]', gqlType: '[BigInt!]!'} : false,
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ].filter(x => !!x)};
+            case 'findInIndexByHardCodedHashKeyAndHardCodedRangeKey':
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
                         {name: 'offset', type: 'string', gqlType: 'String'},
                         {name: 'limit', type: 'integer', gqlType: 'Int'},
                         {name: 'sort', type: 'string', gqlType: 'String'},
