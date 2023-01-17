@@ -1,0 +1,10 @@
+attributes:
+  status:
+    type: workflow
+    default: NOT_REFUNDED
+    config:
+      steps: [NOT_REFUNDED, REFUNDING, REFUNDED]
+      transitions:
+        undefined: [NOT_REFUNDED]
+        NOT_REFUNDED: [REFUNDING]
+        REFUNDING: [REFUNDED]

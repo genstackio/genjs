@@ -1,0 +1,23 @@
+attributes:
+  statusAt: :timestamp
+  completedAt: :timestamp
+  abortedAt: :timestamp
+  expiredAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      COMPLETED: { completedAt: '@now', statusAt: '@now' }
+      ABORTED: { abortedAt: '@now', statusAt: '@now' }
+      EXPIRED: { expiredAt: '@now', statusAt: '@now' }
+    cascadeClear:
+      CREATED: [ completedAt, abortedAt, expiredAt ]
+      COMPLETED: [ abortedAt, expiredAt ]
+      ABORTED: [ expiredAt ]
+      EXPIRED: [  ]
+    config:
+      steps: [CREATED, COMPLETED, ABORTED, EXPIRED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [COMPLETED, EXPIRED, ABORTED]

@@ -1,6 +1,7 @@
 attributes:
   activatedAt: :timestamp
-  activatedBy: uuid
+  activatedBy: :uuid
+  createdBy: :uuid
   status:
     type: workflow
     default: CREATED
@@ -9,6 +10,7 @@ attributes:
       ACTIVATED: {activatedAt: '@now', activatedBy: '@user_id'}
     cascadeClear:
       CREATED: [activatedAt, activatedBy]
+      ACTIVATED: []
     config:
       steps: [CREATED,ACTIVATED]
 

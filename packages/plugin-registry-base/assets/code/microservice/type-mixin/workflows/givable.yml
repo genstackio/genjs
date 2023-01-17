@@ -1,0 +1,11 @@
+attributes:
+  status:
+    type: workflow
+    default: NOT_GIVEN
+    config:
+      steps: [NOT_GIVEN, GIVEN, SUSPENDED]
+      transitions:
+        undefined: [NOT_GIVEN]
+        NOT_GIVEN: [GIVEN, SUSPENDED]
+        GIVEN: [NOT_GIVEN, SUSPENDED]
+        SUSPENDED: [GIVEN, NOT_GIVEN]

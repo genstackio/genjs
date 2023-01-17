@@ -1,0 +1,31 @@
+attributes:
+  statusAt: :timestamp
+  unpublishedAt: :timestamp
+  publishedAt: :timestamp
+  publishedPriorityAt: :timestamp
+  archivedAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      UNPUBLISHED: { unpublishedAt: '@now', statusAt: '@now' }
+      PUBLISHED: { publishedAt: '@now', statusAt: '@now' }
+      PUBLISHED_PRIORITY: { publishedPriorityAt: '@now', statusAt: '@now' }
+      ARCHIVED: { archivedAt: '@now', statusAt: '@now' }
+    cascadeClear:
+      CREATED: [ archivedAt, publishedPriorityAt, publishedAt, unpublishedAt, disabledAt ]
+      UNPUBLISHED: [ archivedAt, publishedPriorityAt, publishedAt, disabledAt ]
+      DISABLED: [ archivedAt, publishedPriorityAt, publishedAt, unpublishedAt ]
+      PUBLISHED: [ archivedAt, unpublishedAt, publishedPriorityAt, disabledAt ]
+      PUBLISHED_PRIORITY: [ archivedAt, unpublishedAt, publishedAt, disabledAt ]
+      ARCHIVED: [ archivedAt, publishedPriorityAt, publishedAt, unpublishedAt, disabledAt ]
+    config:
+      steps: [CREATED, UNPUBLISHED, DISABLED, PUBLISHED, PUBLISHED_PRIORITY, ARCHIVED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [UNPUBLISHED, PUBLISHED, PUBLISHED_PRIORITY, BLOCKED, DISABLED, ARCHIVED]
+        UNPUBLISHED: [PUBLISHED, PUBLISHED_PRIORITY, BLOCKED, DISABLED, ARCHIVED]
+        PUBLISHED: [UNPUBLISHED, PUBLISHED_PRIORITY, BLOCKED, DISABLED, ARCHIVED]
+        PUBLISHED_PRIORITY: [UNPUBLISHED, PUBLISHED, BLOCKED, DISABLED, ARCHIVED]
+        ARCHIVED: [UNPUBLISHED, BLOCKED, DISABLED, ARCHIVED]

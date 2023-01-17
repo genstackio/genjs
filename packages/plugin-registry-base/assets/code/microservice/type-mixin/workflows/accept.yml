@@ -1,6 +1,9 @@
 attributes:
   acceptedAt: :timestamp
+  acceptedBy: :uuid
+  createdBy: :uuid
   refusedAt: :timestamp
+  refusedBy: :uuid
   status:
     type: workflow
     default: CREATED

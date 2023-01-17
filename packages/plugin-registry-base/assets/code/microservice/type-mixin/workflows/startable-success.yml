@@ -1,0 +1,14 @@
+attributes:
+  status:
+    type: workflow
+    default: CREATED
+    config:
+      steps: [ CREATED, QUEUED, STARTED, SUCCESS, ERROR, ABORTED ]
+      transitions:
+        undefined: [ CREATED ]
+        CREATED: [ QUEUED ]
+        QUEUED: [ STARTED ]
+        STARTED: [ SUCCESS, ERROR, ABORTED ]
+        SUCCESS: [ ABORTED ]
+        ERROR: [ ABORTED ]
+        ABORTED: [ ]

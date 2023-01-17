@@ -1,7 +1,13 @@
 attributes:
+  createdBy: :uuid
   submittedAt: :timestamp
+  submittedBy: :uuid
   acceptedAt: :timestamp
+  acceptedBy: :uuid
   refusedAt: :timestamp
+  refusedBy: :uuid
+  draftedAt: :timestamp
+  draftedBy: :uuid
   status:
     type: workflow
     default: CREATED

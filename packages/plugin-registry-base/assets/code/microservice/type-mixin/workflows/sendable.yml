@@ -1,4 +1,12 @@
 attributes:
+  createdBy: :uuid
+  statusAt: :timestamp
+  sendingAt: :timestamp
+  sendingBy: :uuid
+  sendingFailedAt: :timestamp
+  sendingFailedBy: :uuid
+  sentAt: :timestamp
+  sentBy: :uuid
   status:
     type: workflow
     default: CREATED
@@ -7,11 +15,11 @@ attributes:
       SENDING: { sendingAt: '@now', sendingBy: '@user_id', statusAt: '@now' }
       SENDING_FAILED: { sendingFailedAt: '@now', sendingFailedBy: '@user_id', statusAt: '@now' }
       SENT: { sentAt: '@now', sentBy: '@user_id', statusAt: '@now' }
-      cascadeClear:
-        CREATED: [ sendingAt, sendingBy, sendingFailedAt, sendingFailedBy, sentAt, sentBy ]
-        SENDING: [ sentAt, sentBy, sendingFailedAt, sendingFailedBy ]
-        SENDING_FAILED: [ sentAt, sentBy ]
-        SENT: [ sendingFailedAt, sendingFailedBy ]
+    cascadeClear:
+      CREATED: [ sendingAt, sendingBy, sendingFailedAt, sendingFailedBy, sentAt, sentBy ]
+      SENDING: [ sentAt, sentBy, sendingFailedAt, sendingFailedBy ]
+      SENDING_FAILED: [ sentAt, sentBy ]
+      SENT: [ sendingFailedAt, sendingFailedBy ]
     config:
       steps: [CREATED, SENDING, SENDING_FAILED, SENT]
       transitions:

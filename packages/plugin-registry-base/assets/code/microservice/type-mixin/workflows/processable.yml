@@ -1,4 +1,10 @@
 attributes:
+  statusAt: :timestamp
+  queuedAt: :timestamp
+  processingAt: :timestamp
+  processedAt: :timestamp
+  erroredAt: :timestamp
+  abortedAt: :timestamp
   status:
     type: workflow
     default: CREATED
@@ -9,13 +15,13 @@ attributes:
       PROCESSED: { processedAt: '@now', statusAt: '@now' }
       ERRORED: { erroredAt: '@now', statusAt: '@now' }
       ABORTED: { abortedAt: '@now', statusAt: '@now' }
-      cascadeClear:
-        CREATED: [ queuedAt, processingAt, processedAt, erroredAt, abortedAt ]
-        QUEUED: [ processingAt, processedAt, erroredAt, abortedAt ]
-        PROCESSING: [ processedAt, erroredAt, abortedAt ]
-        PROCESSED: [ erroredAt, abortedAt ]
-        ERRORED: [ abortedAt ]
-        ABORTED: [ ]
+    cascadeClear:
+      CREATED: [ queuedAt, processingAt, processedAt, erroredAt, abortedAt ]
+      QUEUED: [ processingAt, processedAt, erroredAt, abortedAt ]
+      PROCESSING: [ processedAt, erroredAt, abortedAt ]
+      PROCESSED: [ erroredAt, abortedAt ]
+      ERRORED: [ abortedAt ]
+      ABORTED: [ ]
     config:
       steps: [CREATED, QUEUED, PROCESSING, PROCESSED, ERRORED, ABORTED]
       autoTransitionTo: QUEUED

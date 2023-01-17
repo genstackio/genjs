@@ -1,0 +1,34 @@
+attributes:
+  statusAt: :timestamp
+  acceptedAt: :timestamp
+  refusedAt: :timestamp
+  canceledAt: :timestamp
+  convertedAt: :timestamp
+  expiredAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      ACCEPTED: { acceptedAt: '@now', statusAt: '@now' }
+      REFUSED: { refusedAt: '@now', statusAt: '@now' }
+      CANCELED: { canceledAt: '@now', statusAt: '@now' }
+      CONVERTED: { convertedAt: '@now', statusAt: '@now' }
+      EXPIRED: { expiredAt: '@now', statusAt: '@now' }
+    cascadeClear:
+      CREATED: [ acceptedAt, refusedAt, canceledAt, convertedAt, expiredAt ]
+      ACCEPTED: [ refusedAt, canceledAt, convertedAt, expiredAt ]
+      REFUSED: [ acceptedAt, canceledAt, convertedAt, expiredAt ]
+      CANCELED: [ acceptedAt, refusedAt, convertedAt, expiredAt ]
+      CONVERTED: [ expiredAt ]
+      EXPIRED: [ ]
+    config:
+      steps: [CREATED, ACCEPTED, REFUSED, CANCELED, CONVERTED, EXPIRED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [ACCEPTED, EXPIRED, CANCELED, REFUSED]
+        ACCEPTED: [CONVERTED, EXPIRED, CANCELED, REFUSED]
+        REFUSED: [EXPIRED, CANCELED]
+        CANCELED: [EXPIRED]
+        CONVERTED: [EXPIRED]
+        EXPIRED: []

@@ -1,0 +1,29 @@
+attributes:
+  createdBy: :uuid
+  runningAt: :timestamp
+  runningBy: :uuid
+  pausedAt: :timestamp
+  pausedBy: :uuid
+  archivedAt: :timestamp
+  archivedBy: :uuid
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', createdBy: '@user_id' }
+      RUNNING: { runningAt: '@now', runningBy: '@user_id' }
+      PAUSED: { pausedAt: '@now', pausedBy: '@user_id' }
+      ARCHIVED: { archivedAt: '@now', archivedBy: '@user_id' }
+    cascadeClear:
+      CREATED: [ runningAt, pausedAt, archivedAt ]
+      RUNNING: [ pausedAt, archivedAt ]
+      PAUSED: [ archivedAt ]
+      ARCHIVED: [ ]
+    config:
+      steps: [ CREATED, RUNNING, PAUSED, ARCHIVED ]
+      transitions:
+        undefined: [ CREATED ]
+        CREATED: [ RUNNING ]
+        RUNNING: [ PAUSED ]
+        PAUSED: [ RUNNING, ARCHIVED ]
+        ARCHIVED: [ CREATED ]

@@ -1,0 +1,36 @@
+attributes:
+  statusAt: :timestamp
+  placedAt: :timestamp
+  validatedAt: :timestamp
+  processingAt: :timestamp
+  processedAt: :timestamp
+  shippedAt: :timestamp
+  completedAt: :timestamp
+  canceledAt: :timestamp
+  adminCanceledAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      PLACED: { placedAt: '@now', statusAt: '@now' }
+      VALIDATED: { validatedAt: '@now', statusAt: '@now' }
+      PROCESSING: { processingAt: '@now', statusAt: '@now' }
+      PROCESSED: { processedAt: '@now', statusAt: '@now' }
+      SHIPPED: { shippedAt: '@now', statusAt: '@now' }
+      COMPLETED: { completedAt: '@now', statusAt: '@now' }
+      CANCELED: { canceledAt: '@now', statusAt: '@now' }
+      ADMIN_CANCELED: { adminCanceledAt: '@now', statusAt: '@now' }
+    config:
+      steps: [CREATED, PLACED, VALIDATED, PROCESSING, PROCESSED, SHIPPED, COMPLETED, CANCELED, ADMIN_CANCELED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [PLACED, CANCELED, ADMIN_CANCELED]
+        PLACED: [VALIDATED, CANCELED, ADMIN_CANCELED]
+        VALIDATED: [PROCESSING, CANCELED, ADMIN_CANCELED]
+        PROCESSING: [PROCESSED, CANCELED, ADMIN_CANCELED]
+        PROCESSED: [SHIPPED, CANCELED, ADMIN_CANCELED]
+        SHIPPED: [COMPLETED, CANCELED, ADMIN_CANCELED]
+        COMPLETED: []
+        CANCELED: [CREATED]
+        ADMIN_CANCELED: [CREATED]

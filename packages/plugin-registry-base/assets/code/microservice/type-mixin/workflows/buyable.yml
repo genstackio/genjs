@@ -1,0 +1,53 @@
+attributes:
+  statusAt: :timestamp
+  promisedAt: :timestamp
+  preorderedAt: :timestamp
+  paidAt: :timestamp
+  successAckAt: :timestamp
+  canceledAt: :timestamp
+  cancelAckAt: :timestamp
+  failedAt: :timestamp
+  failAckAt: :timestamp
+  adminCancelAt: :timestamp
+  adminCanceledAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      PROMISED: { promisedAt: '@now', statusAt: '@now' }
+      PREORDERED: { preorderedAt: '@now', statusAt: '@now' }
+      PAID: { paidAt: '@now', statusAt: '@now' }
+      SUCCESS_ACK: { successAckAt: '@now', statusAt: '@now' }
+      CANCELED: { canceledAt: '@now', statusAt: '@now' }
+      CANCEL_ACK: { cancelAckAt: '@now', statusAt: '@now' }
+      FAILED: { failedAt: '@now', statusAt: '@now' }
+      FAIL_ACK: { failAckAt: '@now', statusAt: '@now' }
+      ADMIN_CANCEL: { adminCancelAt: '@now', statusAt: '@now' }
+      ADMIN_CANCELED: { adminCanceledAt: '@now', statusAt: '@now' }
+    cascadeClear:
+      CREATED: [ promisedAt, preorderedAt, paidAt, successAckAt, canceledAt, cancelAckAt, failedAt, failAckAt, adminCancelAt, adminCanceledAt ]
+      PROMISED: [ preorderedAt, paidAt, successAckAt, canceledAt, cancelAckAt, failedAt, failAckAt, adminCancelAt, adminCanceledAt ]
+      PREORDERED: [ promisedAt, paidAt, successAckAt, canceledAt, cancelAckAt, failedAt, failAckAt, adminCancelAt, adminCanceledAt ]
+      PAID: [ successAckAt, canceledAt, cancelAckAt, failedAt, failAckAt, adminCancelAt, adminCanceledAt ]
+      SUCCESS_ACK: [ canceledAt, cancelAckAt, failedAt, failAckAt, adminCancelAt, adminCanceledAt ]
+      CANCELED: [ cancelAckAt, failedAt, failAckAt, adminCancelAt, adminCanceledAt ]
+      CANCEL_ACK: [ failedAt, failAckAt, adminCancelAt, adminCanceledAt ]
+      FAILED: [ failAckAt, adminCancelAt, adminCanceledAt ]
+      FAIL_ACK: [ adminCancelAt, adminCanceledAt ]
+      ADMIN_CANCEL: [ adminCanceledAt ]
+      ADMIN_CANCELED: [ ]
+    config:
+      steps: [CREATED, PROMISED, PREORDERED, PAID, SUCCESS_ACK, CANCELED, CANCEL_ACK, FAILED, FAIL_ACK, ADMIN_CANCEL, ADMIN_CANCELED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [PROMISED, PREORDERED, PAID, CANCELED, FAILED, ADMIN_CANCEL]
+        PROMISED: [PAID, CANCELED, FAILED, ADMIN_CANCEL]
+        PREORDERED: [PAID, CANCELED, FAILED, ADMIN_CANCEL]
+        PAID: [SUCCESS_ACK, CANCELED, ADMIN_CANCEL]
+        CANCELED: [CANCEL_ACK, ADMIN_CANCEL]
+        FAILED: [FAIL_ACK, ADMIN_CANCEL]
+        FAIL_ACK: [ADMIN_CANCEL]
+        CANCEL_ACK: [ADMIN_CANCEL]
+        SUCCESS_ACK: [ADMIN_CANCEL]
+        ADMIN_CANCEL: [ADMIN_CANCELED]

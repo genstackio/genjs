@@ -1,11 +1,12 @@
 attributes:
+  statusAt: :timestamp
   status:
     type: workflow
     default: CREATED
     cascadePopulate:
       CREATED: { createdAt: '@now', statusAt: '@now' }
-      cascadeClear:
-        CREATED: [  ]
+    cascadeClear:
+      CREATED: [  ]
     config:
       steps: [CREATED]
       transitions:

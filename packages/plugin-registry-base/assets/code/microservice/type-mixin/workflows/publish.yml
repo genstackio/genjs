@@ -1,6 +1,9 @@
 attributes:
-  publishedAt: :timestamp
   archivedAt: :timestamp
+  archivedBy: :uuid
+  createdBy: :uuid
+  publishedAt: :timestamp
+  publishedBy: :uuid
   status:
     type: workflow
     default: CREATED
@@ -11,7 +14,7 @@ attributes:
     cascadeClear:
       CREATED: [publishedAt, publishedBy, archivedAt, archivedBy]
       PUBLISHED: [archivedAt, archivedBy]
-      ARCHIVED: [publishedAt, publishedBy]
+      ARCHIVED: []
     permissions:
       CREATED: ['moderator', 'admin']
       PUBLISHED: ['moderator', 'admin']

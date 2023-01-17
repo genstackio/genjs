@@ -1,0 +1,34 @@
+attributes:
+  statusAt: :timestamp
+  completedAt: :timestamp
+  canceledAt: :timestamp
+  failedAt: :timestamp
+  adminCancelAt: :timestamp
+  adminCanceledAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      COMPLETED: { completedAt: '@now', statusAt: '@now' }
+      CANCELED: { canceledAt: '@now', statusAt: '@now' }
+      FAILED: { failedAt: '@now', statusAt: '@now' }
+      ADMIN_CANCEL: { adminCancelAt: '@now', statusAt: '@now' }
+      ADMIN_CANCELED: { adminCanceledAt: '@now', statusAt: '@now' }
+    cascadeClear:
+      CREATED: [ completedAt, canceledAt, failedAt, adminCancelAt, adminCanceledAt ]
+      COMPLETED: [ canceledAt, failedAt, adminCancelAt, adminCanceledAt ]
+      CANCELED: [ cancelAckAt, failedAt, failAckAt, adminCancelAt, adminCanceledAt ]
+      FAILED: [ failAckAt, adminCancelAt, adminCanceledAt ]
+      ADMIN_CANCEL: [ adminCanceledAt ]
+      ADMIN_CANCELED: [ ]
+    config:
+      steps: [CREATED, COMPLETED, CANCELED, FAILED, ADMIN_CANCEL, ADMIN_CANCELED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [COMPLETED, CANCELED, FAILED, ADMIN_CANCEL]
+        COMPLETED: [CANCELED, ADMIN_CANCEL]
+        CANCELED: []
+        FAILED: [ADMIN_CANCEL]
+        ADMIN_CANCEL: [ADMIN_CANCELED]
+        ADMIN_CANCELED: []

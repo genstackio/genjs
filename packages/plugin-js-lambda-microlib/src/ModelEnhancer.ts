@@ -6,6 +6,7 @@ export class ModelEnhancer {
         m = this.buildFinalizedModelReferences(m, enrichments);
         m = this.buildFinalizedModelDefaultValues(m, enrichments);
         m = this.buildFinalizedModelFields(m, enrichments);
+        m = this.buildFinalizedModelSearchFields(m, enrichments);
         m = this.buildFinalizedModelIndexes(m, enrichments);
         m = this.buildFinalizedModelPrivateFields(m, enrichments);
         m = this.buildFinalizedModelRefAttributeFields(m, enrichments);
@@ -38,6 +39,7 @@ export class ModelEnhancer {
     protected clean(m: any) {
         m = this.cleanObjectKeyIfEmpty(m, 'defaultValues');
         m = this.cleanObjectKeyIfEmpty(m, 'fields');
+        m = this.cleanObjectKeyIfEmpty(m, 'searchFields');
         m = this.cleanObjectKeyIfEmpty(m, 'privateFields');
         m = this.cleanObjectKeyIfEmpty(m, 'indexes', 'array');
         m = this.cleanObjectKeyIfEmpty(m, 'refAttributeFields', 'array');
@@ -70,6 +72,7 @@ export class ModelEnhancer {
     protected sort(m: any) {
         m.defaultValues && (m.defaultValues = this.sortObject(m.defaultValues));
         m.fields && (m.fields = this.sortObject(m.fields));
+        m.searchFields && (m.searchFields = this.sortObject(m.searchFields));
         m.privateFields && (m.privateFields = this.sortObject(m.privateFields));
         m.indexes && (m.indexes = this.sortObject(m.indexes));
         m.refAttributeFields && (m.refAttributeFields = this.sortObject(m.refAttributeFields));
@@ -82,19 +85,19 @@ export class ModelEnhancer {
         m.triggers && (m.triggers = this.sortObject(m.triggers));
         m.watchTargets && (m.watchTargets = this.sortObject(m.watchTargets));
         m.statFields && (m.statFields = this.sortObject(m.statFields));
-        m.statTargets && (m.statTargets = this.sortObject(m.statTargets));
+        m.statTargets && (m.statTargets = this.sortObject(m.statTargets, 2));
         m.transformers && (m.transformers = this.sortObject(m.transformers));
-        m.cascadeValues && (m.cascadeValues = this.sortObject(m.cascadeValues));
+        m.cascadeValues && (m.cascadeValues = this.sortObject(m.cascadeValues, 3));
         m.ownedReferenceListFields && (m.ownedReferenceListFields = this.sortObject(m.ownedReferenceListFields));
         m.updateDefaultValues && (m.updateDefaultValues = this.sortObject(m.updateDefaultValues));
         m.autoTransitionTo && (m.autoTransitionTo = this.sortObject(m.autoTransitionTo));
         m.multiRefAttributeTargetFields && (m.multiRefAttributeTargetFields = this.sortObject(m.multiRefAttributeTargetFields));
         m.converters && (m.converters = this.sortObject(m.converters));
-        m.requires && (m.requires = this.sortObject(m.requires));
+        m.requires && (m.requires = this.sortObject(m.requires, 2));
         m.mutators && (m.mutators = this.sortObject(m.mutators));
         m.pretransformers && (m.pretransformers = this.sortObject(m.pretransformers));
         m.authorizers && (m.authorizers = this.sortObject(m.authorizers));
-        m.prefetchs && (m.prefetchs = this.sortObject(m.prefetchs));
+        m.prefetchs && (m.prefetchs = this.sortObject(m.prefetchs, 2));
         m.enhancers && (m.enhancers = this.sortObject(m.enhancers));
         m.referenceTargets && (m.referenceTargets = this.sortObject(m.referenceTargets));
         return this.sortObject(m);
@@ -105,6 +108,9 @@ export class ModelEnhancer {
     }
     // noinspection JSUnusedLocalSymbols
     protected buildFinalizedModelFields(m: any, enrichments: any) {
+        return m;
+    }
+    protected buildFinalizedModelSearchFields(m: any, enrichments: any) {
         return m;
     }
     // noinspection JSUnusedLocalSymbols
@@ -277,10 +283,21 @@ export class ModelEnhancer {
         }, {...(m.referenceTargets || {})});
         return m;
     }
-    protected sortObject(o: any) {
+    protected sortObject(o: any, depth: number = 1) {
         const keys = Object.keys(o);
         keys.sort();
-        return keys.reduce((acc: any, k: string) => Object.assign(acc, {[k]: o[k]}), {});
+        depth = depth > 0 ? (depth - 1) : 0;
+        return keys.reduce((acc: any, k: string) => {
+            let v = o[k];
+            if (v && depth > 0) {
+                if (Array.isArray(v)) {
+                    v.sort();
+                } else if ('object' === typeof v) {
+                    v = this.sortObject(v, depth);
+                }
+            }
+            return Object.assign(acc, {[k]: v});
+        }, {});
     }
     protected cleanObjectKeyIfEmpty(o: any, key: string, mode: string = 'default') {
         if ('undefined' === typeof o[key]) return o;

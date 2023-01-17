@@ -1,0 +1,9 @@
+attributes:
+  status:
+    type: workflow
+    default: NOT_APPLIED
+    config:
+      steps: [NOT_APPLIED, APPLIED]
+      transitions:
+        undefined: [NOT_APPLIED]
+        NOT_APPLIED: [APPLIED]

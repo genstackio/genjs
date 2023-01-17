@@ -1,0 +1,39 @@
+attributes:
+  createdBy: :uuid
+  pausedAt: :timestamp
+  pausedBy: :uuid
+  startedAt: :timestamp
+  startedBy: :uuid
+  completedAt: :timestamp
+  completedBy: :uuid
+  erroredAt: :timestamp
+  erroredBy: :uuid
+  abortedAt: :timestamp
+  abortedBy: :uuid
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: {createdAt: '@now', createdBy: '@user_id'}
+      PAUSED: {pausedAt: '@now', pausedBy: '@user_id'}
+      STARTED: {startedAt: '@now', startedBy: '@user_id'}
+      COMPLETED: {completedAt: '@now', completedBy: '@user_id'}
+      ERRORED: {erroredAt: '@now', erroredBy: '@user_id'}
+      ABORTED: {abortedAt: '@now', abortedBy: '@user_id'}
+    cascadeClear:
+      CREATED: [pausedAt, startedAt, completedAt, erroredAt, abortedAt]
+      PAUSED: []
+      STARTED: [pausedAt, completedAt, erroredAt, abortedAt]
+      COMPLETED: [erroredAt, abortedAt]
+      ERRORED: [completedAt, abortedAt]
+      ABORTED: [erroredAt, completedAt]
+    config:
+      steps: [CREATED, STARTED, PAUSED, COMPLETED, ERRORED, ABORTED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [PAUSED, STARTED, ABORTED, ERRORED]
+        PAUSED: [CREATED, STARTED, ABORTED, ERRORED]
+        STARTED: [COMPLETED, ABORTED, ERRORED]
+        COMPLETED: [STARTED]
+        ERRORED: [CREATED]
+        ABORTED: [CREATED]

@@ -46,36 +46,12 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
                     }
                     return acc;
                 }, {attributesPrefix: undefined, operationsPrefix: undefined, functionsPrefix: undefined, attributesSuffix: undefined, operationsSuffix: undefined, functionsSuffix: undefined, attributes: {}, operations: {}, functions: {}, vars: {}} as {attributesPrefix?: string, operationsPrefix?: string, functionsPrefix?: string, attributesSuffix?: string, operationsSuffix?: string, functionsSuffix?: string, attributes: Record<string, string>, operations: Record<string, string>, functions: Record<string, string>, vars: Record<string, any>});
-                asset = (!vAttributesPrefix || !asset?.attributes) ? asset : Object.entries(asset.attributes).reduce((acc, [k, v]) => {
-                    acc.attributes[`${vAttributesPrefix}${k.slice(0, 1).toUpperCase()}${k.slice(1)}`] = v;
-                    delete acc.attributes[k];
-                    return acc;
-                }, asset);
-                asset = (!vAttributesSuffix || !asset?.attributes) ? asset : Object.entries(asset.attributes).reduce((acc, [k, v]) => {
-                    acc.attributes[`${k}${vAttributesSuffix.slice(0, 1).toUpperCase()}${vAttributesSuffix.slice(1)}`] = v;
-                    delete acc.attributes[k];
-                    return acc;
-                }, asset);
-                asset = (!vOperationsPrefix || !asset?.operations) ? asset : Object.entries(asset.operations).reduce((acc, [k, v]) => {
-                    acc.operations[`${vOperationsPrefix}${k.slice(0, 1).toUpperCase()}${k.slice(1)}`] = v;
-                    delete acc.operations[k];
-                    return acc;
-                }, asset);
-                asset = (!vOperationsSuffix || !asset?.operations) ? asset : Object.entries(asset.operations).reduce((acc, [k, v]) => {
-                    acc.operations[`${k}${vOperationsSuffix.slice(0, 1).toUpperCase()}${vOperationsSuffix.slice(1)}`] = v;
-                    delete acc.operations[k];
-                    return acc;
-                }, asset);
-                asset = (!vFunctionsPrefix || !asset?.functions) ? asset : Object.entries(asset.functions).reduce((acc, [k, v]) => {
-                    acc.functions[`${vFunctionsPrefix}${k.slice(0, 1).toUpperCase()}${k.slice(1)}`] = v;
-                    delete acc.functions[k];
-                    return acc;
-                }, asset);
-                asset = (!vFunctionsSuffix || !asset?.functions) ? asset : Object.entries(asset.functions).reduce((acc, [k, v]) => {
-                    acc.functions[`${k}${vFunctionsSuffix.slice(0, 1).toUpperCase()}${vFunctionsSuffix.slice(1)}`] = v;
-                    delete acc.functions[k];
-                    return acc;
-                }, asset);
+                asset = (!vAttributesPrefix || !asset?.attributes) ? asset : this.recursived(asset, 'attributes', k => `${vAttributesPrefix}${k.slice(0, 1).toUpperCase()}${k.slice(1)}`);
+                asset = (!vAttributesSuffix || !asset?.attributes) ? asset : this.recursived(asset, 'attributes', k => `${k}${vAttributesSuffix.slice(0, 1).toUpperCase()}${vAttributesSuffix.slice(1)}`);
+                asset = (!vOperationsPrefix || !asset?.operations) ? asset : this.recursived(asset, 'operations', k => `${vOperationsPrefix}${k.slice(0, 1).toUpperCase()}${k.slice(1)}`);
+                asset = (!vOperationsSuffix || !asset?.operations) ? asset : this.recursived(asset, 'operations', k => `${k}${vOperationsSuffix.slice(0, 1).toUpperCase()}${vOperationsSuffix.slice(1)}`);
+                asset = (!vFunctionsPrefix || !asset?.functions) ? asset : this.recursived(asset, 'functions', k => `${vFunctionsPrefix}${k.slice(0, 1).toUpperCase()}${k.slice(1)}`);
+                asset = (!vFunctionsSuffix || !asset?.functions) ? asset : this.recursived(asset, 'functions', k => `${k}${vFunctionsSuffix.slice(0, 1).toUpperCase()}${vFunctionsSuffix.slice(1)}`);
                 asset = Object.entries(vAttributes).reduce((acc, [k, v]: [string, string]) => {
                     if ((!asset?.attributes || {})[k]) return acc;
                     acc.attributes[v] = acc.attributes[k];
@@ -99,6 +75,33 @@ export abstract class AbstractConfigEnhancer implements IConfigEnhancer {
             return this.merge(acc, this.merge(asset, cfg));
         }, {});
         return this.merge(d, c);
+    }
+    protected recursived(a: any, key: string, map: Function) {
+        const mapping = Object.entries(a[key] || {}).reduce((acc, [k]) => {
+            acc[k] = map(k);
+            return acc;
+        }, {} as any);
+        return Object.entries(a[key] || {}).reduce((acc, [k, v]) => {
+            delete acc[key][k];
+            acc[key][mapping[k]] = this.recursiveStringReplaces(v, mapping);
+            return acc;
+        }, a)
+    }
+    protected recursiveStringReplaces(a: any, mapping: any) {
+        return Object.entries(mapping).reduce((acc: any, [k, v]: [string, any]) => {
+            return this.recursiveStringReplace(acc, k, v);
+        }, a as any);
+    }
+    protected recursiveStringReplace(v: any, a: string, b: string) {
+        if (!v) return v;
+        if (Array.isArray(v)) return v.map(x => this.recursiveStringReplace(x, a, b));
+        if ('object' === typeof v) return Object.entries(v).reduce((acc, [kk, vv]) => {
+            delete acc[kk];
+            acc[this.recursiveStringReplace(kk, a, b)] = this.recursiveStringReplace(vv, a, b);
+            return acc;
+        }, {} as any);
+        if ('string' === typeof v) return v.replace(new RegExp(a, 'g'), b);
+        return v;
     }
     protected replaceVarsRecursive(data: any, vars: any) {
         if (!data) return data;

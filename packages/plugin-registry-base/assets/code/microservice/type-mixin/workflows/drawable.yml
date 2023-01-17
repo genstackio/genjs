@@ -1,5 +1,4 @@
 attributes:
-  createdAt: :timestamp
   createdBy: :uuid
   validationRequestedAt: :timestamp
   validationRequestedBy: :uuid
@@ -58,17 +57,3 @@ attributes:
       FINISHED: []
     config:
       steps: [CREATED, VALIDATION_REQUESTED, VALIDATED, RUNNING, COMPLETED, PAUSED, DATE_REACHED, CANCELED, CANCELLATION_REQUESTED, CLOSED, DRAW_REQUESTED, DRAWN, FINISHED]
-
-operations:
-  requestValidation: updateStatus(VALIDATION_REQUESTED)
-  validate: updateStatus(VALIDATED)
-  run: updateStatus(RUNNING)
-  complete: updateStatus(COMPLETED)
-  pause: updateStatus(PAUSED)
-  markDateAsReached: updateStatus(DATE_REACHED)
-  requestCancellation: updateStatus(CANCELLATION_REQUESTED)
-  cancel: updateStatus(CANCELED)
-  close: updateStatus(CLOSED)
-  requestDraw: updateStatus(DRAW_REQUESTED)
-  draw: updateStatus(DRAWN)
-  finish: updateStatus(FINISHED)

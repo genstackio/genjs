@@ -1,0 +1,40 @@
+attributes:
+  createdBy: :uuid
+  queuedAt: :timestamp
+  queuedBy: :uuid
+  generatingAt: :timestamp
+  generatingBy: :uuid
+  generatedAt: :timestamp
+  generatedBy: :uuid
+  erroredAt: :timestamp
+  erroredBy: :uuid
+  canceledAt: :timestamp
+  canceledBy: :uuid
+  generateFailedDetails: string
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: {createdAt: '@now', createdBy: '@user_id'}
+      QUEUED: {queuedAt: '@now', queuedBy: '@user_id'}
+      GENERATING: {generatingAt: '@now', generatingBy: '@user_id'}
+      GENERATED: {generatedAt: '@now', generatedBy: '@user_id'}
+      ERRORED: {erroredAt: '@now', erroredBy: '@user_id'}
+      CANCELED: {canceledAt: '@now', canceledBy: '@user_id'}
+    cascadeClear:
+      CREATED: [queuedAt, generatingAt, generatedAt, erroredAt, canceledAt]
+      GENERATING: [generatedAt, erroredAt, canceledAt]
+      GENERATED: [erroredAt, canceledAt]
+      ERRORED: [generatedAt, canceledAt]
+      CANCELED: [generatedAt, erroredAt]
+    config:
+      steps: [CREATED, QUEUED, GENERATING, GENERATED, ERRORED, CANCELED]
+      autoTransitionTo: QUEUED
+      transitions:
+        undefined: [CREATED]
+        CREATED: [QUEUED, CANCELED, ERRORED]
+        QUEUED: [GENERATING, CANCELED, ERRORED]
+        GENERATING: [GENERATED, CANCELED, ERRORED]
+        GENERATED: [QUEUED]
+        ERRORED: [QUEUED]
+        CANCELED: [QUEUED]

@@ -1,0 +1,9 @@
+attributes:
+  status:
+    type: workflow
+    default: NOT_AVAILABLE
+    config:
+      steps: [NOT_AVAILABLE, COMPLETED]
+      transitions:
+        undefined: [NOT_AVAILABLE]
+        NOT_AVAILABLE: [COMPLETED]

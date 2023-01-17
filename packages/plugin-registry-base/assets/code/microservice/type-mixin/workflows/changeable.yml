@@ -1,0 +1,10 @@
+attributes:
+  status:
+    type: workflow
+    default: UNCHANGED
+    config:
+      steps: [UNCHANGED, CHANGED]
+      transitions:
+        undefined: [UNCHANGED, CHANGED]
+        UNCHANGED: [CHANGED]
+        CHANGED: []
