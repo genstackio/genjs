@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-php-lambda",
-  "version": "0.4.42",
+  "version": "0.4.43",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws-lambda": "^0.1.41",
-    "@genjs/genjs-bundle-php": "^0.1.24"
+    "@genjs/genjs-bundle-aws-lambda": "^0.1.42",
+    "@genjs/genjs-bundle-php": "^0.1.25"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.20"
+    "@genjs/genjs": "^0.4.21"
   }
 }
