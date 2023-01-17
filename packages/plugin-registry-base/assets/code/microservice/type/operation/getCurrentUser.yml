@@ -1,3 +1,5 @@
 wrap:
   - get
   - "{...query, id: (query.user || {}).id}"
+
+outputType: User

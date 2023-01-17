@@ -2,5 +2,14 @@ backends:
   - { type: "service", name: "@auth" }
 
 operations:
-  createAuthToken: createAuthToken
-  refreshAuthToken: refreshAuthToken
+  createAuthToken:
+    type: createAuthToken
+    outputType: AuthTokenResponse
+    args:
+      - {name: data, type: object, outputType: CreateAuthTokenInput, required: true}
+
+  refreshAuthToken:
+    type: refreshAuthToken
+    outputType: AuthTokenResponse
+    args:
+      - {name: data, type: object, outputType: RefreshAuthTokenInput, required: true}

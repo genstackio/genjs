@@ -8,6 +8,10 @@ inputs:
   field:
     main: true
 
+args:
+  - {name: id, type: string, outputType: ID, required: true}
+
+outputType: "{{gqlType}}"
 
 wrap:
   - update

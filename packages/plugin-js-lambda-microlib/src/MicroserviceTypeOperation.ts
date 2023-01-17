@@ -7,6 +7,10 @@ export type MicroserviceTypeOperationConfig = {
     name: string,
     type: string|undefined,
     rawType: string|undefined,
+    rawAs: string|undefined,
+    rawWrap: any|undefined,
+    rawOutputType: string|undefined,
+    rawArgs: any[]|undefined,
     as: string|undefined,
     middlewares: string[],
     errorMiddlewares: string[],
@@ -23,13 +27,21 @@ export type MicroserviceTypeOperationConfig = {
 export default class MicroserviceTypeOperation {
     public readonly name: string;
     public readonly rawType: string|undefined;
+    public readonly rawAs: string|undefined;
+    public readonly rawOutputType: string|undefined;
+    public readonly rawArgs: any[]|undefined;
+    public readonly rawWrap: any|undefined;
     public readonly handler?: Handler;
     public readonly microserviceType: MicroserviceType;
     constructor(microserviceType, cfg: MicroserviceTypeOperationConfig) {
         this.microserviceType = microserviceType;
         const configEnhancer = new MicroserviceTypeOperationConfigEnhancer(this.microserviceType.microservice.package.getAsset.bind(this.microserviceType.microservice.package));
         this.rawType = cfg.rawType;
-        const {name, as = undefined, handler = true, config: extraOperationConfig = {}, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}, enhancers = {}} = cfg.type ? configEnhancer.enhance(cfg, cfg.type) : cfg;
+        this.rawAs = cfg.rawAs;
+        this.rawWrap = cfg.rawWrap;
+        const {name, args = undefined, outputType = undefined, as = undefined, handler = true, config: extraOperationConfig = {}, middlewares = [], errorMiddlewares = [], backend, vars = {}, hooks = {}, enhancers = {}} = cfg.type ? configEnhancer.enhance(cfg, cfg.type) : cfg;
+        this.rawOutputType = outputType || cfg.rawOutputType;
+        this.rawArgs = args || cfg.rawArgs;
         this.name = name;
         this.handler = handler ? new Handler({name: `${microserviceType.name}_${this.name}`, type: 'service', middlewares, errorMiddlewares, directory: 'handlers', params: {
                 on: this.name,

@@ -1,0 +1,19 @@
+inputs:
+  property:
+    type: string
+    default: rank
+    main: true
+  parent:
+    type: string
+    required: true
+
+functions:
+  "fetchAllRankedBy<%- `${parent.slice(0, 1).toUpperCase()}${parent.slice(1)}` %>": findRankedWithLimitInIndexByHashKey(<%- parent %>,key=<%- parent %>,value=query.id,rankProperty=<%- property %>)
+  "fetchAllRankedByParent<%- `${parent.slice(0, 1).toUpperCase()}${parent.slice(1)}` %>": findRankedWithLimitInIndexByHashKey(<%- parent %>,key=<%- parent %>,value=query.parent.id,rankProperty=<%- property %>)
+  applyMove: move(fetcher=fetchAllRankedBy<%- `${parent.slice(0, 1).toUpperCase()}${parent.slice(1)}` %>,rankProperty=<%- property %>)
+
+operations:
+  "findRankedBy<%- `${parent.slice(0, 1).toUpperCase()}${parent.slice(1)}` %>": {wrap: ["fetchAllRankedBy<%- `${parent.slice(0, 1).toUpperCase()}${parent.slice(1)}` %>", 'query']}
+  "findRankedByParent<%- `${parent.slice(0, 1).toUpperCase()}${parent.slice(1)}` %>": {wrap: ["fetchAllRankedByParent<%- `${parent.slice(0, 1).toUpperCase()}${parent.slice(1)}` %>", 'query']}
+
+  move: {wrap: [applyMove, 'query']}

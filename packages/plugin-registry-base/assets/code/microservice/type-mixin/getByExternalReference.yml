@@ -2,4 +2,7 @@ functions:
   getBy: getBy(type=<%- model.shortName %>)
 
 operations:
-  getByExternalReference: getBy(externalReference)
+  getByExternalReference:
+    type: getBy(externalReference)
+    args:
+      - {name: externalReference, type: string, outputType: String, required: true}

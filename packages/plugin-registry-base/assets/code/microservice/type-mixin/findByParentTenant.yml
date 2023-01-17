@@ -1,2 +1,2 @@
 operations:
-  findByParentTenant: findInIndexByHashKey(tenant,key=tenant,value=query.parent.id)
+  findByParentTenant: findInIndexByHardCodedHashKey(tenant,key=tenant,value=query.parent.id)

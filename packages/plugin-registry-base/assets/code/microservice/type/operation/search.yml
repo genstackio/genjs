@@ -6,6 +6,14 @@ inputs:
 
 as: find
 
+args:
+  - {name: offset, type: string, outputType: String}
+  - {name: limit, type: integer, outputType: Int}
+  - {name: query, type: object, outputType: SearchQueryInput}
+  - {name: sort, type: string, outputType: String}
+
+outputType: "{{gqlType}}Page"
+
 backend:
   name: searchapi
   method: search

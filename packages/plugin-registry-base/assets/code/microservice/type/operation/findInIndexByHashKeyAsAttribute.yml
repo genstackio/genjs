@@ -1,0 +1,9 @@
+inputs:
+  index:
+    main: true
+  key: ~
+  value: ~
+
+wrap:
+  - find
+  - "{...query, index: '<%- index %>', hashKey: ['<%- key %>', <%- value %>]}"

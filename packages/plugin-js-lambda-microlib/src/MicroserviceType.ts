@@ -51,6 +51,10 @@ export default class MicroserviceType {
                 const xxx = {...((null === v || undefined === v || !v) ? {} : (('string' === typeof v) ? {type: v} : v as any))};
                 c = operationConfigEnhancer.enrich(xxx);
                 c.rawType = xxx.type;
+                c.rawAs = xxx.as;
+                c.rawWrap = xxx.wrap;
+                c.rawOutputType = xxx.outputType;
+                c.rawArgs = xxx.args;
             } catch (e: any) {
                 throw new Error(`Unable to prepare operation '${k}' for microservice type ${this.name}: ${e.message}`);
             }

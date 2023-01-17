@@ -2,4 +2,8 @@ functions:
   getBy: getBy(type=<%- model.shortName %>)
 
 operations:
-  getByToken: getBy(token)
+  getByToken:
+    type: getBy(token)
+    args:
+      - {name: token, type: string, outputType: String, required: true}
+

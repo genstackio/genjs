@@ -23,8 +23,8 @@ export class SchemaGraphqlModel {
         const {types, queries, mutations, subscriptions, scalars} = this.buildGroupedData(ctx, {
             types: this.buildTypes(ctx, config, pkg),
             inputs: this.buildInputs(ctx, config),
-            queries: this.buildQueries(ctx, config),
-            mutations: this.buildMutations(ctx, config),
+            queries: this.buildQueries(ctx, config, pkg),
+            mutations: this.buildMutations(ctx, config, pkg),
             subscriptions: this.buildSubscriptions(ctx, config),
             scalars: this.buildScalars(ctx, config),
         });
@@ -39,7 +39,13 @@ export class SchemaGraphqlModel {
         return Object.entries(pkg.microservices).reduce((acc: any, [k, v]: [string, any]) => {
             return Object.entries(v.types || {}).reduce((acc2, [kk, vv]: [string, any]) => {
                 return Object.entries(vv.operations).reduce((acc3, [kkk, vvv]: [string, any]) => {
-                    acc3[`${k}_${kk}_${kkk}`] = {name: kkk, type: vvv.type || kkk, gqlType: `${kk.slice(0, 1).toUpperCase()}${kk.slice(1)}`};
+                    const eee = `${kk.slice(0, 1).toUpperCase()}${kk.slice(1)}`;
+                    acc3[`${k}_${kk}_${kkk}`] = {
+                        name: kkk,
+                        type: vvv.rawType || vvv.rawAs || kkk,
+                        gqlType: (vvv.rawOutputType ? vvv.rawOutputType.replace('{{gqlType}}', eee) : undefined) || eee,
+                        args: vvv.rawArgs || undefined,
+                    };
                     return acc3;
                 }, acc2);
             }, acc);
@@ -66,14 +72,14 @@ export class SchemaGraphqlModel {
                 name: fieldName,
                 type: 'id' === fieldName ? 'id' : field.type,
                 automatic: !!(type.model.statFields || {})[fieldName],
-                searchType: type.model.searchFields[fieldName],
+                searchType: (type.model.searchFields || {})[fieldName],
                 outputType: (type.model.outputTypes || {})[fieldName],
                 inputType: (type.model.inputTypes || {})[fieldName],
                 nonFetchable: !!(type.model.nonFetchables || {})[fieldName],
                 list: !!field.list,
                 required: !!(type.model.requiredFields || {})[fieldName],
-                private: !!type.model.privateFields[fieldName],
-                defaultValue: type.model.defaultValues[fieldName] || undefined,
+                private: !!(type.model.privateFields || {})[fieldName],
+                defaultValue: (type.model.defaultValues || {})[fieldName] || undefined,
             };
             return acc;
         }, {}));
@@ -184,37 +190,29 @@ export class SchemaGraphqlModel {
             return acc;
         }, {} as gql_types);
     }
-    protected buildQueries(ctx: any, config: SchemaGraphqlConfig): gql_queries {
+    protected buildQueries(ctx: any, config: SchemaGraphqlConfig, pkg: any): gql_queries {
         const resolvers = (config as any).handlers?.graphql?.vars?.resolvers || {};
+        const otherHandlers = Object.entries(pkg.handlers).filter(x => x[0] !== 'graphql').reduce((acc, [k, v]) => Object.assign(acc, {[k]: v}), {} as any);
 
-        return Object.entries(resolvers?.Query || {}).reduce((acc, [k, v]: [string, any]) => Object.assign(acc, {[k]: this.buildQuery(k, v, ctx, config)}), {} as any);
+        return Object.entries(resolvers?.Query || {}).reduce((acc, [k, v]: [string, any]) => Object.assign(acc, {[k]: this.buildQuery(k, v, ctx, config, pkg, otherHandlers)}), {} as any);
     }
-    protected buildMutations(ctx: any, config: SchemaGraphqlConfig): gql_mutations {
+    protected buildMutations(ctx: any, config: SchemaGraphqlConfig, pkg: any): gql_mutations {
         const resolvers = (config as any).handlers?.graphql?.vars?.resolvers || {};
+        const otherHandlers = Object.entries(pkg.handlers).filter(x => x[0] !== 'graphql').reduce((acc, [k, v]) => Object.assign(acc, {[k]: v}), {} as any);
 
-        return Object.entries(resolvers?.Mutation || {}).reduce((acc, [k, v]: [string, any]) => Object.assign(acc, {[k]: this.buildMutation(k, v, ctx, config)}), {} as any);
+        return Object.entries(resolvers?.Mutation || {}).reduce((acc, [k, v]: [string, any]) => Object.assign(acc, {[k]: this.buildMutation(k, v, ctx, config, pkg, otherHandlers)}), {} as any);
     }
     protected buildSubscriptions(ctx: any, config: SchemaGraphqlConfig): gql_subscriptions {
         const resolvers = (config as any).handlers?.graphql?.vars?.resolvers || {};
 
         return Object.entries(resolvers?.Subscription || {}).reduce((acc, [k, v]: [string, any]) => Object.assign(acc, {[k]: this.buildSubscription(k, v, ctx, config)}), {} as any);
     }
-    protected buildQuery(name: string, resolverName: string, ctx: any, config: SchemaGraphqlConfig): any {
+    protected buildQuery(name: string, resolverName: string, ctx: any, config: SchemaGraphqlConfig, pkg: any, others: any): any {
         const op = (ctx.operations || {})[resolverName] || {name};
         const [a, b, c] = resolverName.split(/_/g);
+        let x: any = {};
         switch (op.type || op.name) {
-            case 'search': return {
-                name,
-                type: 'search',
-                args: [
-                    {name: 'offset', gqlType: 'String'},
-                    {name: 'limit', gqlType: 'Int'},
-                    {name: 'query', gqlType: 'SearchQueryInput'},
-                    {name: 'sort', gqlType: 'String'},
-                ],
-                gqlType: `${op.gqlType}Page`,
-            };
-            case 'find': return {
+            case 'find': x = {
                 name,
                 type: 'find',
                 args: [
@@ -222,90 +220,92 @@ export class SchemaGraphqlModel {
                     {name: 'limit', gqlType: 'Int'},
                 ],
                 gqlType: `${op.gqlType}Page`,
-            };
-            case 'get': return {
+            }; break;
+            case 'get': x = {
                 name,
                 type: 'get',
                 args: [
                     {name: 'id', gqlType: 'ID', required: true}
                 ],
                 gqlType: op.gqlType,
-            };
-            case 'getByCode': return {
-                name,
-                type: 'getByCode',
-                args: [
-                    {name: 'code', gqlType: 'String', required: true}
-                ],
-                gqlType: op.gqlType,
-            };
-            case 'getByToken': return {
-                name,
-                type: 'getByToken',
-                args: [
-                    {name: 'token', gqlType: 'String', required: true}
-                ],
-                gqlType: op.gqlType,
-            };
-            case 'getByKey': return {
-                name,
-                type: 'getByKey',
-                args: [
-                    {name: 'key', gqlType: 'String', required: true}
-                ],
-                gqlType: op.gqlType,
-            };
-            case 'getByEmail': return {
-                name,
-                type: 'getByEmail',
-                args: [
-                    {name: 'email', gqlType: 'String', required: true}
-                ],
-                gqlType: op.gqlType,
-            };
+            }; break;
             default:
-                const {operationNature, operationGqlType, operationArgs} = this.parseOperationValue(((((config as any).microservices || {})[a]?.types || {})[b]?.operations || {})[c], {parentType: {name: 'Query'}, parentField: name, microservice: a, type: b, operation: c});
+                let z: any = {};
+                if (others[name]) z = this.parseHandlerValue(others[name], {parentType: {name: 'Query'}, parentField: name, handler: name});
+                else z = this.parseOperationValue(((((pkg as any).microservices || {})[a]?.types || {})[b]?.operations || {})[c], {parentType: {name: 'Query'}, parentField: name, microservice: a, type: b, operation: c});
 
-                return {
+                const {operationNature, operationGqlType, operationArgs} = z;
+
+                x = {
                     name,
                     type: operationNature,
                     args: operationArgs,
                     gqlType: operationGqlType,
                 };
+                break;
         }
+
+        return {
+            ...x,
+            ...(op?.args ? {args: op.args.map(({outputType, ...xx}) => ({...xx, gqlType: (outputType || '').replace('{{gqlType}}', x.gqlType) || undefined}))} : {})
+        };
     }
-    protected buildMutation(name: string, resolverName: string, ctx: any, config: SchemaGraphqlConfig): any {
+    protected buildMutation(name: string, resolverName: string, ctx: any, config: SchemaGraphqlConfig, pkg: any, others: any): any {
         const op = (ctx.operations || {})[resolverName] || {name};
-        switch (op.type || op.name) {
-            case 'create': return {
+        const [a, b, c] = resolverName.split(/_/g);
+        const opKey = op.type || op.as || op.name;
+        let x: any = {};
+        switch (opKey) {
+            case 'create': x = {
                 name,
                 type: 'create',
                 args: [
-                    {name: 'data', gqlType: `Create${op.gqlType.slice(0, 1).toUpperCase()}${op.gqlType.slice(1)}Input`, required: true}
+                    {name: 'data', gqlType: this.buildInputGqlTypeForOperation(opKey, op), required: true}
                 ],
                 gqlType: op.gqlType,
-            };
-            case 'update': return {
+            }; break;
+            case 'update': x = {
                 name,
                 type: 'update',
                 args: [
                     {name: 'id', gqlType: 'ID', required: true},
-                    {name: 'data', gqlType: `Update${op.gqlType.slice(0, 1).toUpperCase()}${op.gqlType.slice(1)}Input`, required: true}
+                    {name: 'data', gqlType: this.buildInputGqlTypeForOperation(opKey, op), required: true}
                 ],
                 gqlType: op.gqlType,
-            };
-            case 'delete': return {
+            }; break;
+            case 'delete': x = {
                 name,
                 type: 'delete',
                 args: [
                     {name: 'id', gqlType: 'ID', required: true}
                 ],
                 gqlType: 'DeleteResponse',
-            };
-            default: return {
-                name,
-            };
+            }; break;
+            default:
+                let z: any = {};
+                if (others[name]) z = this.parseHandlerValue(others[name], {parentType: {name: 'Mutation'}, parentField: name, handler: name});
+                else z = this.parseOperationValue(((((pkg as any).microservices || {})[a]?.types || {})[b]?.operations || {})[c], {parentType: {name: 'Mutation'}, parentField: name, microservice: a, type: b, operation: c});
+
+                const {operationNature, operationGqlType, operationArgs} = z;
+                    x = {
+                    name,
+                    type: operationNature,
+                    args: operationArgs,
+                    gqlType: operationGqlType,
+                };
+                break;
         }
+
+        return {
+            ...x,
+            ...(op?.args ? {args: op.args.map(({outputType, ...xx}) => ({...xx, gqlType: (outputType || '').replace('{{gqlType}}', x.gqlType) || undefined}))} : {})
+        };
+    }
+    protected buildInputGqlTypeForOperation(opKey: string, op: any) {
+        if (opKey === op.name) {
+            return `${opKey.slice(0, 1).toUpperCase()}${opKey.slice(1)}${op.gqlType.slice(0, 1).toUpperCase()}${op.gqlType.slice(1)}Input`;
+        }
+        return `${op.name.slice(0, 1).toUpperCase()}${op.name.slice(1)}Input`;
     }
     protected buildSubscription(name: string, resolverName: string, ctx: any, config: SchemaGraphqlConfig): any {
         return {name};
@@ -352,11 +352,14 @@ export class SchemaGraphqlModel {
         if (!op) {
             op = msOperation;
         }
+        const origOp = op;
         if ('string' !== typeof op) {
-            if (op?.wrap) {
-                op = op.wrap[0];
+            if (op?.rawWrap) {
+                op = op.rawWrap[0];
             } else if (op?.rawType) {
                 op = op.rawType;
+            } else if (op?.rawAs) {
+                op = op.rawAs;
             } else if (op?.backend) {
                 console.log('DDD => ', op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
                 return {};
@@ -367,6 +370,38 @@ export class SchemaGraphqlModel {
         const [operationNature, cfg] = parseConfigType({}, op);
         let pageType: string = '';
         switch (operationNature) {
+            case 'updateStatus':
+                pageType = this.camelCase(msType);
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: 'id', type: 'string', gqlType: 'ID', required: true},
+                    ]};
+            case 'updateByOrCreate':
+                pageType = this.camelCase(msType);
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: cfg.vars.idKey, type: 'string', gqlType: 'String', required: true},
+                        {name: 'data', type: 'object', gqlType: `Update${this.camelCase(msType)}Input`, required: true},
+                    ]};
+            case 'updateBy':
+                pageType = this.camelCase(msType);
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: cfg.vars.default || cfg.vars.key, type: 'string', gqlType: 'String', required: true},
+                        {name: 'data', type: 'object', gqlType: `Update${this.camelCase(msType)}Input`, required: true},
+                    ]};
+            case 'applyMove':
+                pageType = this.camelCase(msType);
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: 'parentId', type: 'string', gqlType: 'String', required: true},
+                        {name: 'id', type: 'string', gqlType: 'ID', required: true},
+                        {name: 'direction', type: 'string', gqlType: 'String'},
+                    ]};
+            case 'search':
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'query', type: 'object', gqlType: 'SearchQueryInput'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ]};
             case 'findInIndex':
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
@@ -383,6 +418,14 @@ export class SchemaGraphqlModel {
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
                         {name: 'id', type: 'string', gqlType: 'String', required: true},
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ].filter(x => !!x)};
+            case 'findInIndexByHashKeyAsAttribute':
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: cfg.vars.key || 'value', type: 'string', gqlType: 'String', required: !cfg.vars.optional},
                         {name: 'offset', type: 'string', gqlType: 'String'},
                         {name: 'limit', type: 'integer', gqlType: 'Int'},
                         {name: 'sort', type: 'string', gqlType: 'String'},
@@ -476,9 +519,22 @@ export class SchemaGraphqlModel {
                             {name: cfg?.vars?.default || cfg?.vars?.field || 'value', type: 'string', gqlType: 'String', required: true},
                         ]};
                 }
+                if (origOp?.rawOutputType) {
+                    const ogt = origOp.rawOutputType.replace('{{gqlType}}', this.camelCase(msType));
+                    return {...(origOp?.rawOutputType ? {operationGqlType: ogt, operationType: ogt} : {})};
+                }
                 console.log('CCC => ', 'object' === typeof op ? '[Object]' : op, `${parentType.name}.${parentField}`, microservice, msType, msOperation);
                 return {};
         }
+    }
+    protected parseHandlerValue(op: any, {parentType, parentField, handler}) {
+        const z: any = {};
+
+        z.operationNature = handler;
+        op.outputType && (z.operationGqlType = op.outputType);
+        op.args && (z.operationArgs = op.args.map(({outputType, type, ...xx}) => ({...xx, type: type, gqlType: (outputType || '').replace('{{gqlType}}', z.gqlType) || undefined})));
+
+        return z;
     }
     protected buildTypePageType(name: string, typeName, type: any) {
         return {

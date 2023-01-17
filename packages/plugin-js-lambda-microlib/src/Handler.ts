@@ -12,6 +12,8 @@ export type HandlerConfig = {
     test?: TestFileConfig,
     vars: {[key: string]: any},
     directory: string,
+    args?: any[],
+    outputType?: string,
     custom?: boolean,
 };
 
@@ -24,10 +26,14 @@ export default class Handler {
     public readonly vars: {[key: string]: any};
     public readonly test: TestFile|undefined;
     public readonly directory: string;
+    public readonly args: any[]|undefined;
+    public readonly outputType: string|undefined;
     public readonly custom: boolean;
-    constructor({name, type, middlewares = [], errorMiddlewares = [], params = {}, directory, custom = false, vars = {}, test = undefined}: HandlerConfig) {
+    constructor({name, type, args = undefined, outputType, middlewares = [], errorMiddlewares = [], params = {}, directory, custom = false, vars = {}, test = undefined}: HandlerConfig) {
         this.name = name;
         this.type = type;
+        this.args = args;
+        this.outputType = outputType;
         this.params = {o: name, ...params};
         this.middlewares = middlewares;
         this.errorMiddlewares = errorMiddlewares;
