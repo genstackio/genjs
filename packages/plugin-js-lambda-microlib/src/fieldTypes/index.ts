@@ -48,6 +48,7 @@ export {default as timePeriodStart} from './timePeriodStart';
 export {default as timePeriodType} from './timePeriodType';
 export {default as phone} from './phone';
 export {default as positiveInteger} from './positiveInteger';
+export {default as positiveFloat} from './positiveFloat';
 export {default as presets} from './presets';
 export {default as preset} from './preset';
 export {default as price} from './price';

@@ -1,0 +1,1 @@
+export default () => ({type: 'number', searchType: 'float', validators: [{type: '@positive'}]})
