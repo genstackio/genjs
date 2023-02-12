@@ -1,0 +1,2 @@
+attributes:
+  country: {type: constant, default: FR, config: {values: [FR, US, IT, PT, GB, MC, LU, CA, ES, CH, BE, RE, BR, DE, MQ, GP]}}

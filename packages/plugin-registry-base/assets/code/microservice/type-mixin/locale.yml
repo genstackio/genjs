@@ -1,0 +1,2 @@
+attributes:
+  locale: {type: constant, default: fr_FR, config: {values: [fr_FR, fr_LU, fr_MC, fr_BE, fr_CA, fr_CH, en_GB, en_US, it_IT, es_ES, de_DE, nl_BE, pt_PT, pt_BR]}}

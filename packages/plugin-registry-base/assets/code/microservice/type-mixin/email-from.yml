@@ -1,0 +1,4 @@
+attributes:
+  emailFromArn: string
+  emailFromEmail: email
+  emailFrom: string

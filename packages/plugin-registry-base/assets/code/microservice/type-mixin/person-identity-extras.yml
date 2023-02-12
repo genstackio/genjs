@@ -1,0 +1,5 @@
+attributes:
+  nickName: firstName
+  birthDate: timestamp
+  age: positiveInteger
+  nationality: string

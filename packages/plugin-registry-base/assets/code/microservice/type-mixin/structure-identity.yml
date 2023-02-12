@@ -1,0 +1,8 @@
+attributes:
+  fullName: string
+  legalName: string
+  shortName: string
+  nin: string # national identification number (fr => rna)
+  publicEmail: email
+  publicPhone: phone
+  websiteUrl: url
