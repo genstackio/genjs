@@ -12,6 +12,9 @@ inputs:
   maxPage:
     type: number
     default: 1000
+  defaultSort:
+    type: string
+    default: 'ascending'
 
 args:
   - query
@@ -30,7 +33,7 @@ code: |
   } while (!!offset && (n <= maxPages));
   
   items.sort((a, b) => {
-    const x = query.sort ? ((query.sort === 'descending' || query.sort === -1) ? -1 : 1) : 1;
+    const x = query.sort ? ((query.sort === 'descending' || query.sort === -1) ? -1 : 1) : <%- (defaultSort === 'ascending') ? 1 : ((defaultSort === 'descending') ? -1 : 1) %>;
     if (undefined !== a.<%- rankProperty %>) {
       if (undefined !== b.<%- rankProperty %>) {
         return (a.<%- rankProperty %> < b.<%- rankProperty %>) ? -x : ((a.<%- rankProperty %> > b.<%- rankProperty %>) ? x : 0);
