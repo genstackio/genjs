@@ -38,7 +38,7 @@ code: |
       if (undefined !== b.<%- rankProperty %>) {
         return (a.<%- rankProperty %> < b.<%- rankProperty %>) ? -x : ((a.<%- rankProperty %> > b.<%- rankProperty %>) ? x : 0);
       }
-      return -x;
+      return -1;
     }
     if (undefined !== b.<%- rankProperty %>) return x;
     return 0;
