@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-js-lambda",
-  "version": "0.4.46",
+  "version": "0.4.47",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
