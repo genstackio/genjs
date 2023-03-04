@@ -45,6 +45,12 @@ export default class Package extends AwsLambdaPackage {
             ...staticVars.devDependencies,
             ...(vars.devDependencies || {}),
         };
+        vars.resolutions = {
+            ...(staticVars.resolutions || {}),
+            ...(vars.resolutions || {}),
+        };
+
+        !Object.keys(vars.resolutions).length && delete vars.resolutions;
         return vars;
     }
     // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
@@ -61,6 +67,7 @@ export default class Package extends AwsLambdaPackage {
             dependencies: vars.dependencies,
             scripts: vars.scripts,
             devDependencies: vars.devDependencies,
+            ...(vars.resolutions ? {resolutions: vars.resolutions} : {}),
             version: vars.version,
             description: vars.description,
             author: (vars.author && ('object' === typeof vars.author)) ? vars.author : {name: vars.author_name, email: vars.author_email},
