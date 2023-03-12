@@ -48,6 +48,7 @@ export default class SchemaParser {
     }
     parseAttributes(def: any, schema: any) {
         Object.entries(def.attributes).reduce((acc, [k, d]) => {
+            if ((false === d) || ('false' === d)) return acc; // ignore disabled attributes
             d = {
                 config: {},
                 internal: false, required: false, primaryKey: false, volatile: false, unique: false,
