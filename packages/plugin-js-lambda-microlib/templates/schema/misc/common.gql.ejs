@@ -129,6 +129,11 @@ type File {
     viewUrl: String
     viewUrlInfos: ViewUrlInfos
 }
+type Chart {
+    available: Boolean
+    url(format: String): String
+    json: JSON
+}
 type Image {
     available: Boolean
     bucket: String

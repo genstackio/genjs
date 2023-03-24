@@ -651,6 +651,7 @@ export class SchemaGraphqlModel {
         const n: string = type.name;
         const map = {
             object: {
+                chart: 'Chart',
                 image: 'Image',
                 bigint: 'BigInt',
                 file: 'File',
@@ -680,6 +681,7 @@ export class SchemaGraphqlModel {
         switch (true) {
             case /Date/.test(n): i = 'bigint'; break;
             case /Image$/.test(n): i = 'image'; break;
+            case /Chart$/.test(n): i = 'chart'; break;
             case /Screenshots$/.test(n): i = 'screenshots'; break;
             case /Screenshot$/.test(n): i = 'screenshot'; break;
             case /At$/.test(n): i = 'bigint'; break;

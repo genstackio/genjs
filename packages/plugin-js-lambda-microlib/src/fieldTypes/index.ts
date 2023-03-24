@@ -8,6 +8,7 @@ export {default as autoUuid} from './autoUuid';
 export {default as autoUuidIfEmpty} from './autoUuidIfEmpty';
 export {default as autoVerificationCode} from './autoVerificationCode';
 export {default as boolean} from './boolean';
+export {default as chart} from './chart';
 export {default as city} from './city';
 export {default as color} from './color';
 export {default as constant} from './constant';

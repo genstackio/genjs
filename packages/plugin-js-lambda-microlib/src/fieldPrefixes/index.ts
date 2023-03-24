@@ -5,6 +5,7 @@ export {default as referenceAttribute}  from './referenceAttribute';
 export {default as storageAttribute}  from './storageAttribute';
 export {default as storage}  from './storage';
 export {default as fingerprint}  from './fingerprint';
+export {default as chart}  from './chart';
 export {default as image}  from './image';
 export {default as css}  from './css';
 export {default as js}  from './js';
