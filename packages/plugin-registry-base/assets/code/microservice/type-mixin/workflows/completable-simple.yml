@@ -1,0 +1,19 @@
+attributes:
+  notCompletedBy: :uuid
+  notCompletedAt: :timestamp
+  completedBy: :uuid
+  completedAt: :timestamp
+  status:
+    type: workflow
+    default: NOT_COMPLETED
+    cascadePopulate:
+      NOT_COMPLETED: {notCompletedAt: '@now', notCompletedBy: '@user_id'}
+      COMPLETED: {completedAt: '@now', completedBy: '@user_id'}
+    cascadeClear:
+      NOT_COMPLETED: [completedAt, completedAt]
+      COMPLETED: []
+    config:
+      steps: [NOT_COMPLETED, COMPLETED]
+      transitions:
+        undefined: [NOT_COMPLETED, COMPLETED]
+        COMPLETED: []

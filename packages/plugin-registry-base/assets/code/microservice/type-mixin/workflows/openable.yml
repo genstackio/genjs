@@ -1,0 +1,25 @@
+attributes:
+  notOpenedBy: :uuid
+  notOpenedAt: :timestamp
+  openedBy: :uuid
+  openedAt: :timestamp
+  closedBy: :uuid
+  closedAt: :timestamp
+  status:
+    type: workflow
+    default: NOT_OPENED
+    cascadePopulate:
+      NOT_OPENED: {notOpenedAt: '@now', notOpenedBy: '@user_id'}
+      OPENED: {openedAt: '@now', openedBy: '@user_id'}
+      CLOSED: {closedAt: '@now', closedBy: '@user_id'}
+    cascadeClear:
+      NOT_OPENED: [openedAt, closedAt]
+      OPENED: [closedAt]
+      CLOSED: []
+    config:
+      steps: [NOT_OPENED, OPENED, CLOSED]
+      transitions:
+        undefined: [NOT_OPENED, OPENED, CLOSED]
+        NOT_OPENED: [OPENED, CLOSED]
+        OPENED: [CLOSED]
+        CLOSED: [NOT_OPENED]
