@@ -16,4 +16,5 @@ attributes:
       steps: [NOT_COMPLETED, COMPLETED]
       transitions:
         undefined: [NOT_COMPLETED, COMPLETED]
+        NOT_COMPLETED: [COMPLETED]
         COMPLETED: []
