@@ -422,6 +422,14 @@ export class SchemaGraphqlModel {
                         {name: 'limit', type: 'integer', gqlType: 'Int'},
                         {name: 'sort', type: 'string', gqlType: 'String'},
                     ].filter(x => !!x)};
+            case 'findInIndexByHashKeyId':
+                pageType = `${this.camelCase(msType)}Page`;
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: 'id', type: 'string', gqlType: 'String', required: true},
+                        {name: 'offset', type: 'string', gqlType: 'String'},
+                        {name: 'limit', type: 'integer', gqlType: 'Int'},
+                        {name: 'sort', type: 'string', gqlType: 'String'},
+                    ].filter(x => !!x)};
             case 'findInIndexByHashKeyAsAttribute':
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
