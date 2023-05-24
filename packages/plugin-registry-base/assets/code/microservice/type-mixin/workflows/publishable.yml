@@ -13,13 +13,13 @@ attributes:
       PUBLISHED: { publishedAt: '@now', publishedBy: '@user_id' }
       ARCHIVED: { archivedAt: '@now', archivedBy: '@user_id' }
     cascadeClear:
-      UNPUBLISHED: [ publishedAt ]
-      PUBLISHED: [ archivedAt ]
+      UNPUBLISHED: [ publishedAt, publishedBy, archivedAt, archivedBy ]
+      PUBLISHED: [ archivedAt, archivedBy ]
       ARCHIVED: [ ]
     config:
       steps: [ UNPUBLISHED, PUBLISHED, ARCHIVED ]
       transitions:
-        undefined: [ UNPUBLISHED ]
+        undefined: [ UNPUBLISHED, PUBLISHED ]
         UNPUBLISHED: [ PUBLISHED ]
-        PUBLISHED: [ ARCHIVED ]
-        ARCHIVED: [ ]
+        PUBLISHED: [ UNPUBLISHED, ARCHIVED ]
+        ARCHIVED: [ UNPUBLISHED ]
