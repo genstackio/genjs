@@ -8,6 +8,7 @@ import MicroserviceTypeOperation, {MicroserviceTypeOperationConfig} from './Micr
 import MicroserviceTypeOperationConfigEnhancer from "./configEnhancers/MicroserviceTypeOperationConfigEnhancer";
 import MicroserviceTypeFunctionConfigEnhancer from "./configEnhancers/MicroserviceTypeFunctionConfigEnhancer";
 import MicroserviceTypeConfigEnhancer from "./configEnhancers/MicroserviceTypeConfigEnhancer";
+import conditionPatterns from './configs/conditions';
 
 export type MicroserviceTypeConfig = {
     type?: string|undefined,
@@ -380,49 +381,36 @@ export default class MicroserviceType {
         if ('data' === s) return '';
         return `, '${s}'`;
     }
+    parseCondition(condition) {
+        if ('object' === typeof condition) return condition;
+        if ('string' !== typeof condition) throw new Error(`Unsupported condition definition format: ${JSON.stringify(condition)}`);
+
+
+        let builtCondition = conditionPatterns.reduce((acc: any, p: any) => {
+            if (acc) return acc;
+            const matches = condition.match(p.pattern);
+            if (matches) acc = p.build(matches);
+            return acc;
+        }, undefined as any);
+
+        if (!builtCondition) throw new Error(`Unsupported condition definition: ${condition}`);
+
+        return builtCondition;
+    }
+
     buildConditionPartCode(condition, requirements) {
-        if ('string' === typeof condition) {
-            let matches = condition.match(/^\s*(\$)([a-z0-9_]+)\s*\[\s*([a-z0-9_]+|\*)\s*=>\s*([a-z0-9_]+|\*)\s*]\s*$/i);
-            if (!matches) {
-                matches = condition.match(/^\s*([$%#])([a-z0-9_]+)\s*(=|>|<|<>|!=|%)(.*)$/i);
-                if (!matches) {
-                    matches = condition.match(/^\s*([$%#])([a-z0-9_]+)$/i);
-                    if (!matches) {
-                        throw new Error(`Unsupported condition definition: ${condition}`);
-                    } else {
-                        condition = {
-                            type: 'defined',
-                            attribute: matches[2],
-                            dataKey: matches[1],
-                        };
-                    }
-                } else {
-                    const opMap = {'=': 'eq', '>': 'gt', '>=': 'gte', '<': 'lt', '<=': 'lte', '<>': 'ne', '!=': 'ne', '%': 'mod'};
-                    condition = {
-                        type: opMap[matches[3]] || opMap['eq'],
-                        attribute: matches[2],
-                        value: matches[4],
-                        dataKey: matches[1],
-                    };
-                }
-            } else {
-                condition = {
-                    type: 'transition',
-                    attribute: matches[2],
-                    from: matches[3],
-                    to: matches[4],
-                    dataKey: matches[1],
-                };
-            }
-        } else if ('object' === typeof condition) {
-            condition = {type: 'unknown', ...condition};
-        } else {
-            throw new Error(`Unsupported condition definition format: ${JSON.stringify(condition)}`);
-        }
+        condition = this.parseCondition(condition);
+
         switch (condition.type) {
             case 'transition':
                 requirements['isTransition'] = true;
                 return `isTransition('${condition.attribute}', '${condition.from}', '${condition.to}', query)`;
+            case 'value-changed':
+                requirements['hasValueChanged'] = true;
+                return `hasValueChanged('${condition.attribute}', query)`;
+            case 'value-cleared':
+                requirements['isValueCleared'] = true;
+                return `isValueCleared('${condition.attribute}', query)`;
             case 'eq':
                 requirements['isEqualTo'] = true;
                 return `isEqualTo('${condition.attribute}', '${condition.value}', query${this.buildDataKeyString(condition.dataKey)})`;
