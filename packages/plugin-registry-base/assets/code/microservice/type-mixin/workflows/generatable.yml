@@ -34,7 +34,7 @@ attributes:
       CANCELED: [generatedAt, erroredAt]
     config:
       steps: [CREATED, QUEUED, GENERATING, GENERATED, ERRORED, CANCELED]
-      autoTransitionTo: '<%= autostart ? "QUEUED" : "" %>'
+      autoTransitionTo: '<%= autostart ? "QUEUED" : "**unchanged**" %>'
       transitions:
         undefined: [CREATED]
         CREATED: [QUEUED, CANCELED, ERRORED]
