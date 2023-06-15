@@ -1,0 +1,38 @@
+attributes:
+  activatedAt: :timestamp
+  activatedBy: :uuid
+  partiallyBoughtAt: :timestamp
+  partiallyBoughtBy: :uuid
+  completelyBoughtAt: :timestamp
+  completelyboughtBy: :uuid
+  canceledAt: :timestamp
+  canceledBy: :uuid
+  createdBy: :uuid
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: {createdAt: '@now', createdBy: '@user_id'}
+      ACTIVATED: {activatedAt: '@now', activatedBy: '@user_id'}
+      PARTIALLY_BOUGHT: {partiallyBoughtAt: '@now', partiallyBoughtBy: '@user_id'}
+      COMPLETELY_BOUGHT: {completelyBoughtAt: '@now', completelyBoughtBy: '@user_id'}
+      CANCELED: {canceledAt: '@now', canceledBy: '@user_id'}
+    cascadeClear:
+      CREATED: [activatedAt, activatedBy, partiallyBoughtAt, partiallyBoughtBy, completelyBoughtAt, completelyBoughtBy, canceledAt, canceledBy]
+      ACTIVATED: [partiallyBoughtAt, partiallyBoughtBy, completelyBoughtAt, completelyBoughtBy, canceledAt, canceledBy]
+      PARTIALLY_BOUGHT: [completelyBoughtAt, completelyBoughtBy, canceledAt, canceledBy]
+      COMPLETELY_BOUGHT: [canceledAt, canceledBy]
+      CANCELED: []
+    config:
+      steps: [CREATED,ACTIVATED,PARTIALLY_BOUGHT,COMPLETELY_BOUGHT,CANCELED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [ACTIVATED,CANCELED]
+        ACTIVATED: [CREATED,PARTIALLY_BOUGHT,COMPLETELY_BOUGHT,CANCELED]
+        PARTIALLY_BOUGHT: [COMPLETELY_BOUGHT,CANCELED]
+        COMPLETELY_BOUGHT: [CANCELED]
+        CANCELED: [CREATED]
+
+operations:
+  activate: updateStatus(ACTIVATED)
+  unactivate: updateStatus(CREATED)
