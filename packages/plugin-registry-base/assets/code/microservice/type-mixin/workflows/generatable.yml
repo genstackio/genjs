@@ -1,3 +1,8 @@
+inputs:
+  autostart:
+    type: boolean
+    default: true
+
 attributes:
   createdBy: :uuid
   queuedAt: :timestamp
@@ -29,7 +34,7 @@ attributes:
       CANCELED: [generatedAt, erroredAt]
     config:
       steps: [CREATED, QUEUED, GENERATING, GENERATED, ERRORED, CANCELED]
-      autoTransitionTo: QUEUED
+      autoTransitionTo: '<%= autostart ? "QUEUED" : "~" %>'
       transitions:
         undefined: [CREATED]
         CREATED: [QUEUED, CANCELED, ERRORED]
