@@ -1,0 +1,30 @@
+attributes:
+  statusAt: :timestamp
+  preparingAt: :timestamp
+  notPaidAt: :timestamp
+  paidAt: :timestamp
+  canceledAt: :timestamp
+  adminCanceledAt: :timestamp
+  archivedAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      PREPARING: { preparingAt: '@now', statusAt: '@now' }
+      NOT_PAID: { notPaidAt: '@now', statusAt: '@now' }
+      PAID: { paidAt: '@now', statusAt: '@now' }
+      CANCELED: { canceledAt: '@now', statusAt: '@now' }
+      ADMIN_CANCELED: { adminCanceledAt: '@now', statusAt: '@now' }
+      ARCHIVED: { archivedAt: '@now', statusAt: '@now' }
+    config:
+      steps: [CREATED, PREPARING, NOT_PAID, PAID, CANCELED, ADMIN_CANCELED, ARCHIVED]
+      transitions:
+        undefined: [CREATED, PREPARING, ARCHIVED]
+        CREATED: [PREPARING, CANCELED, ADMIN_CANCELED, ARCHIVED]
+        PREPARING: [NOT_PAID, CANCELED, ADMIN_CANCELED, ARCHIVED]
+        NOT_PAID: [PAID, CANCELED, ADMIN_CANCELED, ARCHIVED]
+        PAID: [CANCELED, ADMIN_CANCELED]
+        CANCELED: [ARCHIVED]
+        ADMIN_CANCELED: [CREATED]
+        ARCHIVED: []
