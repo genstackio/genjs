@@ -1,0 +1,20 @@
+attributes:
+  notActivatedBy: :uuid
+  notActivatedAt: :timestamp
+  activatedBy: :uuid
+  activatedAt: :timestamp
+  status:
+    type: workflow
+    default: NOT_ACTIVATED
+    cascadePopulate:
+      NOT_ACTIVATED: {notActivatedAt: '@now', notActivatedBy: '@user_id'}
+      ACTIVATED: {activatedAt: '@now', activatedBy: '@user_id'}
+    cascadeClear:
+      NOT_ACTIVATED: [activatedAt, activatedAt]
+      ACTIVATED: []
+    config:
+      steps: [NOT_ACTIVATED, ACTIVATED]
+      transitions:
+        undefined: [NOT_ACTIVATED, ACTIVATED]
+        NOT_ACTIVATED: [ACTIVATED]
+        ACTIVATED: [NOT_ACTIVATED]
