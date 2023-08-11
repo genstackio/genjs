@@ -1,0 +1,25 @@
+attributes:
+  unpublishedAt: :timestamp
+  unpublishedBy: :uuid
+  publishedAt: :timestamp
+  publishedBy: :uuid
+  archivedAt: :timestamp
+  archivedBy: :uuid
+  status:
+    type: workflow
+    default: PUBLISHED
+    cascadePopulate:
+      UNPUBLISHED: { unpublishedAt: '@now', unpublishedBy: '@user_id' }
+      PUBLISHED: { publishedAt: '@now', publishedBy: '@user_id' }
+      ARCHIVED: { archivedAt: '@now', archivedBy: '@user_id' }
+    cascadeClear:
+      UNPUBLISHED: [ publishedAt, publishedBy, archivedAt, archivedBy ]
+      PUBLISHED: [ archivedAt, archivedBy ]
+      ARCHIVED: [ ]
+    config:
+      steps: [ UNPUBLISHED, PUBLISHED, ARCHIVED ]
+      transitions:
+        undefined: [ UNPUBLISHED, PUBLISHED ]
+        UNPUBLISHED: [ PUBLISHED ]
+        PUBLISHED: [ UNPUBLISHED, ARCHIVED ]
+        ARCHIVED: [ UNPUBLISHED ]
