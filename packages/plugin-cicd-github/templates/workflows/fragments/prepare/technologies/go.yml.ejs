@@ -14,7 +14,7 @@
 <% if (('undefined' !== typeof goprivate_github_user)) { -%>
       - name: Prepare GitHub identity for Go Private modules
         shell: 'script -q -e -c "bash {0}"'
-        run: git config url."https://<%- goprivate_github_user %>:${{ secrets.CUSTOM_GITHUB_TOKEN }}@github.com".insteadOf "https://github.com"
+        run: git config --global url."https://<%- goprivate_github_user %>:${{ secrets.CUSTOM_GITHUB_TOKEN }}@github.com".insteadOf "https://github.com"
         env:
           FORCE_COLOR: 3
           CI: true
