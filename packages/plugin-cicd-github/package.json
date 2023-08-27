@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-cicd-github",
-  "version": "0.6.16",
+  "version": "0.6.17",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
