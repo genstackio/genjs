@@ -39,6 +39,7 @@ export default class Package extends AwsLambdaPackage {
             .addIgnore('/vendor/')
             .addIgnore('/build/')
             .addIgnore('/.idea/')
+            .addIgnore('/coverage.txt')
             ;
     }
     protected buildMakefile(vars: any) {
@@ -54,7 +55,7 @@ export default class Package extends AwsLambdaPackage {
             .addTarget('arch', ['echo $(shell go env GOOS)-$(shell go env GOARCH)'], [], {}, 'Display current arch (os + arch)')
             .addMetaTarget('build', ['build-binary', 'build-package'], {}, 'Build Go binary and Lambda ZIP package')
             .addTarget('build-binary', ['GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go build -o build/bin/$(GOOS)/$(GOARCH)/$(BIN) cmd/main/*.go'], ['prepare-build-dir'], {}, 'Build Go binary')
-            .addTarget('test', ['go test cmd/main/*.go'], [], {}, 'Execute the tests')
+            .addTarget('test', ['go test ./cmd/main/ -v -race -coverprofile=coverage.txt -covermode=atomic'], [], {}, 'Execute the tests')
             .addTarget('format', ['gofmt -w cmd/main/*.go'], [], {}, 'Format the Go source code')
             .addTarget('build-package', [assets ? `cp -R ${assets} build/bin/$(GOOS)/$(GOARCH)/` : undefined, `cd build/bin/$(GOOS)/$(GOARCH) && zip -r ../../../../build/package.zip $(BIN) ${assets ? `${assets} ` : ''}>/dev/null`].filter(x => !!x) as string[], ['prepare-build-dir'], {}, 'Build the Lambda ZIP package')
             .addMetaTarget('clean', ['clean-package', 'clean-binary', 'clean-build-dir'], {}, 'Remove the generated directories and files')
