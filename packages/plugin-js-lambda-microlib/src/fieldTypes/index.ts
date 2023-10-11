@@ -69,6 +69,7 @@ export {default as updatedAt} from './updatedAt';
 export {default as url} from './url';
 export {default as uuid} from './uuid';
 export {default as vatNumber} from './vatNumber';
+export {default as frenchVatNumber} from './frenchVatNumber';
 export {default as visaNumber} from './visaNumber';
 export {default as website} from './website';
 export {default as workflow} from './workflow';

@@ -1,0 +1,1 @@
+export default () => ({type: 'string', searchType: 'keyword', validators: [{type: '@match', config: {pattern: '^[A-Z]{2,3}.{7,13}$', flags: 'i', message: 'Not a valid French VAT Number'}}], upper: true})
