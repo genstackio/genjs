@@ -1,0 +1,20 @@
+attributes:
+  unnotifiedAt: :timestamp
+  unnotifiedBy: :uuid
+  notifiedAt: :timestamp
+  notifiedBy: :uuid
+  status:
+    type: workflow
+    default: UNNOTIFIED
+    cascadePopulate:
+      UNNOTIFIED: { unnotifiedAt: '@now', unnotifiedBy: '@user_id' }
+      NOTIFIED: { notifiedAt: '@now', notifiedBy: '@user_id' }
+    cascadeClear:
+      UNNOTIFIED: [ unnotifiedAt, notifiedAt ]
+      NOTIFIED: [ notifiedAt ]
+    config:
+      steps: [ UNNOTIFIED, NOTIFIED ]
+      transitions:
+        undefined: [ UNNOTIFIED ]
+        UNNOTIFIED: [ NOTIFIED ]
+        NOTIFIED: [ UNNOTIFIED ]
