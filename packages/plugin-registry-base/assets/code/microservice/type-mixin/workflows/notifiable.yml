@@ -15,6 +15,6 @@ attributes:
     config:
       steps: [ UNNOTIFIED, NOTIFIED ]
       transitions:
-        undefined: [ UNNOTIFIED ]
+        undefined: [ UNNOTIFIED, NOTIFIED ]
         UNNOTIFIED: [ NOTIFIED ]
         NOTIFIED: [ UNNOTIFIED ]
