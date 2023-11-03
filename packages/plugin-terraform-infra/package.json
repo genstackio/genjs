@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-terraform-infra",
-  "version": "0.4.24",
+  "version": "0.4.25",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,9 +25,9 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-terraform": "^0.1.21"
+    "@genjs/genjs-bundle-terraform": "^0.1.22"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.21"
+    "@genjs/genjs": "^0.4.22"
   }
 }
