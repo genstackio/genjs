@@ -95,7 +95,7 @@ export class MakefileTemplate extends AbstractFileTemplate {
             case (config as PredefinedTargetConfig).type !== undefined:
                 const c2: PredefinedTargetConfig = <PredefinedTargetConfig>config;
                 return this.addPredefinedTarget(c2.name, c2.type, c2.options, c2.steps, c2.deps, c2.description);
-            case (config as MetaTargetConfig).deps !== undefined:
+            case (config as MetaTargetConfig).deps !== undefined && (!config.steps || !config.steps?.length):
                 const c3: MetaTargetConfig = <MetaTargetConfig>config;
                 return this.addMetaTarget(c3.name, c3.deps, c3.options, c3.description);
             default:
