@@ -1,4 +1,6 @@
-<% (Object.values(projects || {})).forEach(p => { -%>
+<% (Object.values(projects || {})).forEach(p => {
+  v = {...v, ...(p['workflowsVars'] || {})}
+-%>
   <%- p.project %>:
     needs: changes
     if: ${{ needs.changes.outputs.<%- p.project %> == 'true' }}

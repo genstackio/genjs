@@ -8,6 +8,7 @@ export default class Plugin implements IPlugin {
         if ('.github' === p.getName()) return;
         ctx.globalContext.projectsWorkflows = ctx.globalContext.projectsWorkflows || {};
         ctx.globalContext.projectsWorkflows[p.getName()] = {
+            workflowsVars: p['vars']?.['github_workflows']?.vars || {},
             project: p.getName(),
             projectPath: (ctx.group.getDir() === '.') ? p.getName() : `${ctx.group.getDir()}/${p.getName()}`,
             ...((p.hasFeature('generateEnvLocalable') || p['vars']?.sourceLocalEnvLocal) ? {needRoot: true} : {}),

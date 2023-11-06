@@ -17,7 +17,7 @@ export default class Package extends CicdPackage {
         const c = {workflows: {}, ...(vars.github || {})};
         return Object.entries(c.workflows).reduce((acc, [k, v]) => {
             const fileName = `workflows/${k}.yml`;
-            this.hasTemplate(fileName) && (acc[fileName] = true);
+            this.hasTemplate(fileName) && (acc[fileName] = [`${fileName}.ejs`, {...(vars.templateVars || {}), ...(!!v && 'object' === typeof v ? v : {}), projects: vars.projectsWorkflows}]);
             return acc;
         }, {} as any);
     }
@@ -25,7 +25,7 @@ export default class Package extends CicdPackage {
         const c = {parallel_workflows: {}, ...(vars.github || {})};
         return Object.entries(c.parallel_workflows).reduce((acc, [k, v]) => {
             const fileName = `workflows/parallel-${k}.yml`;
-            this.hasTemplate(fileName) && (acc[fileName] = [`${fileName}.ejs`, {...(vars.templateVars || {}), projects: vars.projectsWorkflows}]);
+            this.hasTemplate(fileName) && (acc[fileName] = [`${fileName}.ejs`, {...(vars.templateVars || {}), ...(!!v && 'object' === typeof v ? v : {}), projects: vars.projectsWorkflows}]);
             return acc;
         }, {} as any);
     }
