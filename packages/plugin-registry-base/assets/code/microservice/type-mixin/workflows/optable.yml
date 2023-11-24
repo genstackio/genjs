@@ -1,0 +1,22 @@
+attributes:
+  optedOutBy: :uuid
+  optedOutAt: :timestamp
+  optedInBy: :uuid
+  optedInAt: :timestamp
+  status:
+    type: workflow
+    default: NOT_OPTED
+    cascadePopulate:
+      OPTED_OUT: {optedOutAt: '@now', optedOutBy: '@user_id'}
+      OPTED_IN: {optedInAt: '@now', optedInBy: '@user_id'}
+    cascadeClear:
+      NOT_OPTED: [optedInAt, optedInBy, optedOutAt, optedOutBy]
+      OPTED_OUT: [optedInAt, optedInBy]
+      OPTED_IN: [optedOutAt, optedOutBy]
+    config:
+      steps: [NOT_OPTED, OPTED_IN, OPTED_OUT]
+      transitions:
+        undefined: [NOT_OPTED, OPTED_IN, OPTED_OUT]
+        NOT_OPTED: [OPTED_IN, OPTED_OUT]
+        OPTED_IN: [NOT_OPTED, OPTED_OUT]
+        OPTED_OUT: [NOT_OPTED, OPTED_IN]
