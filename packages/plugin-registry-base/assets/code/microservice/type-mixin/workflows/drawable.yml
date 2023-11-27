@@ -52,7 +52,7 @@ attributes:
       CANCELLATION_REQUESTED: [canceledAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
       CANCELED: [closedAt, drawRequestedAt, drawnAt, finishedAt]
       CLOSED: [drawRequestedAt, drawnAt, finishedAt]
-      DRAW_REQUESTED: [drawnAt, finishedAt]
+      DRAW_REQUESTED: []
       DRAWN: [finishedAt]
       FINISHED: []
     config:
@@ -70,5 +70,5 @@ attributes:
         CANCELLATION_REQUESTED: [CREATED, CANCELLED]
         CLOSED: [DRAW_REQUESTED, FINISHED]
         DRAW_REQUESTED: [DRAWN, CANCELLED, CANCELLATION_REQUESTED]
-        DRAWN: [FINISHED, CREATED]
+        DRAWN: [FINISHED, DRAW_REQUESTED, CREATED]
         FINISHED: [CREATED]
