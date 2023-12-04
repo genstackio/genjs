@@ -1,0 +1,20 @@
+attributes:
+  notBilledBy: :uuid
+  notBilledAt: :timestamp
+  billedBy: :uuid
+  billedAt: :timestamp
+  status:
+    type: workflow
+    default: NOT_BILLED
+    cascadePopulate:
+      NOT_BILLED: {notBilledAt: '@now', notBilledBy: '@user_id'}
+      BILLED: {billedAt: '@now', billedBy: '@user_id'}
+    cascadeClear:
+      NOT_BILLED: [billedAt, billedAt]
+      BILLED: []
+    config:
+      steps: [NOT_BILLED, BILLED]
+      transitions:
+        undefined: [NOT_BILLED, BILLED]
+        NOT_BILLED: [BILLED]
+        BILLED: [NOT_BILLED]
