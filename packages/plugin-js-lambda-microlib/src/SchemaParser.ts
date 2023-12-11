@@ -81,7 +81,6 @@ export default class SchemaParser {
             const detectedRequires = this.buildDetectedRequires(def);
             acc.fields[k] = {
                 type, primaryKey, volatile,
-                ...((index && index.length > 0) ? {index} : {}),
                 ...(list ? {list} : {}),
                 ...(props ? {props} : {}),
             };
@@ -151,6 +150,7 @@ export default class SchemaParser {
             !fetchable && (acc.nonFetchables[k] = true);
             (undefined !== stat) && (acc.statFields[k] = stat);
             if (acc.requires[k] && acc.requires[k].length) acc.requires[k] = this.deduplicate(acc.requires[k]);
+            acc.indexes?.[k]?.length && (acc.fields[k].index = [...acc.indexes[k]]);
             acc.searchFields[k] = this.buildSearchField(k, def, acc);
             if (!acc.indexes[k].length) delete acc.indexes[k];
             if (!acc.validators[k].length) delete acc.validators[k];
