@@ -150,6 +150,12 @@ export default class SchemaParser {
             !fetchable && (acc.nonFetchables[k] = true);
             (undefined !== stat) && (acc.statFields[k] = stat);
             if (acc.requires[k] && acc.requires[k].length) acc.requires[k] = this.deduplicate(acc.requires[k]);
+            acc.indexes?.[k]?.length && (acc.indexes[k] = acc.indexes[k].map(x => {
+                !x.name && delete x.name;
+                !x.hashKey && delete x.hashKey;
+                !x.rangeKey && delete x.rangeKey;
+                return x;
+            }));
             acc.indexes?.[k]?.length && (acc.fields[k].index = [...acc.indexes[k]]);
             acc.searchFields[k] = this.buildSearchField(k, def, acc);
             if (!acc.indexes[k].length) delete acc.indexes[k];
