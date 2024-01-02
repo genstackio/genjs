@@ -76,7 +76,7 @@ export default class SchemaParser {
                 pretransform = undefined, convert = undefined, mutate = undefined,
                 dynamic = undefined, trigger = undefined, from = undefined, requires = undefined, stat = undefined,
                 props = undefined, prefix = undefined, suffix = undefined, truncate = undefined, deletePrefetch = false,
-                watch = undefined, outputType = undefined, inputType = undefined, fetchable = true,
+                watch = undefined, outputType = undefined, inputType = undefined, fetchable = true, args = undefined,
             } = def;
             const detectedRequires = this.buildDetectedRequires(def);
             acc.fields[k] = {
@@ -146,6 +146,7 @@ export default class SchemaParser {
             })
             from && (acc.froms[k] = from) && (acc.dynamics[k] = {type: '@from', config: {name: from}});
             inputType && (acc.inputTypes[k] = inputType);
+            args && (acc.args[k] = args);
             outputType && (acc.outputTypes[k] = outputType);
             !fetchable && (acc.nonFetchables[k] = true);
             (undefined !== stat) && (acc.statFields[k] = stat);
@@ -175,6 +176,7 @@ export default class SchemaParser {
             if (!acc.searchFields[k] || !Object.keys(acc.searchFields[k]).length) delete acc.searchFields[k];
             if (!acc.inputTypes[k]) delete acc.inputTypes[k];
             if (!acc.outputTypes[k]) delete acc.outputTypes[k];
+            if (!acc.args[k]) delete acc.args[k];
             if (!acc.nonFetchables[k]) delete acc.nonFetchables[k];
             return acc;
         }, schema);
@@ -402,6 +404,7 @@ export default class SchemaParser {
             watches: {},
             inputTypes: {},
             outputTypes: {},
+            args: {},
             nonFetchables: {},
             multiRefAttributeTargetFields: {},
             shortName: shortName || (name || '').replace(/^.+_([^_]+)$/, '$1'),

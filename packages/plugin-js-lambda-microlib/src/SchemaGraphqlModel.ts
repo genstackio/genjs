@@ -74,6 +74,7 @@ export class SchemaGraphqlModel {
                 automatic: !!(type.model.statFields || {})[fieldName],
                 searchType: (type.model.searchFields || {})[fieldName],
                 outputType: (type.model.outputTypes || {})[fieldName],
+                args: (type.model.args || {})[fieldName],
                 inputType: (type.model.inputTypes || {})[fieldName],
                 nonFetchable: !!(type.model.nonFetchables || {})[fieldName],
                 list: !!field.list,
@@ -579,6 +580,7 @@ export class SchemaGraphqlModel {
                         required: false,
                         type: typeName,
                         gqlType: gqlTypeName,
+                        ...(v.args ? {args: v.args} : {}),
                     }
                     break;
                 case 'create':
