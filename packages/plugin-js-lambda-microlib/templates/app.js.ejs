@@ -7,9 +7,10 @@ module.exports = ({requireOperation, gql}) => {
         return async (parent, params = {}, {event, context, throwError = false}, info) => {
             const handlerEvent = {params};
             handlerEvent.params = handlerEvent.params || {};
-            const {fields = [], selections = {}} = require('@ohoareau/apollo-graphql-selections').select(info);
+            const {fields = [], selections = {}, arguments = {}} = require('@ohoareau/apollo-graphql-selections').select(info);
             handlerEvent.params.selections = selections;
             handlerEvent.params.fields = handlerEvent.params.fields || fields;
+            handlerEvent.params.arguments = handlerEvent.params.arguments || arguments;
             (!!event && !!event.user) && (handlerEvent.user = event.user);
             !!parent && (handlerEvent.params.parent = parent);
             return requireOperation(n).handler(handlerEvent, {...context, info, throwError});
