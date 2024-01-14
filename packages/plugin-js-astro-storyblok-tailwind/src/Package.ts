@@ -120,10 +120,10 @@ export default class Package extends JavascriptPackage {
             .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
             .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'PUBLIC', mode: vars.env_mode || 'terraform'})
             .addPredefinedTarget('start', 'js-start', {port: this.getParameter('startPort'), sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
-            .addPredefinedTarget('test', 'js-test', {ci: true, coverage: false})
-            .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
-            .addPredefinedTarget('test-cov', 'js-test', {local: true})
-            .addPredefinedTarget('test-ci', 'js-test', {ci: true, coverage: false})
+            .addPredefinedTarget('test', 'js-test', {force_npm_run: true, ci: true, coverage: false})
+            .addPredefinedTarget('test-dev', 'js-test', {force_npm_run: true, local: true, all: true, coverage: false, color: true})
+            .addPredefinedTarget('test-cov', 'js-test', {force_npm_run: true, local: true})
+            .addPredefinedTarget('test-ci', 'js-test', {force_npm_run: true, ci: true, coverage: false})
         ;
     }
     protected getTechnologies() {
