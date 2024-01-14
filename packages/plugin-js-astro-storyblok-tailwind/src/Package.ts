@@ -64,7 +64,7 @@ export default class Package extends JavascriptPackage {
         return {
             ...(await super.buildFilesFromTemplates(vars, cfg)),
             'tsconfig.json?': true,
-            'tailwind.config.js?': true,
+            'tailwind.config.cjs?': true,
             'astro.config.mjs?': true,
             'components.mjs?': true,
             'public/manifest.json?': true,

@@ -5,7 +5,7 @@ export abstract class AbstractJsTarget extends GenericTarget {
     getCommandPrefix(options: any) {
         switch ((options.npm_client || options.npmClient || 'npm').toLowerCase()) {
             case 'npm':
-                if (this.isScriptCommand()) {
+                if (options.force_npm_run || this.isScriptCommand()) {
                     return 'npm run';
                 }
                 return 'npm';
