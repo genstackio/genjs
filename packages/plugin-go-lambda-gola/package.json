@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-go-lambda-gola",
-  "version": "0.1.29",
+  "version": "0.1.30",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws-lambda": "^0.1.43",
-    "@genjs/genjs-bundle-go": "^0.1.27"
+    "@genjs/genjs-bundle-aws-lambda": "^0.1.44",
+    "@genjs/genjs-bundle-go": "^0.1.28"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.22"
+    "@genjs/genjs": "^0.4.23"
   }
 }
