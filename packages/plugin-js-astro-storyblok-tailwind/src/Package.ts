@@ -1,0 +1,142 @@
+import {JavascriptPackage} from '@genjs/genjs-bundle-javascript';
+
+export default class Package extends JavascriptPackage {
+    constructor(config: any) {
+        super(config, __dirname);
+    }
+    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+    protected buildDefaultVars(vars: any) {
+        return {
+            ...super.buildDefaultVars(vars),
+            project_prefix: 'mycompany',
+            project_name: 'myproject',
+        };
+    }
+    protected buildVars(vars: any): any {
+        const staticVars = require('../vars.json');
+        vars = {...staticVars, ...super.buildVars(vars)};
+        vars.scripts = {
+            ...staticVars.scripts,
+            ...(vars.scripts || {}),
+        };
+        vars.dependencies = {
+            ...staticVars.dependencies,
+            ...(vars.dependencies || {}),
+        };
+        vars.devDependencies = {
+            ...staticVars.devDependencies,
+            ...(vars.devDependencies || {}),
+        };
+        return vars;
+    }
+    protected buildReadme(vars: any) {
+        return super.buildReadme(vars)
+            .addFragmentFromTemplate(`${__dirname}/../templates/readme/original.md.ejs`)
+            ;
+    }
+    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+    protected async buildStaticFiles(vars: any, cfg: any) {
+        return {
+            ...(await super.buildStaticFiles(vars, cfg)),
+            'public/favicon.svg?': true,
+        };
+    }
+    // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+    protected async buildDynamicFiles(vars: any, cfg: any) {
+        return {
+            ...(await super.buildDynamicFiles({licenseFile: 'LICENSE.md', ...vars}, cfg)),
+            ['package.json?']: () => JSON.stringify({
+                name: vars.name,
+                type: 'module',
+                version: vars.version,
+                license: vars.license,
+                scripts: vars.scripts,
+                devDependencies: vars.devDependencies,
+                dependencies: vars.dependencies,
+                description: vars.description,
+                author: (vars.author && ('object' === typeof vars.author)) ? vars.author : {name: vars.author_name, email: vars.author_email},
+                private: true,
+                ...(vars.raw_package_json ? vars.raw_package_json : {}),
+            }, null, 4),
+        };
+    }
+    protected async buildFilesFromTemplates(vars: any, cfg: any) {
+        return {
+            ...(await super.buildFilesFromTemplates(vars, cfg)),
+            'tsconfig.json?': true,
+            'tailwind.config.js?': true,
+            'astro.config.mjs?': true,
+            'components.mjs?': true,
+            'public/manifest.json?': true,
+            'public/robots.txt?': true,
+            'src/layouts/BaseLayout.astro?': true,
+            'src/pages/home.astro?': true,
+            'src/pages/index.astro?': true,
+            'src/storyblok/Feature.astro?': true,
+            'src/storyblok/Grid.astro?': true,
+            'src/storyblok/Hero Section.astro?': true,
+            'src/storyblok/Page.astro?': true,
+            'src/storyblok/Teaser.astro?': true,
+            'src/env.d.ts?': true,
+            ...Object.entries(vars.project_envs || {}).reduce((acc, [k, v]) => {
+                acc[`env/${k}.env?`] = ['env/env.env.ejs', {project_env: v}];
+                return acc;
+            }, {}),
+        };
+    }
+    protected buildGitIgnore(vars: any) {
+        return super.buildGitIgnore(vars)
+            .addGroup('build output', [
+                '/dist/',
+            ])
+            .addGroup('generated types', [
+                '/.astro/',
+            ])
+            .addGroup('dependencies', [
+                '/node_modules/',
+            ])
+            .addGroup('testing', [
+                '/coverage',
+            ])
+            .addGroup('misc', [
+                '.DS_Store', '/.idea/', '/.vscode/',
+                '.env.local', '.env.development.local', '.env.test.local', '.env.production.local',
+                'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*', 'pnpm-debug.log*', '/src/index.generated.css'
+            ])
+        ;
+    }
+    protected buildMakefile(vars: any) {
+        return super.buildMakefile(vars)
+            .addGlobalVar('prefix', vars.project_prefix)
+            .addGlobalVar('bucket_prefix', vars.bucket_prefix ? vars.bucket_prefix : `$(prefix)-${vars.project_name}`)
+            .addGlobalVar('env', 'dev')
+            .addGlobalVar('AWS_PROFILE', `${vars.aws_profile_prefix || '$(prefix)'}-$(env)`)
+            .addGlobalVar('bucket', vars.bucket ? vars.bucket : `$(env)-$(bucket_prefix)-${vars.name}`)
+            .addGlobalVar('cloudfront', vars.cloudfront ? vars.cloudfront : `$(AWS_CLOUDFRONT_DISTRIBUTION_ID_${vars.name.toUpperCase().replace(/[^A-Z0-9_]+/g, '_')})`)
+            .addPredefinedTarget('install', 'js-install')
+            .addPredefinedTarget('build', 'js-build', {ci: (!!vars.hide_ci) ? 'hidden' : undefined, sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
+            .addPredefinedTarget('deploy-code', 'aws-s3-sync', {source: 'dist/', cacheControl: vars.s3_cache_control})
+            .addPredefinedTarget('invalidate-cache', 'aws-cloudfront-create-invalidation')
+            .addMetaTarget('deploy', ['deploy-code', 'invalidate-cache'])
+            .addPredefinedTarget('generate-env-local', 'generate-env-local', {prefix: 'PUBLIC', mode: vars.env_mode || 'terraform'})
+            .addPredefinedTarget('start', 'js-start', {port: this.getParameter('startPort'), sourceLocalEnvLocal: vars.sourceLocalEnvLocal})
+            .addPredefinedTarget('test', 'js-test', {ci: true, coverage: false})
+            .addPredefinedTarget('test-dev', 'js-test', {local: true, all: true, coverage: false, color: true})
+            .addPredefinedTarget('test-cov', 'js-test', {local: true})
+            .addPredefinedTarget('test-ci', 'js-test', {ci: true, coverage: false})
+        ;
+    }
+    protected getTechnologies() {
+        return [
+            ...super.getTechnologies(),
+            'astro',
+            'tailwindcss',
+            'storyblok',
+            'aws_cli',
+            'aws_cloudfront',
+            'aws_s3',
+            'aws_route53',
+            this.vars.publish_image && 'docker',
+        ];
+    }
+}
