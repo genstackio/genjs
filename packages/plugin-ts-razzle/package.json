@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-ts-razzle",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@genjs/genjs-bundle-aws-lambda": "^0.1.44",
-    "@genjs/genjs-bundle-typescript": "^0.1.28"
+    "@genjs/genjs-bundle-typescript": "^0.1.29"
   },
   "devDependencies": {
     "@genjs/genjs": "^0.4.23"
