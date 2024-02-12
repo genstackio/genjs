@@ -71,7 +71,6 @@ export class SchemaGraphqlModel {
             acc[fieldName] = {
                 name: fieldName,
                 type: 'id' === fieldName ? 'id' : field.type,
-                automatic: !!(type.model.statFields || {})[fieldName],
                 searchType: (type.model.searchFields || {})[fieldName],
                 outputType: (type.model.outputTypes || {})[fieldName],
                 args: (type.model.args || {})[fieldName],
@@ -614,12 +613,10 @@ export class SchemaGraphqlModel {
                 return true;
             case 'create':
                 if (!!field.private) return false;
-                if (field.automatic) return false;
                 if ('status' === fieldName) return false;
                 return true;
             case 'update':
                 if (!!field.private) return false;
-                if (field.automatic) return false;
                 if ('presets' === fieldName) return false;
                 if ('inlinePreset' === fieldName) return false;
                 return true;
