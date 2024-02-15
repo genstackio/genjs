@@ -411,6 +411,9 @@ export default class MicroserviceType {
             case 'value-cleared':
                 requirements['isValueCleared'] = true;
                 return `isValueCleared('${condition.attribute}', query)`;
+            case 'value-unemptied':
+                requirements['isValueUnemptied'] = true;
+                return `isValueUnemptied('${condition.attribute}', query)`;
             case 'eq':
                 requirements['isEqualTo'] = true;
                 return `isEqualTo('${condition.attribute}', '${condition.value}', query${this.buildDataKeyString(condition.dataKey)})`;

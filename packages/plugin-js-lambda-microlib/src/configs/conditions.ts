@@ -12,7 +12,7 @@ const patterns = [
     },
     // $email[changed]
     {
-        pattern: /^\s*(\$)([a-z0-9_]+)\s*\[\s*(changed|cleared)\s*]\s*$/i,
+        pattern: /^\s*(\$)([a-z0-9_]+)\s*\[\s*(changed|cleared|unemptied)\s*]\s*$/i,
         build: (matches) => ({
             type: `value-${matches[3]}`,
             attribute: matches[2],
