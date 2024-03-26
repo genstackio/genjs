@@ -6,9 +6,9 @@ export abstract class AbstractJsTarget extends GenericTarget {
         switch ((options.npm_client || options.npmClient || 'npm').toLowerCase()) {
             case 'npm':
                 if (options.force_npm_run || this.isScriptCommand()) {
-                    return 'npm run';
+                    return 'npm --silent run';
                 }
-                return 'npm';
+                return 'npm --silent';
             default:
             case 'yarn':
                 return 'yarn --silent';

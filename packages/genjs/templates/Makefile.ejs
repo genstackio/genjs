@@ -5,7 +5,7 @@
 <% } -%>
 <% if ('undefined' !== typeof nvmSupport && !!nvmSupport) { -%>
 ifneq (,$(wildcard .nvmrc))
-PATH = $(HOME)/.nvm/versions/node/v$(shell cat .nvmrc)/bin:$$PATH
+PATH = $(HOME)/.nvm/versions/node/v$(shell cat .nvmrc)/bin:$(shell printenv PATH)
 endif
 <% } -%>
 <% if (exportedVars.length) { -%>
