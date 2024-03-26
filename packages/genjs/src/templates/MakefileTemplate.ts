@@ -162,6 +162,7 @@ export class MakefileTemplate extends AbstractFileTemplate {
             exportedVars,
             defines,
             defaultTarget: this.defaultTarget,
+            nvmSupport: !!this.options?.nvm_support,
         }
     }
     addTarget(name, steps: string[] = [], dependencies: string[] = [], options: any = {}, description: string|undefined = undefined): this {

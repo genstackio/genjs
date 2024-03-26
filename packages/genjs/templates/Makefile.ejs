@@ -3,6 +3,11 @@
 <%- globalVar.name -%> <%- globalVar.type -%> <%- globalVar.value %>
 <% }) %>
 <% } -%>
+<% if ('undefined' !== typeof nvmSupport && !!nvmSupport) { -%>
+ifneq (,$(wildcard .nvmrc))
+PATH = $(HOME)/.nvm/versions/node/v$(shell cat .nvmrc)/bin:$$PATH
+endif
+<% } -%>
 <% if (exportedVars.length) { -%>
 <% exportedVars.forEach(exportedVar => { -%>
 export <%- exportedVar.name %><%- (undefined === exportedVar.value) ? '' : `=${exportedVar.value}` %>
