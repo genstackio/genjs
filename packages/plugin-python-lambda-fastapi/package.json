@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-python-lambda-fastapi",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,10 +25,10 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws-lambda": "^0.1.45",
-    "@genjs/genjs-bundle-python": "^0.1.31"
+    "@genjs/genjs-bundle-aws-lambda": "^0.1.46",
+    "@genjs/genjs-bundle-python": "^0.1.32"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.24"
+    "@genjs/genjs": "^0.4.25"
   }
 }
