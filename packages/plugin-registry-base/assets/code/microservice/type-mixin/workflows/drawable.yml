@@ -24,6 +24,10 @@ attributes:
   drawnBy: :uuid
   finishedAt: :timestamp
   finishedBy: :uuid
+  archiveRequestedAt: :timestamp
+  archiveRequestedBy: :uuid
+  archivedAt: :timestamp
+  archivedBy: :uuid
   status:
     type: workflow
     default: CREATED
@@ -41,34 +45,40 @@ attributes:
       DRAW_REQUESTED: {drawRequestedAt: '@now', drawRequestedBy: '@user_id'}
       DRAWN: {drawnAt: '@now', drawnBy: '@user_id'}
       FINISHED: {finishedAt: '@now', finishedBy: '@user_id'}
+      ARCHIVE_REQUESTED: {archiveRequestedAt: '@now', archiveRequestedBy: '@user_id'}
+      ARCHIVED: {archivedAt: '@now', archivedBy: '@user_id'}
     cascadeClear:
-      CREATED: [validationRequestedAt, validatedAt, runningAt, completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
-      VALIDATION_REQUESTED: [validatedAt, runningAt, completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
-      VALIDATED: [runningAt, completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
-      RUNNING: [completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
-      COMPLETED: [pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
-      PAUSED: [completedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
-      DATE_REACHED: [completedAt, pausedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
-      CANCELLATION_REQUESTED: [canceledAt, closedAt, drawRequestedAt, drawnAt, finishedAt]
-      CANCELED: [closedAt, drawRequestedAt, drawnAt, finishedAt]
-      CLOSED: [drawRequestedAt, drawnAt, finishedAt]
+      CREATED: [validationRequestedAt, validatedAt, runningAt, completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
+      VALIDATION_REQUESTED: [validatedAt, runningAt, completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
+      VALIDATED: [runningAt, completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
+      RUNNING: [completedAt, pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
+      COMPLETED: [pausedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
+      PAUSED: [completedAt, dateReachedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
+      DATE_REACHED: [completedAt, pausedAt, canceledAt, cancellationRequestedAt, closedAt, drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
+      CANCELLATION_REQUESTED: [canceledAt, closedAt, drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
+      CANCELED: [closedAt, drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
+      CLOSED: [drawRequestedAt, drawnAt, finishedAt, archiveRequestedAt, archivedAt]
       DRAW_REQUESTED: []
-      DRAWN: [finishedAt]
-      FINISHED: []
+      DRAWN: [finishedAt, archiveRequestedAt, archivedAt]
+      FINISHED: [archiveRequestedAt, archivedAt]
+      ARCHIVE_REQUESTED: [archivedAt]
+      ARCHIVED: []
     config:
-      steps: [CREATED, VALIDATION_REQUESTED, VALIDATED, RUNNING, COMPLETED, PAUSED, DATE_REACHED, CANCELED, CANCELLATION_REQUESTED, CLOSED, DRAW_REQUESTED, DRAWN, FINISHED]
+      steps: [CREATED, VALIDATION_REQUESTED, VALIDATED, RUNNING, COMPLETED, PAUSED, DATE_REACHED, CANCELED, CANCELLATION_REQUESTED, CLOSED, DRAW_REQUESTED, DRAWN, FINISHED, ARCHIVE_REQUESTED, ARCHIVED]
       transitions:
         undefined: [CREATED]
-        CREATED: [VALIDATION_REQUESTED, RUNNING, PAUSED, CANCELED, CANCELLATION_REQUESTED, FINISHED]
-        VALIDATION_REQUESTED: [CREATED, VALIDATED, CANCELED, CANCELLATION_REQUESTED, FINISHED]
-        VALIDATED: [CREATED, RUNNING, PAUSED, CANCELED, CANCELLATION_REQUESTED, CLOSED, FINISHED]
+        CREATED: [VALIDATION_REQUESTED, RUNNING, PAUSED, CANCELED, CANCELLATION_REQUESTED, FINISHED, ARCHIVE_REQUESTED]
+        VALIDATION_REQUESTED: [CREATED, VALIDATED, CANCELED, CANCELLATION_REQUESTED, FINISHED, ARCHIVE_REQUESTED]
+        VALIDATED: [CREATED, RUNNING, PAUSED, CANCELED, CANCELLATION_REQUESTED, CLOSED, FINISHED, ARCHIVE_REQUESTED]
         RUNNING: [CREATED, VALIDATED, COMPLETED, PAUSED, DATE_REACHED, CANCELED, CANCELLATION_REQUESTED, CLOSED]
         COMPLETED: [CREATED, VALIDATED, PAUSED, RUNNING, DATE_REACHED, CANCELED, CANCELLATION_REQUESTED, CLOSED]
         PAUSED: [CREATED, VALIDATED, RUNNING, DATE_REACHED, CANCELED, CANCELLATION_REQUESTED, CLOSED]
         DATE_REACHED: [CREATED, VALIDATED, RUNNING, PAUSED, CANCELED, CANCELLATION_REQUESTED, CLOSED]
-        CANCELED: [CREATED]
+        CANCELED: [CREATED, ARCHIVE_REQUESTED]
         CANCELLATION_REQUESTED: [CREATED, CANCELLED]
-        CLOSED: [DRAW_REQUESTED, FINISHED]
+        CLOSED: [DRAW_REQUESTED, FINISHED, ARCHIVE_REQUESTED]
         DRAW_REQUESTED: [DRAWN, CANCELLED, CANCELLATION_REQUESTED]
-        DRAWN: [FINISHED, DRAW_REQUESTED, CREATED, RUNNING]
-        FINISHED: [CREATED]
+        DRAWN: [FINISHED, ARCHIVE_REQUESTED, DRAW_REQUESTED, CREATED, RUNNING]
+        FINISHED: [CREATED, ARCHIVE_REQUESTED]
+        ARCHIVE_REQUESTED: [ARCHIVED]
+        ARCHIVED: []
