@@ -57,18 +57,21 @@ export default class Package extends AwsLambdaPackage {
             ;
     }
     protected buildMakefile(vars: any) {
+        const runtime = vars.aws_runtime || 'go1.x';
+        const arch = vars.aws_arch || 'linux-amd64';
+        const isOldRuntime = 'go1.x' === runtime;
         const assets: string = vars.go_assets_dir || '';
         const t = super.buildMakefile(vars)
             .addGlobalVar('env', 'dev')
-            .addGlobalVar('BIN', 'main')
-            .addGlobalVar('ARCH', 'linux-amd64')
+            .addGlobalVar('BIN', isOldRuntime ? 'main' : 'bootstrap')
+            .addGlobalVar('ARCH', arch)
             .addGlobalVar('platform_temp', undefined, '$(subst -, ,$(ARCH))')
             .addGlobalVar('GOOS', undefined, '$(word 1, $(platform_temp))')
             .addGlobalVar('GOARCH', undefined, '$(word 2, $(platform_temp))')
             .addGlobalVar('GOPROXY', undefined, 'https://proxy.golang.org')
             .addTarget('arch', ['echo $(shell go env GOOS)-$(shell go env GOARCH)'], [], {}, 'Display current arch (os + arch)')
             .addMetaTarget('build', ['build-binary', 'build-package'], {}, 'Build Go binary and Lambda ZIP package')
-            .addTarget('build-binary', ['GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go build -o build/bin/$(GOOS)/$(GOARCH)/$(BIN) ./cmd/main/'], ['prepare-build-dir'], {}, 'Build Go binary')
+            .addTarget('build-binary', [`GOOS=$(GOOS) GOARCH=$(GOARCH) CGO_ENABLED=0 go build ${isOldRuntime ? '' : '-tags lambda.norpc '}-o build/bin/$(GOOS)/$(GOARCH)/$(BIN) ./cmd/main/`], ['prepare-build-dir'], {}, 'Build Go binary')
             .addTarget('test', ['go test ./cmd/main/ -v -race -coverprofile=coverage.txt -covermode=atomic'], [], {}, 'Execute the tests')
             .addTarget('format', ['gofmt -w ./cmd/main/ -v'], [], {}, 'Format the Go source code')
             .addTarget('build-package', [assets ? `cp -R ${assets} build/bin/$(GOOS)/$(GOARCH)/` : undefined, `cd build/bin/$(GOOS)/$(GOARCH) && zip -r ../../../../build/package.zip $(BIN) ${assets ? `${assets} ` : ''}>/dev/null`].filter(x => !!x) as string[], ['prepare-build-dir'], {}, 'Build the Lambda ZIP package')
