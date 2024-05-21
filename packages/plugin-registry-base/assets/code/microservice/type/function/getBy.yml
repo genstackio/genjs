@@ -15,6 +15,6 @@ args:
 
 code: |
   if (undefined === value || null === value || '' === value) throw new (require('@ohoareau/errors/lib/DocumentNotFoundError').default)('<%- type %>', '*empty*', field);
-  const docs = await service.find({...query, index: field, hashKey: value, limit: 1, fields, selections: {items: {fields}}});
+  const docs = await service.find({...query, index: field, hashKey: value, limit: 1, fields, selections: {items: {fields, selections: query.selections}}});
   if (!docs || !docs.items || (1 > docs.items.length)) throw new (require('@ohoareau/errors/lib/DocumentNotFoundError').default)('<%- type %>', value, field);
   return docs.items.shift();
