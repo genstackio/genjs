@@ -69,7 +69,7 @@ export default class Package extends JavascriptPackage {
             'tailwind.config.cjs?': true,
             'postcss.config.js?': true,
             'index.html?': true,
-            'eslintrc.cjs?': true,
+            '.eslintrc.cjs?': true,
             'public/manifest.json?': true,
             'public/robots.txt?': true,
             'src/App.css?': true,
