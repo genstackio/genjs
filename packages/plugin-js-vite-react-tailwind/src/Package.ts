@@ -66,7 +66,7 @@ export default class Package extends JavascriptPackage {
             'tsconfig.json?': true,
             'tsconfig.node.json?': true,
             'vite.config.ts?': true,
-            'tailwind.config.cjs?': true,
+            'tailwind.config.js?': true,
             'postcss.config.js?': true,
             'index.html?': true,
             '.eslintrc.cjs?': true,
