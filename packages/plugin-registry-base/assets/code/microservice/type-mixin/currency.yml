@@ -1,2 +1,2 @@
 attributes:
-  currency: { type: constant, default: EUR, config: { values: [ EUR, USD, CAD, GBP, CHF, MAD, MUR, XBT ] } }
+  currency: { type: constant, default: EUR, config: { values: [ EUR, USD, CAD, GBP, CHF, MAD, MUR, XBT, XOF ] } }
