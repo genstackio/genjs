@@ -1,0 +1,30 @@
+attributes:
+  statusAt: :timestamp
+  processingAt: :timestamp
+  processedAt: :timestamp
+  erroredAt: :timestamp
+  abortedAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      PROCESSING: { processingAt: '@now', statusAt: '@now' }
+      PROCESSED: { processedAt: '@now', statusAt: '@now' }
+      ERRORED: { erroredAt: '@now', statusAt: '@now' }
+      ABORTED: { abortedAt: '@now', statusAt: '@now' }
+    cascadeClear:
+      CREATED: [ processingAt, processedAt, erroredAt, abortedAt ]
+      PROCESSING: [ processedAt, erroredAt, abortedAt ]
+      PROCESSED: [ erroredAt, abortedAt ]
+      ERRORED: [ abortedAt ]
+      ABORTED: [ ]
+    config:
+      steps: [CREATED, PROCESSING, PROCESSED, ERRORED, ABORTED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [PROCESSING, ABORTED, ERRORED]
+        PROCESSING: [PROCESSED, ERRORED, ABORTED]
+        PROCESSED: [CREATED]
+        ERRORED: [ABORTED, CREATED]
+        ABORTED: [CREATED]
