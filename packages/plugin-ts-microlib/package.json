@@ -27,6 +27,7 @@
     "glob": "^8.0.3"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.25"
+    "@genjs/genjs": "^0.4.25",
+    "@genjs/genjs-bundle-package": "^0.1.28"
   }
 }
