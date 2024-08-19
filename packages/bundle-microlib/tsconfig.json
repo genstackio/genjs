@@ -7,8 +7,7 @@
   },
   "references": [
     { "path": "../genjs"},
-    { "path": "../bundle-package"},
-    { "path": "../bundle-microlib"}
+    { "path": "../bundle-package"}
   ],
   "include": [
     "./src"

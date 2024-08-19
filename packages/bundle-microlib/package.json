@@ -1,6 +1,6 @@
 {
-  "name": "@genjs/genjs-plugin-ts-microlib",
-  "version": "0.1.2",
+  "name": "@genjs/genjs-bundle-microlib",
+  "version": "0.0.0",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,17 +16,13 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
-    "gen": "../genjs/bin/genjs",
-    "dump": "../genjs/bin/genjs dump"
+    "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`"
   },
   "peerDependencies": {
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-package": "^0.1.28",
-    "@genjs/genjs-bundle-microlib": "^0",
-    "glob": "^8.0.3"
+    "@genjs/genjs-bundle-package": "^0.1.28"
   },
   "devDependencies": {
     "@genjs/genjs": "^0.4.25"
