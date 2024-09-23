@@ -24,13 +24,18 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
                     `AWS_EC2_METADATA_DISABLED=true AWS_PROFILE=$(AWS_PROFILE) aws s3 cp $(source_package_file) s3://$(target_s3_bucket)/$(target_s3_key)${vars.s3_cache_control ? ` --cache-control '${vars.s3_cache_control}'` : ''}`,
                 ])
                 .addTarget('update-lambda-code', [
-                    '$(foreach f,$(target_lambda_name), echo "\\n----- \\033[36m$(f)\\033[0m --------------------------"; echo; AWS_EC2_METADATA_DISABLED=true AWS_PAGER= AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket) --s3-key $(target_s3_key) --output yaml;)',
+                    `$(foreach f,$(target_lambda_name), echo "\\n----- \\033[36m$(f)\\033[0m --------------------------"; echo; ${vars.target_aws_regions?.length ? vars.target_aws_regions.map(buildDeployOne).join(';') : buildDeployOne('')};)`,
                 ])
-                .addTarget('update-lambda-code-of', [
-                    'AWS_EC2_METADATA_DISABLED=true AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket) --s3-key $(target_s3_key)',
-                ])
-
-
+                .addTarget(
+                    'update-lambda-code-of',
+                    vars.target_aws_regions?.length ?
+                        vars.target_aws_regions.map(r =>
+                            `AWS_EC2_METADATA_DISABLED=true AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_REGION=${r} AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket)-${r} --s3-key $(target_s3_key)`,
+                        )
+                        : [
+                            'AWS_EC2_METADATA_DISABLED=true AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION) AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket) --s3-key $(target_s3_key)',
+                        ],
+                )
             ;
             if (assets) {
                 t
@@ -66,5 +71,8 @@ export function applyDeployMakefileHelper(t: MakefileTemplate, vars: any, p: IPa
     }
 }
 
+function buildDeployOne(x: string) {
+    return `AWS_EC2_METADATA_DISABLED=true AWS_PAGER= AWS_DEFAULT_REGION=$(AWS_DEFAULT_REGION)${x ? ` AWS_REGION=${x}` : ''} AWS_PROFILE=$(AWS_PROFILE) aws lambda update-function-code --function-name $(f) --s3-bucket $(target_s3_bucket)${x ? `-${x}` : ''} --s3-key $(target_s3_key) --output yaml`;
+}
 // noinspection JSUnusedGlobalSymbols
 export default applyDeployMakefileHelper;
