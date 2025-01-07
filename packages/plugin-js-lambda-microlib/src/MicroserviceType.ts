@@ -478,6 +478,7 @@ export default class MicroserviceType {
         const conditionCode = this.buildConditionCode(condition, conditionNot, requirements);
         let call: string|undefined = undefined;
         if ('@get' === type) return `    ${conditionCode || ''}Object.assign(query, await service.get(query.id, ${this.stringifyForHook(config['fields'] || [], options)}));`;
+        if ('@get-consistent' === type) return `    ${conditionCode || ''}Object.assign(query, await service.getConsistent(query.id, ${this.stringifyForHook(config['fields'] || [], options)}));`;
         const rawOpts = !!Object.keys(opts).length ? `, ${this.stringifyForHook(opts, options)}` : '';
         if ('@lambda/event' === type) {
             requirements['lambdaEvent'] = true;

@@ -229,6 +229,14 @@ export class SchemaGraphqlModel {
                 ],
                 gqlType: op.gqlType,
             }; break;
+            case 'getConsistent': x = {
+                name,
+                type: 'getConsistent',
+                args: [
+                    {name: 'id', gqlType: 'ID', required: true}
+                ],
+                gqlType: op.gqlType,
+            }; break;
             default:
                 let z: any = {};
                 if (others[name]) z = this.parseHandlerValue(others[name], {parentType: {name: 'Query'}, parentField: name, handler: name});
@@ -414,6 +422,11 @@ export class SchemaGraphqlModel {
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
                         {name: cfg?.vars?.default || cfg?.vars?.field || 'value', type: 'string', gqlType: 'String', required: true},
                     ]};
+            case 'getConsistentBy':
+                pageType = this.camelCase(msType);
+                return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                        {name: cfg?.vars?.default || cfg?.vars?.field || 'value', type: 'string', gqlType: 'String', required: true},
+                    ]};
             case 'findInIndexByHashKey':
                 pageType = `${this.camelCase(msType)}Page`;
                 return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
@@ -522,6 +535,12 @@ export class SchemaGraphqlModel {
                         ]};
                 }
                 if (/^getBy/.test(operationNature || '')) {
+                    pageType = this.camelCase(msType);
+                    return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
+                            {name: cfg?.vars?.default || cfg?.vars?.field || 'value', type: 'string', gqlType: 'String', required: true},
+                        ]};
+                }
+                if (/^getConsistentBy/.test(operationNature || '')) {
                     pageType = this.camelCase(msType);
                     return {operationNature, operationType: pageType, operationGqlType: pageType, operationArgs: [
                             {name: cfg?.vars?.default || cfg?.vars?.field || 'value', type: 'string', gqlType: 'String', required: true},

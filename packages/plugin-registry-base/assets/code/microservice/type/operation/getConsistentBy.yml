@@ -1,0 +1,13 @@
+require:
+  - getConsistentBy
+
+inputs:
+  field:
+    main: true
+
+wrap:
+  - getConsistentBy
+  - "'<%- field %>'"
+  - query.<%- field %>
+  - query.fields || []
+  - query
