@@ -488,6 +488,22 @@ export default class MicroserviceType {
             requirements['snsPublish'] = true;
             return `    ${conditionCode || ''}await snsPublish(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'});`
         }
+        if ('%message' === type) {
+            requirements['message'] = true;
+            switch (options['position']) {
+                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'}, undefined, query);`;
+                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'}, result, query);`;
+                default: return undefined;
+            }
+        }
+        if ('%message:' === type.slice(0, 9)) {
+            requirements['message'] = true;
+            switch (options['position']) {
+                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'}, undefined, query);`;
+                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'}, result, query);`;
+                default: return undefined;
+            }
+        }
         if ('%event' === type) {
             requirements['event'] = true;
             return `    ${conditionCode || ''}await event(${this.stringifyForHook(config['name'] || options['operationName'], options)}, result, query);`
