@@ -491,16 +491,16 @@ export default class MicroserviceType {
         if ('%message' === type) {
             requirements['message'] = true;
             switch (options['position']) {
-                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).map(x => this.stringifyValueForHook(`'${x}'`, options)).join(', ') : args) : 'undefined'}, undefined, query);`;
-                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).map(x => this.stringifyValueForHook(`'${x}'`, options)).join(', ') : args) : 'undefined'}, result, query);`;
+                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? this.mapToStringifyValueForHook(args, options).join(', ') : args) : 'undefined'}, undefined, query);`;
+                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? this.mapToStringifyValueForHook(args, options).join(', ') : args) : 'undefined'}, result, query);`;
                 default: return undefined;
             }
         }
         if ('%message:' === type.slice(0, 9)) {
             requirements['message'] = true;
             switch (options['position']) {
-                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? (<any>args).map(x => this.stringifyValueForHook(`'${x}'`, options)).join(', ') : args) : 'undefined'}, undefined, query);`;
-                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? (<any>args).map(x => this.stringifyValueForHook(`'${x}'`, options)).join(', ') : args) : 'undefined'}, result, query);`;
+                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? this.mapToStringifyValueForHook(args, options).join(', ') : args) : 'undefined'}, undefined, query);`;
+                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? this.mapToStringifyValueForHook(args, options).join(', ') : args) : 'undefined'}, result, query);`;
                 default: return undefined;
             }
         }
@@ -662,7 +662,22 @@ export default class MicroserviceType {
             default: return undefined;
         }
     }
-    stringifyValueForHook(x, {position = undefined}) {
+    mapToStringifyValueForHook(args: any[], options: { position?: string }) {
+        return args.map(x => {
+            switch (x) {
+                case 'undefined':
+                case 'null':
+                    return x;
+                case false:
+                    return 'false';
+                case true:
+                    return 'true';
+                default:
+                    return this.stringifyValueForHook(`'${x}'`, options);
+            }
+        })
+    }
+    stringifyValueForHook(x, { position = undefined }: {position?: string}) {
         // noinspection RegExpRedundantEscape
         if (/'\{\{[^{}]+}}'/.test(x)) {
             let a;
