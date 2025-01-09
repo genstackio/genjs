@@ -491,16 +491,16 @@ export default class MicroserviceType {
         if ('%message' === type) {
             requirements['message'] = true;
             switch (options['position']) {
-                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'}, undefined, query);`;
-                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'}, result, query);`;
+                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : 'undefined'}, undefined, query);`;
+                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(config['topic'], options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : 'undefined'}, result, query);`;
                 default: return undefined;
             }
         }
         if ('%message:' === type.slice(0, 9)) {
             requirements['message'] = true;
             switch (options['position']) {
-                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'}, undefined, query);`;
-                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : '{}'}, result, query);`;
+                case 'before': return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : 'undefined'}, undefined, query);`;
+                case 'after':  return `    ${conditionCode || ''}await message(${this.stringifyForHook(type.slice(9), options)}, ${args ? (Array.isArray(args) ? (<any>args).join(', ') : args) : 'undefined'}, result, query);`;
                 default: return undefined;
             }
         }
