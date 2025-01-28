@@ -1,5 +1,6 @@
+<% const origV = v -%>
 <% (Object.values(projects || {})).forEach(p => {
-  v = {...v, ...(p['workflowsVars'] || {})}
+  v = {...origV, ...(p['workflowsVars'] || {})}
 -%>
   <%- p.project %>:
     needs: changes

@@ -3,4 +3,5 @@
         run: make build-<%- project %> env=${{env.env}}
         env:
           FORCE_COLOR: 3
-          CI: true
+          CI: true<% if (('undefined' !== typeof v.github_token_env) && !!v.github_token_env) { %>
+          <%= v.github_token_env -%>: ${{secrets.<%= v.github_token_env -%>}}<% } -%>
