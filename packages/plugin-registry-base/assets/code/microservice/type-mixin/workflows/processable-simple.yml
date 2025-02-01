@@ -1,0 +1,22 @@
+attributes:
+  statusAt: :timestamp
+  processedAt: :timestamp
+  canceledAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now', statusAt: '@now' }
+      PROCESSED: { processedAt: '@now', statusAt: '@now' }
+      CANCELED: { canceledAt: '@now', statusAt: '@now' }
+    cascadeClear:
+      CREATED: [ processedAt, canceledAt ]
+      PROCESSED: [ canceledAt ]
+      CANCELED: [ ]
+    config:
+      steps: [CREATED, PROCESSED, CANCELED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [PROCESSED, CANCELED]
+        PROCESSED: [CREATED]
+        CANCELED: [CREATED]
