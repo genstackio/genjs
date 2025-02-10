@@ -673,6 +673,16 @@ export default class MicroserviceType {
                 case true:
                     return 'true';
                 default:
+                    if ('object' === typeof x) {
+                        return `{${Object.entries(x).reduce((acc, [k, v]) => {
+                            if (Array.isArray(v)) {
+                                v = this.mapToStringifyValueForHook(v, options);
+                            } else {
+                                v = this.stringifyValueForHook(`'${v}'`, options);
+                            }
+                            return `${acc}${acc ? ', ' : ''}${k}: ${v}`;
+                        }, '')}}`;
+                    }
                     return this.stringifyValueForHook(`'${x}'`, options);
             }
         })
