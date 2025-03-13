@@ -1,0 +1,35 @@
+{
+  "name": "@genjs/genjs-plugin-js-react-router",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib",
+    "vars.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "../../node_modules/.bin/jest -c ../../jest.config.js --rootDir=`pwd`",
+    "gen": "../genjs/bin/genjs",
+    "dump": "../genjs/bin/genjs dump"
+  },
+  "peerDependencies": {
+    "@genjs/genjs": "^0"
+  },
+  "dependencies": {
+    "@genjs/genjs-bundle-aws-lambda": "^0.1.47",
+    "@genjs/genjs-bundle-javascript": "^0.1.31"
+  },
+  "devDependencies": {
+    "@genjs/genjs": "^0.4.25",
+    "aws-sdk": "^2.1199.0"
+  }
+}
