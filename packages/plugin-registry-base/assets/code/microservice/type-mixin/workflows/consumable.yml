@@ -1,0 +1,21 @@
+attributes:
+  consumedAt: :timestamp
+  canceledAt: :timestamp
+  status:
+    type: workflow
+    default: CREATED
+    cascadePopulate:
+      CREATED: { createdAt: '@now' }
+      CONSUMED: { consumedAt: '@now' }
+      CANCELED: { canceledAt: '@now' }
+    cascadeClear:
+      CREATED: [ consumedAt, canceledAt ]
+      CONSUMED: [ canceledAt ]
+      CANCELED: [ ]
+    config:
+      steps: [CREATED, CONSUMED, CANCELED]
+      transitions:
+        undefined: [CREATED]
+        CREATED: [CONSUMED, CANCELED]
+        CONSUMED: [CANCELED]
+        CANCELED: []
