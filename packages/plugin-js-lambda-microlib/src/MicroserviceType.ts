@@ -766,6 +766,19 @@ export default class MicroserviceType {
                 x = x.replace(a[0], `${prefix}${a[1]}`);
             }
         }
+        if (/'\$[a-z0-9_]*:[a-z0-9_]+:[a-z0-9_]*'/i.test(x)) {
+            let a;
+            const r = /'\$([a-z0-9_]*):([a-z0-9_]+):([a-z0-9_]*)'/i;
+            let prefix = '';
+            switch (<any>position) {
+                case 'before': prefix = 'query.data.'; break;
+                case 'after': prefix = 'result.'; break;
+                default: break;
+            }
+            while ((a = r.exec(x)) !== null) {
+                x = x.replace(a[0], `\`${a[1] ? a[1] : ''}\${${prefix}${a[2]}}${a[3] ? a[3] : ''}\``);
+            }
+        }
         if (/'\[\[process.env.[^{}]+]]'/.test(x)) {
             let a;
             const r = /'\[\[(process.env.[^{}]+)]]'/;
