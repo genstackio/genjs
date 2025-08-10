@@ -76,9 +76,9 @@ export default class Package extends AwsLambdaPackage {
         return () => JSON.stringify({
             name: vars.name,
             license: vars.license,
-            dependencies: vars.dependencies,
+            dependencies: this.cleanObject(vars.dependencies),
             scripts: vars.scripts,
-            devDependencies: vars.devDependencies,
+            devDependencies: this.cleanObject(vars.devDependencies),
             ...(vars.resolutions ? {resolutions: vars.resolutions} : {}),
             version: vars.version,
             description: vars.description,

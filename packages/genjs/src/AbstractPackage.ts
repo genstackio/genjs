@@ -73,6 +73,10 @@ export abstract class AbstractPackage<C extends BasePackageConfig = BasePackageC
         disabled_features.forEach(f => this.features[f] = false);
         Object.assign(this.extraOptions, bbExtraOptions, xExtraOptions);
     }
+    protected cleanObject(o: undefined|Record<string, unknown>) {
+        if (!o) return o;
+        return Object.entries(o).filter(([_, b]) => null !== b && undefined !== b).reduce((acc, [a, b]) => Object.assign(acc, {[a]: b}), {} as Record<string, string>);
+    }
     public getCustomPluginsByType<T extends object = any>(type: string, defaultValue: T = {} as T): T {
         const customPaths = [
             `${this.absoluteTargetDir}/.genjs/${type}`,
