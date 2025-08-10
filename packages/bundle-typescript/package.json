@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-bundle-typescript",
-  "version": "0.1.31",
+  "version": "0.1.32",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -22,9 +22,9 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-javascript": "^0.1.31"
+    "@genjs/genjs-bundle-javascript": "^0.1.32"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.25"
+    "@genjs/genjs": "^0.4.26"
   }
 }

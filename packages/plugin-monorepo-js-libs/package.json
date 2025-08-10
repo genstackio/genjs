@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-monorepo-js-libs",
-  "version": "0.4.35",
+  "version": "0.4.36",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,12 +25,12 @@
     "@genjs/genjs": "^0"
   },
   "dependencies": {
-    "@genjs/genjs-bundle-aws": "^0.1.28",
-    "@genjs/genjs-bundle-javascript": "^0.1.31",
-    "@genjs/genjs-bundle-scm": "^0.1.18",
-    "@genjs/genjs-bundle-typescript": "^0.1.31"
+    "@genjs/genjs-bundle-aws": "^0.1.29",
+    "@genjs/genjs-bundle-javascript": "^0.1.32",
+    "@genjs/genjs-bundle-scm": "^0.1.19",
+    "@genjs/genjs-bundle-typescript": "^0.1.32"
   },
   "devDependencies": {
-    "@genjs/genjs": "^0.4.25"
+    "@genjs/genjs": "^0.4.26"
   }
 }
