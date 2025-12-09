@@ -556,10 +556,6 @@ export default class MicroserviceType {
             requirements['prepare'] = true;
             return `    ${conditionCode || ''}await prepare(query);`;
         }
-        if ('@dispatch' === type) {
-            requirements['dispatch'] = true;
-            return `    ${conditionCode || ''}await dispatch(result, query);`;
-        }
         if ('@after' === type) {
             requirements['after'] = true;
             return `    ${conditionCode || ''}await after(result, query);`;

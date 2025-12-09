@@ -50,15 +50,6 @@ export default class Handler {
         };
 
         const addedGroups: {[key: string]: any} = {};
-        if (0 <= this.middlewares.indexOf('@warmup')) {
-            pushGroupTest(addedGroups, 'warmup', {name: 'warmup call', type: 'handler-call', config: {event: {warm: true}, expected: {status: 'success', code: 1000, message: 'warmed'}}});
-        }
-        if ((0 <= this.middlewares.indexOf('@apigateway') || ('apigateway' === this.type)) && (!this.vars.errors)) {
-            pushGroupTest(addedGroups, 'apigateway', {name: 'malformed event', type: 'handler-call', config: {event: {}, expectedBody: JSON.stringify({errorType: 'not-found', message: 'Resource Not Found', code: 404, data: {}, errorInfo: {}})}});
-        }
-        if ((0 <= this.middlewares.indexOf('@apigateway') || ('apigateway' === this.type)) && (true === this.vars.healthz)) {
-            pushGroupTest(addedGroups, 'apigateway', {name: 'healthz', type: 'handler-call', config: {event: {httpMethod: 'GET', resource: '/healthz'}, expectedBody: JSON.stringify({status: 'ok', code: 1001, message: 'healthy'})}});
-        }
         if (('graphql' === this.type)) {
             pushGroupTest(addedGroups, 'graphql', {name: 'ui', type: 'handler-call', config: {event: {httpMethod: 'GET', resource: '/graphql', path: '/graphql', headers: {'Accept': 'text/html'}}, expectedStatusCode: 200}});
         }
