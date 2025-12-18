@@ -1,6 +1,6 @@
 {
   "name": "@genjs/genjs-plugin-registry-base",
-  "version": "0.6.38",
+  "version": "0.6.39",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
