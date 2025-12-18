@@ -6,12 +6,12 @@ inputs:
   indexed:
     type: boolean
     default: false
-  unique:
-    type: boolean
-    default: false
   prefix:
     type: string
     default: ''
+  unique:
+    type: boolean
+    default: false
 
 attributes:
   code:
