@@ -9,10 +9,13 @@ inputs:
   prefix:
     type: string
     default: ''
+  unique:
+    type: boolean
+    default: false
 
 attributes:
   code:
-    type: "<%- indexed ? '@' : '' %>string"
+    type: "<%- unique ? '!' : '' %><%- indexed ? '@' : '' %>string"
     prefix: "<%- prefix || '' %>"
     value:
       type: "<%- generator %>"

@@ -117,7 +117,12 @@ export default class SchemaParser {
             (undefined !== ownedReferenceList) && (acc.ownedReferenceListFields[k] = ownedReferenceList);
             (validators && 0 < validators.length) && (acc.validators[k] = [...acc.validators[k], ...validators]);
             (authorizers && 0 < authorizers.length) && (acc.authorizers[k] = [...(acc.authorizers[k] || []), ...authorizers]);
-            unique && (acc.validators[k].push({type: '@unique', config: {type: schema.name, index: k}}));
+            if (unique) {
+              if (undefined === value && undefined === updateValue) {
+                acc.validators[k].push({type: '@unique', config: {type: schema.name, index: k}});
+              }
+              acc.fields[k].unique = true;
+            }
             (undefined !== value) && (acc.values[k] = value);
             (undefined !== updateValue) && (acc.updateValues[k] = updateValue);
             (undefined !== defaultValue) && (acc.defaultValues[k] = defaultValue);
