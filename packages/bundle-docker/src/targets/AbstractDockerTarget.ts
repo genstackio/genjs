@@ -1,5 +1,5 @@
 import {GenericTarget} from '@genjs/genjs';
-import {parseEcr} from "@ohoareau/aws-parse";
+import {parseEcr} from "../utils";
 
 export abstract class AbstractDockerTarget extends GenericTarget {
     abstract getCommandName(options: any): string;
